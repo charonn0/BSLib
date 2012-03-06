@@ -161,7 +161,7 @@ Protected Module Images
 		  //.exe, .dll, .scr, .pif, etc. file which contains icon resources. Common Windows icons are located in SpecialFolder.System.Child("shell32.dll")
 		  
 		  //You may optionally designate the Index of the icon you want to be the default selection (much like the Suggested Name in a GetSaveFolderItem
-		  //dialog.) Icons start with Index=0 There is no guarentee that the user will select this icon or even that the selected icon will come from your 
+		  //dialog.) Icons start with Index=0 There is no guarentee that the user will select this icon or even that the selected icon will come from your
 		  //specified IconResource as the user may select a different resource file.
 		  
 		  //If you require that the returned Picture be of a certain size, pass the pixSize parameter. Passing 0 or nothing will return

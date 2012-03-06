@@ -154,57 +154,6 @@ Protected Module Console
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Resize(x As Integer, y As Integer) As Boolean
-		  //Attempts to resize the Console buffer and window to the specified dimensions.
-		  //x = the number of columns wide the buffer should be; y is the number of
-		  //rows in the buffer.
-		  
-		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-		    Declare Function SetConsoleScreenBufferSize Lib "Kernel32" (cHandle As Integer, coords As COORD) As Boolean
-		    Declare Function SetConsoleWindowInfo Lib "Kernel32" (cHandle As Integer, Absolute As Boolean, ByRef coords As SMALL_RECT) As Boolean
-		    Declare Function GetLargestConsoleWindowSize Lib "Kernel32" (cHandle As Integer) As COORD
-		    
-		    Dim cord As COORD
-		    Dim winSize As SMALL_RECT = Buffer.sdWindow
-		    
-		    cord.X = winSize.Right
-		    cord.Y = winSize.Bottom
-		    
-		    If x < cord.X Or y < cord.Y Then
-		      If x > cord.X Then
-		        cord.X = x
-		        Call SetConsoleScreenBufferSize(StdOutHandle, cord)
-		      End If
-		      If y > cord.Y Then
-		        cord.Y = y
-		        Call SetConsoleScreenBufferSize(StdOutHandle, cord)
-		      End If
-		      
-		      
-		      winSize.Right = x - 1
-		      winSize.Bottom = y - 1
-		      If SetConsoleWindowInfo(StdOutHandle, True, winSize) Then
-		        cord.X = x
-		        cord.Y = y
-		        Return SetConsoleScreenBufferSize(StdOutHandle, cord)
-		      End If
-		    Else
-		      cord.X = x
-		      cord.Y = y
-		      If SetConsoleScreenBufferSize(StdOutHandle, cord) Then
-		        winSize.Right = x - 1
-		        winSize.Bottom = y - 1
-		        Return SetConsoleWindowInfo(StdOutHandle, True, winSize)
-		      End If
-		    End If
-		  #Else
-		    #pragma Unused x
-		    #pragma Unused y
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Sub SendCTRL_C()
 		  //Sends a Control+C signal. By default this will immediately interrupt and terminate the application. You can override this
 		  //behavior using the OverrideCTRL_C function.
@@ -377,11 +326,104 @@ Protected Module Console
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
+			  //Returns the maximum height (in characters) of the console buffer
+			  return Buffer.dwSize.Y
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  //Attempts to resize the Console buffer and window to the specified dimensions.
+			  //value = the number of columns high the buffer should be
+			  
+			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
+			    Declare Function SetConsoleScreenBufferSize Lib "Kernel32" (cHandle As Integer, coords As COORD) As Boolean
+			    Declare Function SetConsoleWindowInfo Lib "Kernel32" (cHandle As Integer, Absolute As Boolean, ByRef coords As SMALL_RECT) As Boolean
+			    Declare Function GetLargestConsoleWindowSize Lib "Kernel32" (cHandle As Integer) As COORD
+			    
+			    Dim cord As COORD
+			    Dim winSize As SMALL_RECT = Buffer.sdWindow
+			    
+			    cord.X = winSize.Right
+			    cord.Y = winSize.Bottom
+			    
+			    If Value > cord.Y Then
+			      cord.X = BufferWidth
+			      cord.Y = Value
+			      If SetConsoleScreenBufferSize(StdOutHandle, cord) Then
+			        winSize.Bottom = value - 1
+			        Call SetConsoleWindowInfo(StdOutHandle, False, winSize)
+			      End If
+			    Else
+			      winSize.Bottom = value - 1
+			      If SetConsoleWindowInfo(StdOutHandle, True, winSize) Then
+			        cord.X = BufferWidth
+			        cord.Y = value
+			        Call SetConsoleScreenBufferSize(StdOutHandle, cord)
+			      End If
+			    End If
+			  #Else
+			    #pragma Unused Value
+			  #endif
+			End Set
+		#tag EndSetter
+		BufferHeight As Integer
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  //Returns the maximum width (in characters) of the console buffer
+			  Return Buffer.dwSize.X
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  //Attempts to resize the Console buffer and window to the specified dimensions.
+			  //value = the number of columns wide the buffer should be
+			  
+			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
+			    Declare Function SetConsoleScreenBufferSize Lib "Kernel32" (cHandle As Integer, coords As COORD) As Boolean
+			    Declare Function SetConsoleWindowInfo Lib "Kernel32" (cHandle As Integer, Absolute As Boolean, ByRef coords As SMALL_RECT) As Boolean
+			    Declare Function GetLargestConsoleWindowSize Lib "Kernel32" (cHandle As Integer) As COORD
+			    
+			    Dim cord As COORD
+			    Dim winSize As SMALL_RECT = Buffer.sdWindow
+			    
+			    cord.X = winSize.Right
+			    cord.Y = winSize.Bottom
+			    
+			    If Value > cord.X Then
+			      cord.X = Value
+			      cord.Y = BufferHeight
+			      If SetConsoleScreenBufferSize(StdOutHandle, cord) Then
+			        winSize.Right = value - 1
+			        Call SetConsoleWindowInfo(StdOutHandle, False, winSize)
+			      End If
+			    Else
+			      winSize.Right = BufferWidth - value
+			      If SetConsoleWindowInfo(StdOutHandle, True, winSize) Then
+			        cord.X = Value - 1
+			        cord.Y = BufferHeight
+			        Call SetConsoleScreenBufferSize(StdOutHandle, cord)
+			      End If
+			    End If
+			  #Else
+			    #pragma Unused Value
+			  #endif
+			End Set
+		#tag EndSetter
+		BufferWidth As Integer
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
 			  //Returns the console window title.
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
 			    Declare Function GetConsoleTitleW Lib "Kernel32" (Contitle As Ptr, mbsize As Integer) As Integer
 			    Dim mb As New MemoryBlock(256)
 			    Call GetConsoleTitleW(mb, mb.Size)
+			    If mb.Size = 0 Then Return ""
 			    Return mb.Wstring(0)
 			  #endif
 			End Get
@@ -573,26 +615,6 @@ Protected Module Console
 		IgnoreCTRL_C As Boolean
 	#tag EndComputedProperty
 
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  //Returns the maximum height (in characters) of the console buffer
-			  return Buffer.dwSize.Y
-			End Get
-		#tag EndGetter
-		MaxBufferHeight As Integer
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  //Returns the maximum width (in characters) of the console buffer
-			  Return Buffer.dwSize.X
-			End Get
-		#tag EndGetter
-		MaxBufferWidth As Integer
-	#tag EndComputedProperty
-
 	#tag Property, Flags = &h21
 		Private OriginalTitle As String
 	#tag EndProperty
@@ -705,6 +727,16 @@ Protected Module Console
 
 	#tag ViewBehavior
 		#tag ViewProperty
+			Name="BufferHeight"
+			Group="Behavior"
+			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="BufferWidth"
+			Group="Behavior"
+			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="ConsoleTitle"
 			Group="Behavior"
 			Type="String"
@@ -753,16 +785,6 @@ Protected Module Console
 			Group="Position"
 			InitialValue="0"
 			InheritedFrom="Object"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="MaxBufferHeight"
-			Group="Behavior"
-			Type="Integer"
-		#tag EndViewProperty
-		#tag ViewProperty
-			Name="MaxBufferWidth"
-			Group="Behavior"
-			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"

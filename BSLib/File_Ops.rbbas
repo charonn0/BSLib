@@ -291,6 +291,14 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function Extension(Extends f As FolderItem) As String
+		  Dim fn As String = f.Name
+		  Dim ext As String = NthField(fn, ".", CountFields(fn, "."))
+		  Return ext
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function FindClose(FindHandle As Integer) As Boolean
 		  //Closes the passed FindFirst* handle.
 		  Soft Declare Function MyFindClose Lib "Kernel32" Alias "FindClose" (fHandle As Integer) As Boolean
@@ -630,6 +638,21 @@ Protected Module File_Ops
 		    Else
 		      Call Platform.CloseHandle(HWND)
 		      Return 0
+		    End If
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function IsDangerous(Extends target As FolderItem) As Boolean
+		  //Returns True if the target FolderItem has an extension (e.g. ".exe") which Windows deems dangerous.
+		  //See the remarks here: http://msdn.microsoft.com/en-us/library/windows/desktop/bb773465%28v=vs.85%29.aspx
+		  //XP with SP1 or newer only.
+		  
+		  #If TargetWin32 Then
+		    If Platform.IsAtLeast(Platform.WinVista) Or (Platform.IsExactly(Platform.WinXP) And Platform.ServicePack >= 1) Then
+		      Soft Declare Function AssocIsDangerous Lib "Shlwapi" (ext As WString) As Boolean
+		      Return AssocIsDangerous("." + target.Extension)
 		    End If
 		  #endif
 		End Function

@@ -26,7 +26,7 @@ Protected Module Win32Structs
 		MaxWindowSize As COORD
 	#tag EndStructure
 
-	#tag Structure, Name = CONSOLE_SCREEN_BUFFER_INFOEX, Flags = &h0
+	#tag Structure, Name = CONSOLE_SCREEN_BUFFER_INFOEX, Flags = &h0, Attributes = \"StructureAlignment \x3D 8"
 		sSize As Integer
 		  dwSize As COORD
 		  CursorPosition As COORD
@@ -35,7 +35,7 @@ Protected Module Win32Structs
 		  MaxWindowSize As COORD
 		  PopupAttributes As UInt16
 		  FullscreenSupported As Boolean
-		ColorTable(16) As UInt32
+		ColorTable(15) As UInt32
 	#tag EndStructure
 
 	#tag Structure, Name = COORD, Flags = &h0
@@ -177,12 +177,12 @@ Protected Module Win32Structs
 		  Flags As UInt32
 		  CallbackMessage As UInt32
 		  IconHandle As Integer
-		  ToolTip As WString*64
+		  ToolTip As String*64
 		  State As Integer
 		  StateMask As Integer
-		  BalloonText As Wstring*256
+		  BalloonText As String*256
 		  Timeout_Version_Union As UInt32
-		  BalloonTitle As WString*64
+		  BalloonTitle As String*64
 		  InfoFlags As Integer
 		  GUIDitem As GUID
 		BalloonIconHandle As Integer
@@ -209,6 +209,15 @@ Protected Module Win32Structs
 		  SuiteMask As UInt16
 		  ProductType As Byte
 		Reserved As Byte
+	#tag EndStructure
+
+	#tag Structure, Name = PROCESSOR_POWER_INFORMATION, Flags = &h0
+		ProcessorNumber As UInt32
+		  MaxMhz As UInt32
+		  CurrentMhz As UInt32
+		  MhzLimit As UInt32
+		  MaxIdleState As UInt32
+		CurrentIdleState As UInt32
 	#tag EndStructure
 
 	#tag Structure, Name = PROCESS_INFORMATION, Flags = &h0
@@ -311,6 +320,20 @@ Protected Module Win32Structs
 		MS As UInt16
 	#tag EndStructure
 
+	#tag Structure, Name = SYSTEM_BATTERY_STATE, Flags = &h0
+		ACOnline As Boolean
+		  BatteryPresent As Boolean
+		  Charging As Boolean
+		  Discharging As Boolean
+		  spare(3) As Byte
+		  MaxCapacity As Integer
+		  RemainingCapacity As Integer
+		  Rate As Integer
+		  EstimatedTimer As Integer
+		  DefaultAlert1 As Integer
+		DefaultAlert2 As Integer
+	#tag EndStructure
+
 	#tag Structure, Name = SYSTEM_INFO, Flags = &h0
 		OEMID As Integer
 		  pageSize As Integer
@@ -365,6 +388,28 @@ Protected Module Win32Structs
 	#tag Structure, Name = WIN32_FIND_STREAM_DATA, Flags = &h0
 		StreamSize As Int64
 		StreamName As String*1024
+	#tag EndStructure
+
+	#tag Structure, Name = WINTRUST_DATA, Flags = &h0
+		cbStruct As Integer
+		  PolicyCallbackData As Ptr
+		  SIPClientData As Ptr
+		  UIChoice As Integer
+		  fwdRevocationChecks As Integer
+		  UnionChoice As Integer
+		  Union As Ptr
+		  StateAction As Integer
+		  WVTStateData As Integer
+		  URLContext_reserved As Ptr
+		  ProvFlags As Integer
+		UIContext As Integer
+	#tag EndStructure
+
+	#tag Structure, Name = WINTRUST_FILE_INFO, Flags = &h0
+		cbStruct As Integer
+		  FilePath As String*260
+		  fHandle As Integer
+		KnownSubjet As GUID
 	#tag EndStructure
 
 

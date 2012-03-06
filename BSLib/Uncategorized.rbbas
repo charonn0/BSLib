@@ -52,6 +52,38 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function FormatHertz(hertz As UInt64) As String
+		  //Converts raw Hertz into SI formatted strings. 1MHz = 1000 Hertz.
+		  Const kilo = 1000
+		  Dim mega As UInt64 = 1000 * kilo
+		  Dim giga As UInt64 = 1000 * mega
+		  Dim tera As UInt64 = 1000 * giga
+		  
+		  Dim suffix As String
+		  Dim strHertz As Double
+		  
+		  If hertz < kilo Then
+		    strHertz = hertz
+		    suffix = "Hz"
+		  ElseIf hertz >= kilo And hertz < mega Then
+		    strHertz = hertz / kilo
+		    suffix = "KHz"
+		  ElseIf hertz >= mega And hertz < giga Then
+		    strHertz = hertz / mega
+		    suffix = "MHz"
+		  ElseIf hertz >= giga And hertz < tera Then
+		    strHertz = hertz / giga
+		    suffix = "GHz"
+		  ElseIf hertz > tera Then
+		    strHertz = hertz / tera
+		    suffix = "THz"
+		  End If
+		  Return Format(strHertz, "#######0.00") + " " + suffix
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function IntToHex(src as Byte) As string
 		  //Hexify a Byte with padded zeros if needed
 		  
@@ -75,6 +107,40 @@ Protected Module Uncategorized
 		  End If
 		  
 		  Return ret
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function ResolveRelativePath(RelativePath As String, CurrentDir As FolderItem = Nil) As String
+		  //Takes a Relative Path and an optional root directory. Returns a string representing the absolute path
+		  //represented by the RelativePath relative to the CurrentDir.
+		  //If CurrentDir is Nil then the App.ExecutableFile.Parent directory is used.
+		  //For Example:
+		  
+		  'Dim f As FolderItem = GetFolderItem("C:\")
+		  'Dim abso As String = ResolveRelativePath("Windows\..\Program Files\MyApp\MyApp Libs\..\MyApp.exe", f)
+		  
+		  //abso would now be "C:\Program Files\MyApp\MyApp.exe"
+		  //Note that this function does not determine whether the resulting absolute path is valid, or whether
+		  //the file/directory it refers to exists.
+		  
+		  #If TargetWin32 Then
+		    Declare Function PathCanonicalizeW Lib "Shlwapi" (OutBuffer As Ptr, InBuffer As Ptr) As Boolean
+		    Declare Function PathAppendW Lib "Shlwapi" (firstHalf As Ptr, secondHalf As Ptr) As Boolean
+		    If CurrentDir = Nil Then CurrentDir = App.ExecutableFile.Parent
+		    
+		    Dim outBuff As New MemoryBlock(1024)
+		    outBuff.WString(0) = CurrentDir.AbsolutePath
+		    Dim inBuff As New MemoryBlock(1024)
+		    inBuff.WString(0) = RelativePath
+		    If PathAppendW(outBuff, inBuff) Then
+		      inBuff.WString(0) = outBuff.WString(0)
+		      If PathCanonicalizeW(outBuff, inBuff) Then
+		        Return outBuff.WString(0)
+		      End If
+		    End If
+		    Return RelativePath
+		  #endif
 		End Function
 	#tag EndMethod
 
@@ -117,6 +183,42 @@ Protected Module Uncategorized
 		  next
 		  
 		  Return LeftB(hexedInt, LenB(hexedInt))
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Tokenize(Input As String) As String()
+		  //Returns a String array containing the space-delimited members of the Input string.
+		  //Like `Split` but honoring quotes; good for command line arguments and other parsing.
+		  //For example, this string:
+		  '                     MyApp.exe --foo "C:\My Dir\"
+		  //Would become:
+		  '                     s(0) = MyApp.exe
+		  '                     s(1) = --foo
+		  '                     s(2) = "C:\My Dir\"
+		  
+		  
+		  #If TargetWin32 Then
+		    Declare Function PathGetArgsW Lib "Shlwapi" (path As WString) As WString
+		    Dim ret() As String
+		    Dim cmdLine As String = Input
+		    While cmdLine.Len > 0
+		      Dim tmp As String
+		      Dim args As String = PathGetArgsW(cmdLine)
+		      If Len(args) = 0 Then
+		        tmp = ReplaceAll(cmdLine.Trim, Chr(34), "")
+		        ret.Append(tmp)
+		        Exit While
+		      Else
+		        tmp = Left(cmdLine, cmdLine.Len - args.Len).Trim
+		        tmp = ReplaceAll(tmp, Chr(34), "")
+		        ret.Append(tmp)
+		        cmdLine = args
+		      End If
+		    Wend
+		    Return ret
+		  #endif
+		  
 		End Function
 	#tag EndMethod
 

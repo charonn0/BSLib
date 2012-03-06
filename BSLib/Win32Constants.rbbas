@@ -1,5 +1,17 @@
 #tag Module
 Protected Module Win32Constants
+	#tag Constant, Name = AW_ACTIVATE, Type = Double, Dynamic = False, Default = \"&h00020000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = AW_BLEND, Type = Double, Dynamic = False, Default = \"&h00080000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = AW_CENTER, Type = Double, Dynamic = False, Default = \"&h00000010", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = AW_HIDE, Type = Double, Dynamic = False, Default = \"&h00010000", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = BLACKNESS, Type = Double, Dynamic = False, Default = \"&h00000042", Scope = Public
 	#tag EndConstant
 
@@ -75,7 +87,13 @@ Protected Module Win32Constants
 	#tag Constant, Name = EWX_SHUTDOWN, Type = Double, Dynamic = False, Default = \"&h00000001", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = FILE_ATTRIBUTE_NORMAL, Type = Double, Dynamic = False, Default = \"&h00000080", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = FILE_DEVICE_MASS_STORAGE, Type = Double, Dynamic = False, Default = \"&h0000002d", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FLAG_WRITE_THROUGH, Type = Double, Dynamic = False, Default = \"&h80000000", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_READ_ACCESS, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Public
@@ -94,6 +112,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = GENERIC_READ, Type = Double, Dynamic = False, Default = \"&h80000000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = GENERIC_WRITE, Type = Double, Dynamic = False, Default = \"&h40000000", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = IDABORT, Type = Double, Dynamic = False, Default = \"3", Scope = Public
@@ -228,6 +249,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = NOTSRCERASE, Type = Double, Dynamic = False, Default = \"&h001100A6", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = OPEN_ALWAYS, Type = Double, Dynamic = False, Default = \"4", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = OPEN_EXISTING, Type = Double, Dynamic = False, Default = \"3", Scope = Public
 	#tag EndConstant
 
@@ -244,6 +268,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = PROCESS_QUERY_LIMITED_INFORMATION, Type = Double, Dynamic = False, Default = \"&h1000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PROCESS_TERMINATE, Type = Double, Dynamic = False, Default = \"&h1", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = PROCESS_VM_READ, Type = Double, Dynamic = False, Default = \"&h10", Scope = Public
@@ -376,6 +403,15 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = SRCPAINT, Type = Double, Dynamic = False, Default = \"&h00EE0086", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = STD_ERROR_HANDLE, Type = Double, Dynamic = False, Default = \"-12", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = STD_INPUT_HANDLE, Type = Double, Dynamic = False, Default = \"-10", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = STD_OUTPUT_HANDLE, Type = Double, Dynamic = False, Default = \"-11", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = TOKEN_ADJUST_PRIVILEGES, Type = Double, Dynamic = False, Default = \"&h00000020", Scope = Public
