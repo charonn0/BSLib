@@ -59,12 +59,24 @@ End
 #tag EndWindow
 
 #tag WindowCode
+	#tag Event
+		Sub Open()
+		  tray = New TrayIcon(VolumeNormalRedicon, "Hello!", "World!", Self)
+		End Sub
+	#tag EndEvent
+
+
+	#tag Property, Flags = &h0
+		Tray As TrayIcon
+	#tag EndProperty
+
+
 #tag EndWindowCode
 
 #tag Events PushButton1
 	#tag Event
 		Sub Action()
-		  MsgBox(Str(Platform.ErrorMode))
+		  Tray.ShowBalloon("Hello, world!", "This is a test")
 		End Sub
 	#tag EndEvent
 #tag EndEvents

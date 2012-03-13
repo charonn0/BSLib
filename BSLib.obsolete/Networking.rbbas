@@ -25,7 +25,7 @@ Protected Module Networking
 	#tag Method, Flags = &h0
 		Function InternetAvailable() As Boolean
 		  //Returns True if the computer appears to have Internet access.
-		  //On Windows XP and earlier, we just check whether GoogleDNS is reachable
+		  //On Windows XP and earlier, we just check whether GoogleDNS is reachable 
 		  
 		  #If TargetWin32 Then
 		    If Platform.IsAtLeast(Platform.WinVista) Then
@@ -41,7 +41,7 @@ Protected Module Networking
 	#tag Method, Flags = &h0
 		Function IPv4DotToInt(dottedIP As String) As UInt32
 		  //Converts a standard dotted IPv4 address to an Unsigned 32 bit Integer
-		  //Returns an unsigned 32 bit integer (UInt32) NOT a plain Integer. Putting the return value into a signed integer variable will
+		  //Returns an unsigned 32 bit integer (UInt32) NOT a plain Integer. Putting the return value into a signed integer variable will 
 		  //cause weirdness
 		  //This function should be cross-platform safe.
 		  

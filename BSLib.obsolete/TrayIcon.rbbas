@@ -18,17 +18,17 @@ Protected Class TrayIcon
 		  Const NIM_SETFOCUS = &h00000003
 		  Const NIM_SETVERSION = &h00000004
 		  
-		  Dim tray As NOTIFYICONDATA
 		  tray.sSize = tray.Size
-		  tray.WindowHandle = GDIBMPHandle(1, SpecialFolder.Windows.Child("system32").Child("shell32.dll"))
+		  tray.WindowHandle = HWND.Handle
 		  tray.uID = IconID
+		  tray.IconHandle = GDIBMPHandle(102, App.ExecutableFile)
+		  
 		  tray.Flags = NIF_ICON Or NIF_TIP Or NIF_STATE Or NIF_SHOWTIP
-		  tray.IconHandle = Ico.Graphics.Handle(6)
 		  tray.ToolTip = tip
 		  tray.BalloonTitle = title
 		  
 		  If Shell_NotifyIcon(NIM_ADD, tray) Then
-		    Break
+		    'Break
 		  Else
 		    Break
 		  End If
@@ -53,15 +53,43 @@ Protected Class TrayIcon
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Sub ShowBalloon(Message As String, Title As String)
+		  Declare Function Shell_NotifyIcon Lib "Shell32" (message As Integer, ByRef data As NOTIFYICONDATA) As Boolean
+		  
+		  Const NIF_MESSAGE = &h00000001
+		  Const NIF_ICON = &h00000002
+		  Const NIF_TIP = &h00000004
+		  Const NIF_STATE = &h00000008
+		  Const NIF_REALTIME = &h00000040
+		  Const NIF_SHOWTIP = &h00000080
+		  Const NIF_INFO = &h00000010
+		  Const NIF_GUID = &h00000020
+		  Const NIM_ADD = &h00000000
+		  Const NIM_MODIFY = &h00000001
+		  Const NIM_DELETE = &h00000002
+		  Const NIM_SETFOCUS = &h00000003
+		  Const NIM_SETVERSION = &h00000004
+		  Const NIIF_INFO = &h00000001
+		  
+		  tray.Flags = NIF_INFO
+		  tray.BalloonTitle = title
+		  tray.BalloonText = Message
+		  
+		  If Shell_NotifyIcon(NIM_MODIFY , tray) Then
+		    'Break
+		  Else
+		    Break
+		  End If
+		  
+		End Sub
+	#tag EndMethod
+
 
 	#tag Hook, Flags = &h0
 		Event Clicked(ClickType As Integer) As Boolean
 	#tag EndHook
 
-
-	#tag Property, Flags = &h21
-		Private IconHandle As Integer
-	#tag EndProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
@@ -80,6 +108,10 @@ Protected Class TrayIcon
 
 	#tag Property, Flags = &h21
 		Private mIconID As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private tray As NOTIFYICONDATA
 	#tag EndProperty
 
 

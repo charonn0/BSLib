@@ -188,7 +188,7 @@ Protected Module Console
 
 	#tag Method, Flags = &h0
 		Function SetConsoleTextColor(NewColor As UInt16) As UInt16
-		  //Sets the current console text colors to the passed color constant. Multiple (non-conflicting) values can be
+		  //Sets the current console text colors to the passed color constant. Multiple (non-conflicting) values can be 
 		  //set by Or'ing the constants (see this Module's constants.)
 		  //Returns the previous color info on success, or zero on error. Note that 0 is also the default color value.
 		  //You should call this function again with the returned old color value to reset the
@@ -301,6 +301,7 @@ Protected Module Console
 
 	#tag Note, Name = About This Module
 		This module adds some handy functions to Windows Console Applications.
+		
 	#tag EndNote
 
 

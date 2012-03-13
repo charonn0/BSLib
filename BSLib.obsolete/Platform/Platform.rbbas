@@ -592,18 +592,6 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub FatalExit(ErrorMessage As String)
-		  //Displays the Windows default fatal error message box, with the passed ErrorMessage, then exits the application.
-		  //Vista and newer only.
-		  
-		  If System.IsFunctionAvailable("FatalAppExitW", "Kernel32") Then
-		    Soft Declare Sub FatalAppExitW Lib "Kernel32" (Action As Integer, Message As WString)
-		    FatalAppExitW(0, ErrorMessage)
-		  End If
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Function FileFromProcessID(processID As Integer) As FolderItem
 		  //Given a processID number of an active process, tries to resolve the executable file for the program.
 		  //Returns Nil if it cannot resolve the file. Most likely this would be due to insufficient access rights
