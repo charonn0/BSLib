@@ -8,6 +8,7 @@ Module=Win32Crypto;BSLib/Crypto/Win32Crypto.rbbas;&h19A12FFF;&h6187C7FF;false
 Module=Images;BSLib/Images.rbbas;&h26676FFF;&h294D6FFF;false
 Module=Console;BSLib/Console/Console.rbbas;&h1226A7FF;&h294D6FFF;false
 Module=Platform;BSLib/Platform/Platform.rbbas;&h39952FFF;&h294D6FFF;false
+Module=Explorer;BSLib/Platform/Explorer.rbbas;&h5E560FFF;&h39952FFF;false
 Module=PowerState;BSLib/Platform/PowerState.rbbas;&h92E57FF;&h39952FFF;false
 Module=File_Ops;BSLib/File_Ops.rbbas;&h48974FFF;&h294D6FFF;false
 Module=Uncategorized;BSLib/Uncategorized.rbbas;&h525157FF;&h294D6FFF;false

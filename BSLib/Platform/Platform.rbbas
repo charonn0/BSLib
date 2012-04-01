@@ -86,21 +86,6 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Sub Beep(freq As Integer, duration As Integer)
-		  //This function differs from the built-in Beep method in that both the frequency and duration of the beep can (must) be specified.
-		  //Windows Vista and XP64 omit this function.
-		  #If TargetWin32 Then
-		    If System.IsFunctionAvailable("Beep", "Kernel32") Then
-		      Soft Declare Function WinBeep Lib "Kernel32" Alias "Beep" (freq As Integer, duration As Integer) As Boolean
-		      Call WinBeep(freq, duration)
-		    Else
-		      #If TargetHasGUI Then Realbasic.Beep  //Built-in beep not available in ConsoleApplications? Weird.
-		    End If
-		  #endif
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Function BIOSDate() As String
 		  //Returns the date string of the BIOS as reported in the Windows registry.
 		  #If TargetWin32 Then
@@ -158,9 +143,9 @@ Protected Module Platform
 
 	#tag Method, Flags = &h1
 		Protected Function CaptureScreen() As Picture
-		  //Calls GetPartialScreenShot with a rectangle comprising all of the main screen (screen 0). Returns a Picture
+		  //Calls GetPartialScreenShot with a rectangle comprising all of the desktop rectangle. Returns a Picture
 		  
-		  #If TargetWin32 Then Return GetPartialScreenShot(0, GetMetric(0), 0, GetMetric(1))
+		  #If TargetWin32 Then Return GetPartialScreenShot(0, ScreenVirtualWidth, 0, ScreenVirtualHeight)
 		End Function
 	#tag EndMethod
 
@@ -510,88 +495,6 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function ExplorerConfirmsRecycling() As Boolean
-		  //Returns True if Windows Explorer is set to request confirmation when emptying the Recycle Bin
-		  #If TargetWin32 Then
-		    Return Not ShellGetSettings.NoConfirmRecycle
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ExplorerDoubleClickOpens() As Boolean
-		  //Returns True if Windows Explorer is set to open files when double clicked (as opposed to single-click)
-		  #If TargetWin32 Then
-		    Return ShellGetSettings.DoubleClickInWebView
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ExplorerHasActiveDesktop() As Boolean
-		  //Returns True if Windows Explorer is set to use a web page as its desktop.
-		  #If TargetWin32 Then
-		    Return ShellGetSettings.DesktopHTML
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ExplorerHidesDesktopIcons() As Boolean
-		  //Returns True if Windows Explorer is set to use the "Windows classic" UI.
-		  #If TargetWin32 Then
-		    Return Not ShellGetSettings.HideIcons
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ExplorerIsInClassicMode() As Boolean
-		  //Returns True if Windows Explorer is set to use the "Windows classic" UI.
-		  #If TargetWin32 Then
-		    Return ShellGetSettings.Win95Classic
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ExplorerShowsAll() As Boolean
-		  //Returns True if Windows Explorer is set to show all files.
-		  #If TargetWin32 Then
-		    Return ShellGetSettings.ShowAllObjects
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ExplorerShowsColoredNames() As Boolean
-		  //Returns True if Windows Explorer is set to show filenames in a different color if the file
-		  //is encrypted or compressed.
-		  #If TargetWin32 Then
-		    Return ShellGetSettings.ShowSystemFiles
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ExplorerShowsExtensions() As Boolean
-		  //Returns True if Windows Explorer is set to show all file extensions.
-		  #If TargetWin32 Then
-		    Return ShellGetSettings.ShowExtensions
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ExplorerShowsSystemFiles() As Boolean
-		  //Returns True if Windows Explorer is set to show system files.
-		  #If TargetWin32 Then
-		    Return ShellGetSettings.ShowSystemFiles
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Sub FatalExit(ErrorMessage As String)
 		  //Displays the Windows default fatal error message box, with the passed ErrorMessage, then exits the application.
 		  //Vista and newer only.
@@ -744,7 +647,7 @@ Protected Module Platform
 
 	#tag Method, Flags = &h1
 		Protected Function GetPartialScreenShot(left As Integer, right As Integer, top As Integer, bottom As Integer) As Picture
-		  //Returns a Picture of the rectangle defined from current desktop.
+		  //Returns a Picture of the defined rectangle from current desktop.
 		  //Rectangle coordinates are relative to the upper left corner of the user's leftmost screen, in pixels
 		  
 		  #If TargetWin32 Then
@@ -1212,46 +1115,6 @@ Protected Module Platform
 		Protected Function ScreenWidth() As Integer
 		  //Returns the width of the main screen, in pixels
 		  Return GetMetric(0)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function ShellGetSettings() As SHELLFLAGSTATE
-		  
-		  #If TargetWin32 Then
-		    Declare Sub SHGetSettings Lib "Shell32" (ByRef flagStruct As SHELLFLAGSTATE, flags As Integer)
-		    Dim info As SHELLFLAGSTATE
-		    Const AllFlags = &h7FFFBF
-		    SHGetSettings(info, AllFlags)
-		    Return info
-		  #endif
-		  
-		  
-		  
-		  
-		  'Const SSF_SHOWALLOBJECTS = &h00000001
-		  'Const SSF_SHOWEXTENSIONS = &h00000002
-		  'Const SSF_HIDDENFILEEXTS = &h00000004
-		  'Const SSF_SERVERADMINUI = &h00000004
-		  'Const SSF_SHOWCOMPCOLOR = &h00000008
-		  'Const SSF_SORTCOLUMNS = &h00000010
-		  'Const SSF_SHOWSYSFILES = &h00000020
-		  'Const SSF_DOUBLECLICKINWEBVIEW = &h00000080
-		  'Const SSF_SHOWATTRIBCOL = &h00000100
-		  'Const SSF_DESKTOPHTML = &h00000200
-		  'Const SSF_WIN95CLASSIC = &h00000400
-		  'Const SSF_DONTPRETTYPATH = &h00000800
-		  'Const SSF_SHOWINFOTIP = &h00002000
-		  'Const SSF_MAPNETDRVBUTTON = &h00001000
-		  'Const SSF_NOCONFIRMRECYCLE = &h00008000
-		  'Const SSF_HIDEICONS = &h00004000
-		  'Const SSF_FILTER = &h00010000
-		  'Const SSF_WEBVIEW = &h00020000
-		  'Const SSF_SHOWSUPERHIDDEN = &h00040000
-		  'Const SSF_SEPPROCESS = &h00080000
-		  'Const SSF_NONETCRAWLING = &h00100000
-		  'Const SSF_STARTPANELON = &h00200000
-		  'Const SSF_SHOWSTARTPAGE = &h00400000
 		End Function
 	#tag EndMethod
 

@@ -1,7 +1,7 @@
 #tag Module
 Protected Module PowerState
 	#tag Method, Flags = &h21
-		Private Function GetBatteryState() As SYSTEM_BATTERY_STATE()
+		Private Function BatteryState() As SYSTEM_BATTERY_STATE()
 		  #If TargetWin32 Then
 		    Declare Function CallNtPowerInformation Lib "PowrProf" (infoLevel As Integer, InputBuffer As Ptr, _
 		    buffSize As Integer, OutputBuffer As Ptr, outbufferSize As Integer) As Integer
@@ -71,7 +71,7 @@ Protected Module PowerState
 			  //battery is charging. Not all batteries report charging rates.
 			  
 			  
-			  Dim procs() As SYSTEM_BATTERY_STATE = GetBatteryState()
+			  Dim procs() As SYSTEM_BATTERY_STATE = BatteryState()
 			  Return procs(0).Rate
 			End Get
 		#tag EndGetter
@@ -84,7 +84,7 @@ Protected Module PowerState
 			  //Returns True if the computer has at least one battery.
 			  
 			  
-			  Dim procs() As SYSTEM_BATTERY_STATE = GetBatteryState()
+			  Dim procs() As SYSTEM_BATTERY_STATE = BatteryState()
 			  Return procs(0).BatteryPresent
 			End Get
 		#tag EndGetter
@@ -97,7 +97,7 @@ Protected Module PowerState
 			  //Returns the remaining capacity of the battery or batteries in milliwatt hours.
 			  
 			  
-			  Dim procs() As SYSTEM_BATTERY_STATE = GetBatteryState()
+			  Dim procs() As SYSTEM_BATTERY_STATE = BatteryState()
 			  Return procs(0).EstimatedTimer
 			End Get
 		#tag EndGetter
@@ -110,7 +110,7 @@ Protected Module PowerState
 			  //Returns True if a battery is charging.
 			  
 			  
-			  Dim procs() As SYSTEM_BATTERY_STATE = GetBatteryState()
+			  Dim procs() As SYSTEM_BATTERY_STATE = BatteryState()
 			  Return procs(0).Charging
 			End Get
 		#tag EndGetter
@@ -123,7 +123,7 @@ Protected Module PowerState
 			  //Returns the recommended remaining battery capacity at which a critical battery alert should be given.
 			  
 			  
-			  Dim procs() As SYSTEM_BATTERY_STATE = GetBatteryState()
+			  Dim procs() As SYSTEM_BATTERY_STATE = BatteryState()
 			  Return procs(0).DefaultAlert2
 			End Get
 		#tag EndGetter
@@ -136,7 +136,7 @@ Protected Module PowerState
 			  //Returns the recommended remaining battery capacity at which a low-battery notice should be given.
 			  
 			  
-			  Dim procs() As SYSTEM_BATTERY_STATE = GetBatteryState()
+			  Dim procs() As SYSTEM_BATTERY_STATE = BatteryState()
 			  Return procs(0).DefaultAlert1
 			End Get
 		#tag EndGetter
@@ -149,7 +149,7 @@ Protected Module PowerState
 			  //Returns the maximum capacity of the battery in milliwatt hours.
 			  
 			  
-			  Dim procs() As SYSTEM_BATTERY_STATE = GetBatteryState()
+			  Dim procs() As SYSTEM_BATTERY_STATE = BatteryState()
 			  Return procs(0).MaxCapacity
 			End Get
 		#tag EndGetter
@@ -162,7 +162,7 @@ Protected Module PowerState
 			  //Returns True if the computer is plugged into the mains rather than running on batteries.
 			  
 			  
-			  Dim procs() As SYSTEM_BATTERY_STATE = GetBatteryState()
+			  Dim procs() As SYSTEM_BATTERY_STATE = BatteryState()
 			  Return procs(0).ACOnline
 			End Get
 		#tag EndGetter
@@ -175,7 +175,7 @@ Protected Module PowerState
 			  //Returns True if the computer is running on batteries.
 			  
 			  
-			  Dim procs() As SYSTEM_BATTERY_STATE = GetBatteryState()
+			  Dim procs() As SYSTEM_BATTERY_STATE = BatteryState()
 			  Return procs(0).Discharging
 			End Get
 		#tag EndGetter
@@ -188,7 +188,7 @@ Protected Module PowerState
 			  //Returns the remaining capacity of the battery in milliwatt hours.
 			  
 			  
-			  Dim procs() As SYSTEM_BATTERY_STATE = GetBatteryState()
+			  Dim procs() As SYSTEM_BATTERY_STATE = BatteryState()
 			  Return procs(0).RemainingCapacity
 			End Get
 		#tag EndGetter

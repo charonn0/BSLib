@@ -16,6 +16,21 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub Beep(freq As Integer, duration As Integer)
+		  //This function differs from the built-in Beep method in that both the frequency and duration of the beep can (must) be specified.
+		  //Windows Vista and XP64 omit this function.
+		  #If TargetWin32 Then
+		    If System.IsFunctionAvailable("Beep", "Kernel32") Then
+		      Soft Declare Function WinBeep Lib "Kernel32" Alias "Beep" (freq As Integer, duration As Integer) As Boolean
+		      Call WinBeep(freq, duration)
+		    Else
+		      #If TargetHasGUI Then Realbasic.Beep  //Built-in beep not available in ConsoleApplications? Weird.
+		    End If
+		  #endif
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function FormatBytes(bytes As UInt64) As String
 		  //Converts raw byte counts into SI formatted strings. 1KB = 1024 bytes.
 		  //Should return properly formatted strings for any positive number of bytes
@@ -219,6 +234,25 @@ Protected Module Uncategorized
 		    Return ret
 		  #endif
 		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function UUID() As String
+		  Declare Function RpcStringFree Lib "Rpcrt4" Alias "RpcStringFreeA" (Addr As Ptr) As Integer
+		  Declare Function UuidCreate Lib "Rpcrt4" (Uuid As Ptr) As Integer
+		  Declare Function UuidToString Lib "Rpcrt4" Alias "UuidToStringA" (Uuid As Ptr, ByRef p As ptr) As Integer
+		  
+		  Static mb As New MemoryBlock(16)
+		  Dim strUUID As String
+		  Call UuidCreate(mb)
+		  Static ptrUUID As New MemoryBlock(16)
+		  Dim ppAddr As ptr
+		  Call UuidToString(mb, ppAddr)
+		  Dim mb2 As MemoryBlock = ppAddr
+		  strUUID = mb2.CString(0)
+		  Call RpcStringFree(ptrUUID)
+		  Return strUUID
 		End Function
 	#tag EndMethod
 

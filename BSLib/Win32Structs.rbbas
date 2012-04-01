@@ -385,6 +385,19 @@ Protected Module Win32Structs
 		FileDateLS As Integer
 	#tag EndStructure
 
+	#tag Structure, Name = WIN32_FIND_DATA, Flags = &h0
+		Attribs As Integer
+		  CreationTime As FILETIME
+		  LastAccess As FILETIME
+		  LastWrite As FILETIME
+		  sizeHigh As Integer
+		  sizeLow As Integer
+		  Reserved1 As Integer
+		  Reserved2 As Integer
+		  FileName As String*260
+		AlternateName As String*14
+	#tag EndStructure
+
 	#tag Structure, Name = WIN32_FIND_STREAM_DATA, Flags = &h0
 		StreamSize As Int64
 		StreamName As String*1024

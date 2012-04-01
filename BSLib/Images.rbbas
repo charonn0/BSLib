@@ -3,7 +3,6 @@ Protected Module Images
 	#tag Method, Flags = &h0
 		Function ColorToHex(Extends c As Color) As String
 		  //Converts a Color to a hex string.
-		  //This function should be cross-platform safe.
 		  
 		  Dim ret As String
 		  
@@ -31,27 +30,80 @@ Protected Module Images
 
 	#tag Method, Flags = &h0
 		Function DefaultIconForFileType(extension As String, size As Integer = 32) As Picture
-		  Declare Function SHGetFileInfoW Lib "shell32" (path As WString, attribs As Integer, ByRef info As SHFILEINFO, infosize As Integer, flags As Integer) As Boolean
-		  Declare Function DrawIconEx Lib "user32" ( hDC As Integer, xLeft As Integer, yTop As Integer, hIcon As Integer, cxWidth As Integer, cyWidth As Integer, istepIfAniCur As Integer, _
-		  hbrFlickerFreeDraw As Integer, diFlags As Integer ) As Integer
-		  Declare Function DestroyIcon Lib "user32" ( hIcon As Integer ) As Integer
+		  //Given a file extension like "html" or "doc", returns a picture of the default icon for that file type.
+		  //Optionally, you may pass the requested size, in pixels, of the icon. Not all sizes will be present
+		  //in all cases. 32 pixels is pretty safe, however, and it is the default.
+		  //If the specified file type doesn't have a default icon, this function returns Nil
 		  
-		  Const FILE_ATTRIBUTE_NORMAL = &h80
-		  Const SHGFI_USEFILEATTRIBUTES = &h000000010
-		  Const SHGFI_DISPLAYNAME = &h000000200
-		  Const SHGFI_TYPENAME = &h000000400
-		  Const SHGFI_ICON = &h000000100
+		  #If TargetWin32 Then
+		    Declare Function SHGetFileInfoW Lib "shell32" (path As WString, attribs As Integer, ByRef info As SHFILEINFO, infosize As Integer, flags As Integer) As Boolean
+		    
+		    Const FILE_ATTRIBUTE_NORMAL = &h80
+		    Const SHGFI_USEFILEATTRIBUTES = &h000000010
+		    Const SHGFI_DISPLAYNAME = &h000000200
+		    Const SHGFI_TYPENAME = &h000000400
+		    Const SHGFI_ICON = &h000000100
+		    
+		    Dim info As SHFILEINFO
+		    If SHGetFileInfoW("foo." + extension, FILE_ATTRIBUTE_NORMAL, info, info.Size, SHGFI_DISPLAYNAME Or SHGFI_TYPENAME Or SHGFI_USEFILEATTRIBUTES Or SHGFI_ICON) Then
+		      Dim theIcon As Picture = New Picture(size, size, 32)
+		      theIcon.Transparent = 1
+		      Call DrawIcon(theIcon.Graphics.Handle(1), 0, 0, info.hIcon, size, size, 0, 0, &h3)
+		      DestroyIcon(info.hIcon)
+		      Return theIcon
+		    Else
+		      Return Nil
+		    End If
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub DestroyIcon(hIcon As Integer)
+		  #If TargetWin32 Then
+		    Declare Function MyDestroyIcon Lib "user32" Alias "DestroyIcon" (hIcon As Integer) As Integer
+		    Call MyDestroyIcon(hIcon)
+		  #endif
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function DrawIcon(hDC As Integer, xLeft As Integer, yTop As Integer, hIcon As Integer, cxWidth As Integer, cyWidth As Integer, istepIfAniCur As Integer, hbrFlickerFreeDraw As Integer, diFlags As Integer) As Integer
+		  #If TargetWin32 Then
+		    Declare Function DrawIconEx Lib "User32" (hDC As Integer, xLeft As Integer, yTop As Integer, hIcon As Integer, cxWidth As Integer, cyWidth As Integer, istepIfAniCur As Integer, _
+		    hbrFlickerFreeDraw As Integer, diFlags As Integer) As Integer
+		    
+		    Return DrawIconEx(hDC, xLeft, yTop, hIcon, cxWidth, cyWidth, istepIfAniCur, hbrFlickerFreeDraw, diFlags)
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function ExtractIcon(Resource as FolderItem, Index As Integer, pixSize As Integer = 0) As Picture
+		  //Extracts the specified Icon resource into a RB Picture. Returns Nil on error.
+		  //Icons are located in EXE, DLL, etc. type files, and are referenced by their index.
 		  
-		  Dim info As SHFILEINFO
-		  If SHGetFileInfoW("foo." + extension, FILE_ATTRIBUTE_NORMAL, info, info.Size, SHGFI_DISPLAYNAME Or SHGFI_TYPENAME Or SHGFI_USEFILEATTRIBUTES Or SHGFI_ICON) Then
-		    Dim theIcon As Picture = New Picture(size, size, 32)
+		  #If TargetWin32 Then
+		    Declare Function ExtractIconExW Lib "Shell32" ( lpszFile As WString, ByVal nIconIndex As Integer, phiconLarge As ptr, phiconSmall As ptr, ByVal nIcons As Integer ) As Integer
+		    
+		    Dim theIcon As Picture = New Picture(pixsize, pixsize, 32)
 		    theIcon.Transparent = 1
-		    Call DrawIconEx(theIcon.Graphics.Handle(1), 0, 0, info.hIcon, size, size, 0, 0, &H3)
-		    Call DestroyIcon(info.hIcon)
+		    
+		    Dim large As New MemoryBlock(4)
+		    Try
+		      Call ExtractIconExW(resource.AbsolutePath, Index, large, Nil, 1)
+		      Call DrawIcon(theIcon.Graphics.Handle(1), 0, 0, large.Long(0), pixsize, pixsize, 0, 0, &h3)
+		    Catch
+		      DestroyIcon(large.Long(0))
+		      Return Nil
+		    End Try
+		    DestroyIcon(large.Long(0))
 		    Return theIcon
-		  Else
-		    Return Nil
-		  End If
+		  #endif
+		  
+		Exception
+		  Return Nil
+		  
 		End Function
 	#tag EndMethod
 
@@ -61,7 +113,6 @@ Protected Module Images
 		  //Can take a few seconds on very large Pictures
 		  //This function was *greatly* optimized by user 'doofus' on the RealSoftware forums:
 		  //http://forums.realsoftware.com/viewtopic.php?f=1&t=42327&sid=4e724091fc9dd70fd5705110098adf67
-		  //This function should be cross-platform safe.
 		  
 		  If p = Nil Then Raise New NilObjectException
 		  Dim w As Integer = p.Width
@@ -88,47 +139,22 @@ Protected Module Images
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function IconToPicture(Resource as FolderItem, Index As Integer, pixSize As Integer = 0) As Picture
-		  //Extracts the specified Icon resource into a RB Picture. Returns Nil on error.
-		  //Icons are located in EXE, DLL, etc. type files, and are referenced by their index.
+		Function IntToColor(extends c as Integer) As Color
+		  //From WFS, converts an Integer to a Color
 		  
-		  #If TargetWin32 Then
-		    Declare Function ExtractIconExW Lib "Shell32" ( lpszFile As WString, ByVal nIconIndex As Integer, phiconLarge As ptr, phiconSmall As ptr, ByVal nIcons As Integer ) As Integer
-		    Declare Function DrawIconEx Lib "User32" (hDC As Integer, xLeft As Integer, yTop As Integer, hIcon As Integer, cxWidth As Integer, cyWidth As Integer, istepIfAniCur As Integer, _
-		    hbrFlickerFreeDraw As Integer, diFlags As Integer) As Integer
-		    Declare Function DestroyIcon Lib "User32" (hIcon As Integer) As Integer
-		    
-		    Dim theIcon As Picture = New Picture(pixsize, pixsize, 32)
-		    theIcon.Transparent = 1
-		    
-		    Dim small As New MemoryBlock(4)
-		    Dim large As New MemoryBlock(4)
-		    Try
-		      Call ExtractIconExW(resource.AbsolutePath, Index, large, small, 1)
-		      Call DrawIconEx(theIcon.Graphics.Handle(1), 0, 0, large.Long(0), pixsize, pixsize, 0, 0, &h3)
-		    Catch
-		      Call DestroyIcon(small.Long(0))
-		      Call DestroyIcon(large.Long(0))
-		      Return Nil
-		    End Try
-		    Call DestroyIcon(small.Long(0))
-		    Call DestroyIcon(large.Long(0))
-		    Return theIcon
-		  #endif
-		  
-		Exception
-		  Return theIcon
-		  
+		  Dim mb as new MemoryBlock(4)
+		  mb.Long(0) = c
+		  Return RGB(mb.Byte(0), mb.Byte(1), mb.Byte(2))
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function IntToColor(extends c as Integer) As Color
-		  //From WFS, converts an Integer to a Color
-		  //This function should be cross-platform safe.
-		  Dim mb as new MemoryBlock(4)
-		  mb.Long(0) = c
-		  Return RGB(mb.Byte(0), mb.Byte(1), mb.Byte(2))
+		Function PictureToHTML(MyPic As Picture) As String
+		  //Given a Picture, returns the base64-encoded HTML representation
+		  
+		  Dim s As String = MyPic.GetData(Picture.FormatPNG)
+		  s = "<img src='data:image/png;base64," + EncodeBase64(s) + "' width=" + Str(MyPic.Width) + " height=" + Str(MyPic.Height) + ">"
+		  Return s
 		End Function
 	#tag EndMethod
 
@@ -184,10 +210,57 @@ Protected Module Images
 		    
 		    If PickIconDlg(HWND, resource, resourceLen, Index) = 1 Then
 		      Dim f As FolderItem = GetFolderItem(resource.WString(0))
-		      Dim retpic As Picture = IconToPicture(f, Index, pixSize)
+		      Dim retpic As Picture = ExtractIcon(f, Index, pixSize)
 		      Return retpic
 		    End If
 		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function TextToPicture(Text As String, Font As String = "System", FontSize As Integer = 11, Bold As Boolean = False, Underline As Boolean = False, Italic As Boolean = False, forecolor As Color = &c000000, BackColor As Color = &cFFFFFF) As Picture
+		  If Text = "" Then 
+		    Return New Picture(1, 1, 32)
+		  End If
+		  Dim lines() As Picture
+		  Dim requiredHeight, requiredWidth As Integer
+		  Dim tlines() As String = Split(Text, EndOfLine)
+		  
+		  For i As Integer = 0 To UBound(tlines)
+		    Dim p As New Picture(250, 250, 24)
+		    p.Graphics.TextFont = Font
+		    p.Graphics.TextSize = FontSize
+		    p.Graphics.Bold = Bold
+		    p.Graphics.Italic = Italic
+		    p.Graphics.Underline = Underline
+		    Dim nm As String = tlines(i)
+		    Dim strWidth, strHeight As Integer
+		    strWidth = p.Graphics.StringWidth(nm) + 5
+		    strHeight = p.Graphics.StringHeight(nm, strWidth)
+		    p = New Picture(strWidth, strHeight, 32)
+		    p.Graphics.ForeColor = BackColor
+		    p.Graphics.FillRect(0, 0, p.Width, p.Height)
+		    p.Graphics.AntiAlias = True
+		    p.Graphics.ForeColor = forecolor
+		    p.Graphics.TextFont = Font
+		    p.Graphics.TextSize = FontSize
+		    p.Graphics.Bold = Bold
+		    p.Graphics.Italic = Italic
+		    p.Graphics.Underline = Underline
+		    p.Graphics.DrawString(nm, 1, ((p.Height/2) + (strHeight/4)))
+		    lines.Append(p)
+		    requiredHeight = requiredHeight + p.Height
+		    If p.Width > requiredWidth Then requiredWidth = p.Width
+		  Next
+		  Dim txtBuffer As Picture
+		  txtBuffer = New Picture(requiredWidth, requiredHeight, 24)
+		  Dim x, y As Integer
+		  For i As Integer = 0 To UBound(lines)
+		    txtBuffer.Graphics.DrawPicture(lines(i), x, y)
+		    y = y + lines(i).Height
+		  Next
+		  txtBuffer.Transparent = 1
+		  Return txtBuffer
 		End Function
 	#tag EndMethod
 
