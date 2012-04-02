@@ -309,10 +309,65 @@ Begin Window Window1
       Visible         =   True
       Width           =   174
    End
+   Begin Label ETATest
+      AutoDeactivate  =   True
+      Bold            =   ""
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   6
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Multiline       =   ""
+      Scope           =   0
+      Selectable      =   False
+      TabIndex        =   10
+      TabPanelIndex   =   0
+      Text            =   ""
+      TextAlign       =   0
+      TextColor       =   &h000000
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   220
+      Transparent     =   False
+      Underline       =   ""
+      Visible         =   True
+      Width           =   588
+   End
+   Begin Timer Timer1
+      Height          =   32
+      Index           =   -2147483648
+      Left            =   683
+      LockedInPosition=   False
+      Mode            =   2
+      Period          =   1000
+      Scope           =   0
+      TabPanelIndex   =   0
+      Top             =   59
+      Width           =   32
+   End
 End
 #tag EndWindow
 
 #tag WindowCode
+	#tag Event
+		Sub Open()
+		  Dim s As String = "Hello 'there, world'"
+		  Call Tokenize(s)
+		  Break
+		End Sub
+	#tag EndEvent
+
+
 #tag EndWindowCode
 
 #tag Events Canvas1
@@ -368,6 +423,18 @@ End
 	#tag Event
 		Sub TextChange()
 		  Canvas2.Refresh(True)
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events Timer1
+	#tag Event
+		Sub Action()
+		  Static d As Date
+		  If d = Nil Then
+		    d = New Date
+		    d.TotalSeconds = d.TotalSeconds \ 2
+		  End If
+		  ETATest.Text = "Application started: " + ETA(d)
 		End Sub
 	#tag EndEvent
 #tag EndEvents

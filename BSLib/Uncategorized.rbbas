@@ -31,6 +31,128 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function ETA(d As Date, d2 As Date = Nil) As String
+		  //Given a date object, returns the time difference from now, as a long-form string.
+		  //e.g.: "12 minutes from now." or "6 weeks, 4 days, 13 hours, 9 minutes, 12 seconds ago."
+		  //
+		  //If you pass the optional d2 Date object, then the time difference is calculated as the
+		  //difference from d2 (the "present") to d.
+		  
+		  Dim words As String
+		  Dim secsremaining As UInt64
+		  If d2 = Nil Then d2 = New Date
+		  If d.TotalSeconds < d2.TotalSeconds Then  //In the future
+		    secsremaining = d2.TotalSeconds - d.TotalSeconds
+		  Else  //In the past (or present)
+		    secsremaining = d.TotalSeconds - d2.TotalSeconds
+		  End If
+		  
+		  Const secs_in_min = 60
+		  Const secs_in_hour = 3600
+		  Const secs_in_day = 86400
+		  Const secs_in_week = 604800
+		  Const secs_in_year = 31556926
+		  
+		  Dim tmp As UInt64
+		  Dim periodname As String
+		  
+		  
+		  tmp = secsremaining \ secs_in_year
+		  If tmp > 0 Then
+		    If tmp > 1000 Then Return "Just prior to the heat death of the Universe."  //We've overflowed
+		    If tmp = 1 Then
+		      periodname = " year, "
+		    Else
+		      periodname = " years, "
+		    End If
+		    words = words + Str(tmp) + periodname
+		  End If
+		  secsremaining = secsremaining - tmp * secs_in_year
+		  tmp = 0
+		  
+		  
+		  tmp = secsremaining \ secs_in_week
+		  If tmp > 0 Then
+		    If tmp = 1 Then
+		      periodname = " week, "
+		    Else
+		      periodname = " weeks, "
+		    End If
+		    words = words + Str(tmp) + periodname
+		  End If
+		  secsremaining = secsremaining - tmp * secs_in_week
+		  tmp = 0
+		  
+		  
+		  
+		  tmp = secsremaining \ secs_in_day
+		  If tmp > 0 Then
+		    If tmp = 1 Then
+		      periodname = " day, "
+		    Else
+		      periodname = " days, "
+		    End If
+		    words = words + Str(tmp) + periodname
+		  End If
+		  secsremaining = secsremaining - tmp * secs_in_day
+		  tmp = 0
+		  
+		  
+		  
+		  
+		  tmp = secsremaining \ secs_in_hour
+		  If tmp > 0 Then
+		    If tmp = 1 Then
+		      periodname = " hour, "
+		    Else
+		      periodname = " hours, "
+		    End If
+		    words = words + Str(tmp) + periodname
+		  End If
+		  secsremaining = secsremaining - tmp * secs_in_hour
+		  tmp = 0
+		  
+		  
+		  
+		  
+		  
+		  tmp = secsremaining \ secs_in_min
+		  If tmp > 0 Then
+		    If tmp > 1 Then
+		      periodname = " minutes"
+		    Else
+		      periodname = " minutes"
+		    End If
+		    words = words + Str(tmp) + periodname
+		  End If
+		  secsremaining = secsremaining - tmp * secs_in_min
+		  
+		  If secsremaining > 0 Then
+		    words = words + ", "
+		    If tmp > 1 Then
+		      periodname = " seconds"
+		    Else
+		      periodname = " second"
+		    End If
+		    words = words + Str(secsremaining) + periodname
+		  End If
+		  words = words + " "
+		  
+		  
+		  
+		  If d.TotalSeconds < d2.TotalSeconds Then
+		    words = words + " ago."
+		  Else
+		    words = words + " from now."
+		  End If
+		  
+		  Return words
+		  
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function FormatBytes(bytes As UInt64) As String
 		  //Converts raw byte counts into SI formatted strings. 1KB = 1024 bytes.
 		  //Should return properly formatted strings for any positive number of bytes
@@ -202,9 +324,9 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Tokenize(Input As String) As String()
+		Function Tokenize(ByVal Input As String) As String()
 		  //Returns a String array containing the space-delimited members of the Input string.
-		  //Like `Split` but honoring quotes; good for command line arguments and other parsing.
+		  //Like `String.Split(" ")` but honoring quotes; good for command line arguments and other parsing.
 		  //For example, this string:
 		  '                     MyApp.exe --foo "C:\My Dir\"
 		  //Would become:
@@ -239,19 +361,68 @@ Protected Module Uncategorized
 
 	#tag Method, Flags = &h0
 		Function UUID() As String
-		  Declare Function RpcStringFree Lib "Rpcrt4" Alias "RpcStringFreeA" (Addr As Ptr) As Integer
-		  Declare Function UuidCreate Lib "Rpcrt4" (Uuid As Ptr) As Integer
-		  Declare Function UuidToString Lib "Rpcrt4" Alias "UuidToStringA" (Uuid As Ptr, ByRef p As ptr) As Integer
+		  //This function ©2004-2011 Adam Shirey
+		  //http://www.dingostick.com/node.php?id=11
 		  
-		  Static mb As New MemoryBlock(16)
 		  Dim strUUID As String
-		  Call UuidCreate(mb)
-		  Static ptrUUID As New MemoryBlock(16)
-		  Dim ppAddr As ptr
-		  Call UuidToString(mb, ppAddr)
-		  Dim mb2 As MemoryBlock = ppAddr
-		  strUUID = mb2.CString(0)
-		  Call RpcStringFree(ptrUUID)
+		  
+		  #If TargetMacOS
+		    //see http://developer.apple.com/documentation/CoreFOundation/Reference/CFUUIDRef/Reference/reference.html
+		    Declare Function CFUUIDCreate Lib "Carbon" (alloc As ptr) As Ptr
+		    Declare Function CFUUIDCreateString Lib "Carbon" (alloc As ptr, CFUUIDRef As Ptr) As CFStringRef
+		    Declare Sub CFRelease Lib "Carbon" (cf As Ptr)
+		    
+		    Dim pUUID As ptr = CFUUIDCreate(Nil)
+		    StructureInfo = CFUUIDCreateString(Nil, pUUID)
+		    CFRelease(pUUID)
+		    
+		  #ElseIf TargetWin32
+		    //see: http://msdn.microsoft.com/en-us/library/aa379205(VS.85).aspx
+		    //and: http://msdn.microsoft.com/en-us/library/aa379352(VS.85).aspx
+		    
+		    Const RPC_S_UUID_LOCAL_ONLY = 1824
+		    Const RPC_S_UUID_NO_ADDRESS = 1739
+		    
+		    Declare Function RpcStringFree Lib "Rpcrt4" Alias "RpcStringFreeA" (Addr As Ptr) As Integer
+		    Declare Function UuidCreate Lib "Rpcrt4" (Uuid As Ptr) As Integer
+		    Declare Function UuidToString Lib "Rpcrt4" Alias "UuidToStringA" (Uuid As Ptr, ByRef p As ptr) As Integer
+		    
+		    Static mb As New MemoryBlock(16)
+		    Call UuidCreate( mb ) //can compare to RPC_S_UUID_LOCAL_ONLY and RPC_S_UUID_NO_ADDRESS for more info
+		    
+		    Static ptrUUID As New MemoryBlock(16)
+		    
+		    Dim ppAddr As ptr
+		    Call UuidToString(mb, ppAddr)
+		    
+		    Dim mb2 As MemoryBlock = ppAddr
+		    strUUID = mb2.CString(0)
+		    
+		    Call RpcStringFree(ptrUUID)
+		    
+		    
+		  #ElseIf TargetLinux
+		    // see http://linux.die.net/man/3/uuid_generate
+		    
+		    // these are soft declared because there's perhaps a smaller chance of libuuid being present on a linux system,
+		    // though I have no evidence to support such a claim. it seems pretty standard.
+		    
+		    Soft Declare Sub uuid_generate Lib "libuuid" (out As ptr)
+		    Soft Declare Sub uuid_unparse_upper(mb As Ptr, uu As Ptr)
+		    
+		    If System.IsFunctionAvailable("uuid_generate", "libuuid") Then
+		      Static mb As New MemoryBlock( 16 )
+		      Static uu As New MemoryBlock( 36 )
+		      
+		      uuid_generate(mb) // generate the uuid in binary form
+		      uuid_unparse_upper(mb, uu) // convert to a 36-byte string
+		      
+		      strUUID = uu.StringValue(0, 36)
+		    Else
+		      System.DebugLog(App.ExecutableFile.Name + ": expected libuuid!")
+		    End If
+		  #EndIf
+		  
 		  Return strUUID
 		End Function
 	#tag EndMethod
