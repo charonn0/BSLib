@@ -31,12 +31,20 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CelciusToFahrenheit(C As Double) As Double
+		  Return (9/5) * C + 32
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function ETA(d As Date, d2 As Date = Nil) As String
 		  //Given a date object, returns the time difference from now, as a long-form string.
 		  //e.g.: "12 minutes from now." or "6 weeks, 4 days, 13 hours, 9 minutes, 12 seconds ago."
 		  //
 		  //If you pass the optional d2 Date object, then the time difference is calculated as the
 		  //difference from d2 (the "present") to d.
+		  //Due to the spectacular number of type-conversion warnings this function generates, it's likely
+		  //that you may lose a couple of seconds here and there.
 		  
 		  Dim words As String
 		  Dim secsremaining As UInt64
@@ -153,12 +161,19 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function FormatBytes(bytes As UInt64) As String
-		  //Converts raw byte counts into SI formatted strings. 1KB = 1024 bytes.
-		  //Should return properly formatted strings for any positive number of bytes
-		  //up to the overflow of a UInt64.
+		Function FahrenheitToCelcius(F As Double) As Double
+		  Return (5/9) * (F - 32)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function FormatBytes(bytes As UInt64, precision As Integer = 2) As String
+		  //Converts raw byte counts into SI formatted strings. 1KB = 1024 bytes. Don't pass negative numbers; coercion is an ugly thing.
+		  //Optionally pass an integer representing the number of decimal places to return. The default is two decimal places. You may specify
+		  //between 0 and 16 decimal places. Specifying more than 16 will append extra zeros to make up the length. Passing 0 
+		  //shows no decimal places and no decimal point.
 		  
-		  Dim suffix As String
+		  Dim suffix, precisionZeros As String
 		  Dim strBytes As Double
 		  
 		  If bytes < 1024 Then
@@ -183,7 +198,23 @@ Protected Module Uncategorized
 		    strBytes = bytes / 1152921504606846976
 		    suffix = "EB"
 		  End If
-		  Return Format(strBytes, "#,###0.00") + " " + suffix
+		  
+		  While precisionZeros.Len < precision
+		    precisionZeros = precisionZeros + "0"
+		  Wend
+		  If precisionZeros.Trim <> "" Then precisionZeros = "." + precisionZeros
+		  
+		  Return Format(strBytes, "#,###0" + precisionZeros) + " " + suffix
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function FormatDegrees(degrees As Double) As String
+		  //Assumes Unicode 
+		  Dim s As String = DefineEncoding(&u00B0, Encodings.UTF8)
+		  s = Format(degrees, "-###,##0.0#") + s
+		  Return s
 		  
 		End Function
 	#tag EndMethod

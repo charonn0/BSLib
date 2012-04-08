@@ -22,6 +22,14 @@ Inherits RuntimeException
 	#tag EndMethod
 
 
+	#tag Note, Name = Notes
+		This Exception subclass is raised by various Windows-specific functions.
+		
+		This class's constructor takes the Last Win32 Error number as its argument, and sets
+		the Exception's ErrorNumber and Message properties to reflect the Win32 error.
+	#tag EndNote
+
+
 	#tag ViewBehavior
 		#tag ViewProperty
 			Name="ErrorNumber"

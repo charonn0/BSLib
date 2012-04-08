@@ -2,7 +2,7 @@
 Protected Module Images
 	#tag Method, Flags = &h0
 		Function ColorToHex(Extends c As Color) As String
-		  //Converts a Color to a hex string.
+		  //Converts a Color to a hex string, with appropriate zeroes as spaceholders
 		  
 		  Dim ret As String
 		  
@@ -36,7 +36,7 @@ Protected Module Images
 		  //If the specified file type doesn't have a default icon, this function returns Nil
 		  
 		  #If TargetWin32 Then
-		    Declare Function SHGetFileInfoW Lib "shell32" (path As WString, attribs As Integer, ByRef info As SHFILEINFO, infosize As Integer, flags As Integer) As Boolean
+		    Declare Function SHGetFileInfoW Lib "Shell32" (path As WString, attribs As Integer, ByRef info As SHFILEINFO, infosize As Integer, flags As Integer) As Boolean
 		    
 		    Const FILE_ATTRIBUTE_NORMAL = &h80
 		    Const SHGFI_USEFILEATTRIBUTES = &h000000010
@@ -79,25 +79,25 @@ Protected Module Images
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function ExtractIcon(Resource as FolderItem, Index As Integer, pixSize As Integer = 0) As Picture
+		Function ExtractIcon(Resource as FolderItem, Index As Integer, pixSize As Integer = 32) As Picture
 		  //Extracts the specified Icon resource into a RB Picture. Returns Nil on error.
 		  //Icons are located in EXE, DLL, etc. type files, and are referenced by their index.
 		  
 		  #If TargetWin32 Then
-		    Declare Function ExtractIconExW Lib "Shell32" ( lpszFile As WString, ByVal nIconIndex As Integer, phiconLarge As ptr, phiconSmall As ptr, ByVal nIcons As Integer ) As Integer
+		    Declare Function ExtractIconExW Lib "Shell32" (ResourceFile As WString, Index As Integer, largeIco As Ptr, smallIco As Ptr, Icons As Integer) As Integer
 		    
 		    Dim theIcon As Picture = New Picture(pixsize, pixsize, 32)
 		    theIcon.Transparent = 1
 		    
-		    Dim large As New MemoryBlock(4)
+		    Dim largeIco As New MemoryBlock(4)
 		    Try
-		      Call ExtractIconExW(resource.AbsolutePath, Index, large, Nil, 1)
-		      Call DrawIcon(theIcon.Graphics.Handle(1), 0, 0, large.Long(0), pixsize, pixsize, 0, 0, &h3)
+		      Call ExtractIconExW(resource.AbsolutePath, Index, largeIco, Nil, 1)
+		      Call DrawIcon(theIcon.Graphics.Handle(Graphics.HandleTypeHDC), 0, 0, largeIco.Int32Value(0), pixsize, pixsize, 0, 0, &h3)
 		    Catch
-		      DestroyIcon(large.Long(0))
+		      DestroyIcon(largeIco.Int32Value(0))
 		      Return Nil
 		    End Try
-		    DestroyIcon(large.Long(0))
+		    DestroyIcon(largeIco.Int32Value(0))
 		    Return theIcon
 		  #endif
 		  
@@ -151,9 +151,10 @@ Protected Module Images
 	#tag Method, Flags = &h0
 		Function PictureToHTML(MyPic As Picture) As String
 		  //Given a Picture, returns the base64-encoded HTML representation
-		  
+		  //e.g. 
+		  //<img src='data:image/png;base64,iVBORw0KGgoAAAANS...' width=200 height=200 />
 		  Dim s As String = MyPic.GetData(Picture.FormatPNG)
-		  s = "<img src='data:image/png;base64," + EncodeBase64(s) + "' width=" + Str(MyPic.Width) + " height=" + Str(MyPic.Height) + ">"
+		  s = "<img src='data:image/png;base64," + EncodeBase64(s) + "' width=" + Str(MyPic.Width) + " height=" + Str(MyPic.Height) + " />"
 		  Return s
 		End Function
 	#tag EndMethod
@@ -162,7 +163,8 @@ Protected Module Images
 		Function Scale(Source As Picture, Ratio As Double = 1.0) As Picture
 		  //Returns a scaled version of the passed Picture object.
 		  //A ratio of 1.0 is 100% (no change,) 0.5 is 50% (half size) and so forth.
-		  //This function should be cross-platform safe.
+		  
+		  If Ratio = 1.0 Then Return Source  //No change, so why bother?
 		  
 		  Dim wRatio, hRatio As Double
 		  wRatio = (Ratio * Source.width)
@@ -178,9 +180,7 @@ Protected Module Images
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function SelectIcon(IconResource As FolderItem, DefaultIndex As Integer = 0, pixSize As Integer = 0, Optional parentWindow As Window) As Picture
-		  //This function will not compile in a ConsoleApplication
-		  //
+		Function SelectIcon(IconResource As FolderItem, DefaultIndex As Integer = 0, pixSize As Integer = 0, Optional HWND As Integer) As Picture
 		  //This function will show a Icon Selection dialog to the user. If the user selects an icon, a REALbasic Picture is returned containing the icon.
 		  //Otherwise, returns Nil.
 		  //Icons are stored in Windows PE images (executables) as accessible resources. You must specify a FolderItem which points to a
@@ -193,33 +193,37 @@ Protected Module Images
 		  //If you require that the returned Picture be of a certain size, pass the pixSize parameter. Passing 0 or nothing will return
 		  //a picture of the same size as the icon's default size. pixSize is both the width and height.
 		  
-		  //If you want the Icon Selection Dialog to appear as a child window of a particular Window, then pass the desired Window Object as the parentWindow
-		  //parameter.
+		  //If you want the Icon Selection Dialog to appear as a child window of a particular Window, then pass the desired Window's Handle property 
+		  //as the HWND parameter.
 		  
-		  #If TargetWin32 Then
+		  #If TargetWin32 And TargetHasGUI Then  //The RB Picture object is not available in console applications
 		    Declare Function PickIconDlg Lib "Shell32" (HWND As Integer, resource As Ptr, resourceLen As Integer, ByRef Index As Integer) As Integer
 		    
 		    If IconResource = Nil Then Return Nil
 		    
-		    Dim HWND, resourceLen, Index As Integer
+		    Dim resourceLen, Index As Integer
 		    Dim resource As New MemoryBlock(1024)
 		    resource.WString(0) = IconResource.AbsolutePath
 		    resourceLen = resource.Size
 		    Index = DefaultIndex
-		    If parentWindow <> Nil Then HWND = parentWindow.Handle
 		    
 		    If PickIconDlg(HWND, resource, resourceLen, Index) = 1 Then
 		      Dim f As FolderItem = GetFolderItem(resource.WString(0))
 		      Dim retpic As Picture = ExtractIcon(f, Index, pixSize)
 		      Return retpic
 		    End If
+		  #Else
+		    #pragma Unused IconResource
+		    #pragma Unused DefaultIndex
+		    #pragma Unused pixSize
+		    #pragma Unused HWND
 		  #endif
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function TextToPicture(Text As String, Font As String = "System", FontSize As Integer = 11, Bold As Boolean = False, Underline As Boolean = False, Italic As Boolean = False, forecolor As Color = &c000000, BackColor As Color = &cFFFFFF) As Picture
-		  If Text = "" Then 
+		  If Text = "" Then
 		    Return New Picture(1, 1, 32)
 		  End If
 		  Dim lines() As Picture
