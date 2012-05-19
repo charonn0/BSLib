@@ -117,9 +117,6 @@ Protected Module Win32Constants
 	#tag Constant, Name = GENERIC_WRITE, Type = Double, Dynamic = False, Default = \"&h40000000", Scope = Public
 	#tag EndConstant
 
-	#tag Constant, Name = ICU_BROWSER_MODE, Type = Double, Dynamic = False, Default = \"&h2000000", Scope = Public
-	#tag EndConstant
-
 	#tag Constant, Name = IDABORT, Type = Double, Dynamic = False, Default = \"3", Scope = Public
 	#tag EndConstant
 

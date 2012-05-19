@@ -110,7 +110,7 @@ Protected Module Explorer
 			  #endif
 			End Get
 		#tag EndGetter
-		Protected HsActiveDesktop As Boolean
+		Protected HasActiveDesktop As Boolean
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h1

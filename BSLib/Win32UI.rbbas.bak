@@ -24,20 +24,6 @@ Protected Module Win32UI
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Flash(Extends win As Window)
-		  //Flashes the specified Window once
-		  //See: http://msdn.microsoft.com/en-us/library/windows/desktop/ms679346%28v=vs.85%29.aspx
-		  
-		  #If TargetWin32 Then
-		    If System.IsFunctionAvailable("FlashWindow", "User32") Then
-		      Soft Declare Function FlashWindow Lib "User32" (HWND As Integer, invert As Boolean) As Boolean
-		      Call FlashWindow(win.Handle, True)
-		    End If
-		  #endif
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function ZoomIn(Extends w As Window) As Boolean
 		  Dim ret As Boolean = AnimateWindow(w.Handle, AW_ACTIVATE Or AW_CENTER, 200)
 		  w.Show

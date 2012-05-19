@@ -839,20 +839,6 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function IsServiceAccount(Accountname As String) As Boolean
-		  If System.IsFunctionAvailable("NetIsServiceAccount", "Netapi") Then
-		    Soft Declare Function NetIsServiceAccount Lib "Netapi" (ServerName As Ptr, Accountname As WString, ByRef isService As Boolean) As Integer
-		    
-		    Dim ret As Boolean
-		    
-		    Call NetIsServiceAccount(Nil, Accountname, ret)
-		    Return ret
-		  End If
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Function IsShuttingDown() As Boolean
 		  //Returns True if Windows is shutting down or logging off.
 		  Return GetMetric(&h2000) <> 0

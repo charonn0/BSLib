@@ -326,23 +326,17 @@ Protected Module File_Ops
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Function FindFirstStream(filename As String, InfoLevel As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA, reserved As Integer = 0) As Integer
-		  If System.IsFunctionAvailable("FindFirstStreamW", "Kernel32") Then
-		    Soft Declare Function FindFirstStreamW Lib "Kernel32" (filename As WString, InfoLevel As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA, _
-		    reserved As Integer) As Integer
-		    
-		    Return FindFirstStreamW(filename, InfoLevel, buffer, reserved)
-		  End If
+	#tag Method, Flags = &h0
+		Function FindFirstStream(filename As String, InfoLevel As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA, reserved As Integer = 0) As Integer
+		  Soft Declare Function FindFirstStreamW Lib "Kernel32" (filename As WString, InfoLevel As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA, reserved As Integer) As Integer
+		  Return FindFirstStreamW(filename, InfoLevel, buffer, reserved)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function FindNextStream(sHandle As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA) As Boolean
-		  If System.IsFunctionAvailable("FindNextStreamW", "Kernel32") Then
-		    Soft Declare Function FindNextStreamW Lib "Kernel32" (sHandle As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA) As Boolean
-		    Return FindNextStreamW(sHandle, buffer)
-		  End If
+		  Soft Declare Function FindNextStreamW Lib "Kernel32" (sHandle As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA) As Boolean
+		  Return FindNextStreamW(sHandle, buffer)
 		End Function
 	#tag EndMethod
 
@@ -678,19 +672,6 @@ Protected Module File_Ops
 		  //Returns True if the file is a 64 bit Windows application
 		  #If TargetWin32 Then
 		    Return exeType(target) = 6
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function IsExecutable(Extends target As FolderItem) As Boolean
-		  //Returns True if the file is executable or contains executable code (e.g. EXE, VBS, BAT)
-		  //See: http://msdn.microsoft.com/en-us/library/windows/desktop/ms722429%28v=vs.85%29.aspx
-		  
-		  #If TargetWin32 Then
-		    Declare Function SaferiIsExecutableFileType Lib "AdvApi32" (path As WString, omitEXE As Boolean) As Boolean
-		    
-		    Return SaferiIsExecutableFileType(target.AbsolutePath, False)
 		  #endif
 		End Function
 	#tag EndMethod

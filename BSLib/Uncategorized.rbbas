@@ -31,8 +31,34 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CelciusToFahrenheit(C As Double) As Double
+		Function C2F(C As Double) As Double
+		  //Converts degrees Celcius to degrees Fahrenheit
 		  Return (9/5) * C + 32
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CRC32(Extends source As MemoryBlock) As Integer
+		  Const CRCpolynomial = &hEDB88320
+		  Dim crc, t as Integer
+		  Dim strCode as String
+		  strCode = source.StringValue(0, source.Size)
+		  crc = &hffffffff
+		  Dim char As String
+		  
+		  For x As Integer = 1 To LenB(strcode)
+		    char = Midb(strcode, x, 1)
+		    t = (crc And &hFF) Xor AscB(char)
+		    For b As Integer = 0 To 7
+		      If((t And &h1) = &h1) Then
+		        t = bitwise.ShiftRight(t, 1, 32) Xor CRCpolynomial
+		      Else
+		        t = bitwise.ShiftRight(t, 1, 32)
+		      End If
+		    next
+		    crc = Bitwise.ShiftRight(crc, 8, 32) Xor t
+		  Next
+		  Return (crc Xor &hFFFFFFFF)
 		End Function
 	#tag EndMethod
 
@@ -127,7 +153,7 @@ Protected Module Uncategorized
 		  tmp = secsremaining \ secs_in_min
 		  If tmp > 0 Then
 		    If tmp > 1 Then
-		      periodname = " minutes"
+		      periodname = " minute"
 		    Else
 		      periodname = " minutes"
 		    End If
@@ -136,11 +162,11 @@ Protected Module Uncategorized
 		  secsremaining = secsremaining - tmp * secs_in_min
 		  
 		  If secsremaining > 0 Then
-		    words = words + ", "
+		    If words.Trim <> "" Then words = words + ", "
 		    If tmp > 1 Then
-		      periodname = " seconds"
-		    Else
 		      periodname = " second"
+		    Else
+		      periodname = " seconds"
 		    End If
 		    words = words + Str(secsremaining) + periodname
 		  End If
@@ -161,43 +187,53 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function FahrenheitToCelcius(F As Double) As Double
+		Function F2C(F As Double) As Double
+		  //Converts degrees Fahrenheit to degrees Celcius
 		  Return (5/9) * (F - 32)
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function FormatBytes(bytes As UInt64, precision As Integer = 2) As String
-		  //Converts raw byte counts into SI formatted strings. 1KB = 1024 bytes. Don't pass negative numbers; coercion is an ugly thing.
+		  //Converts raw byte counts into SI formatted strings. 1KB = 1024 bytes.
 		  //Optionally pass an integer representing the number of decimal places to return. The default is two decimal places. You may specify
-		  //between 0 and 16 decimal places. Specifying more than 16 will append extra zeros to make up the length. Passing 0 
+		  //between 0 and 16 decimal places. Specifying more than 16 will append extra zeros to make up the length. Passing 0
 		  //shows no decimal places and no decimal point.
+		  
+		  Const kilo = 1024
+		  Static mega As UInt64 = kilo * kilo
+		  Static giga As UInt64 = kilo * mega
+		  Static tera As UInt64 = kilo * giga
+		  Static peta As UInt64 = kilo * tera
+		  Static exab As UInt64 = kilo * peta
 		  
 		  Dim suffix, precisionZeros As String
 		  Dim strBytes As Double
 		  
-		  If bytes < 1024 Then
-		    strBytes = bytes
+		  
+		  If bytes < kilo Then
+		    strbytes = bytes
 		    suffix = "bytes"
-		  ElseIf bytes <= 512000 And bytes >= 1024 Then
-		    strBytes = bytes / 1024
+		  ElseIf bytes >= kilo And bytes < mega Then
+		    strbytes = bytes / kilo
 		    suffix = "KB"
-		  ElseIf bytes > 512000 And bytes < 786432000 Then  //786432000 bytes = 750 MB
-		    strBytes = bytes / 1048576
+		  ElseIf bytes >= mega And bytes < giga Then
+		    strbytes = bytes / mega
 		    suffix = "MB"
-		  ElseIf bytes >= 786432000 And bytes < 824633720832 Then
-		    strBytes = bytes / 1073741824
+		  ElseIf bytes >= giga And bytes < tera Then
+		    strbytes = bytes / giga
 		    suffix = "GB"
-		  ElseIf bytes > 824633720832 And bytes < 1125999999999999 Then
-		    strBytes = bytes / 1099511627776
+		  ElseIf bytes >= tera And bytes < peta Then
+		    strbytes = bytes / tera
 		    suffix = "TB"
-		  ElseIf bytes >= 1126000000000000 And bytes < 1152921504606846975 Then
-		    strBytes = bytes / 1126000000000000
+		  ElseIf bytes >= tera And bytes < exab Then
+		    strbytes = bytes / peta
 		    suffix = "PB"
-		  ElseIf bytes >= 1152921504606846976 Then
-		    strBytes = bytes / 1152921504606846976
+		  ElseIf bytes >= exab Then
+		    strbytes = bytes / exab
 		    suffix = "EB"
 		  End If
+		  
 		  
 		  While precisionZeros.Len < precision
 		    precisionZeros = precisionZeros + "0"
@@ -211,7 +247,7 @@ Protected Module Uncategorized
 
 	#tag Method, Flags = &h0
 		Function FormatDegrees(degrees As Double) As String
-		  //Assumes Unicode 
+		  //Assumes Unicode
 		  Dim s As String = DefineEncoding(&u00B0, Encodings.UTF8)
 		  s = Format(degrees, "-###,##0.0#") + s
 		  Return s
@@ -220,14 +256,18 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function FormatHertz(hertz As UInt64) As String
-		  //Converts raw Hertz into SI formatted strings. 1MHz = 1000 Hertz.
+		Function FormatHertz(hertz As UInt64, precision As Integer = 2) As String
+		  //Converts raw Hertz into SI formatted strings. 1KHz = 1000 Hertz.
+		  //Optionally pass an integer representing the number of decimal places to return. The default is two decimal places. You may specify
+		  //between 0 and 16 decimal places. Specifying more than 16 will append extra zeros to make up the length. Passing 0
+		  //shows no decimal places and no decimal point.
+		  
 		  Const kilo = 1000
 		  Dim mega As UInt64 = 1000 * kilo
 		  Dim giga As UInt64 = 1000 * mega
 		  Dim tera As UInt64 = 1000 * giga
 		  
-		  Dim suffix As String
+		  Dim suffix, precisionZeros As String
 		  Dim strHertz As Double
 		  
 		  If hertz < kilo Then
@@ -246,7 +286,12 @@ Protected Module Uncategorized
 		    strHertz = hertz / tera
 		    suffix = "THz"
 		  End If
-		  Return Format(strHertz, "#######0.00") + " " + suffix
+		  
+		  While precisionZeros.Len < precision
+		    precisionZeros = precisionZeros + "0"
+		  Wend
+		  If precisionZeros.Trim <> "" Then precisionZeros = "." + precisionZeros
+		  Return Format(strHertz, "###0" + precisionZeros) + " " + suffix
 		  
 		End Function
 	#tag EndMethod

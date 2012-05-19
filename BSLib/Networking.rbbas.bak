@@ -1,23 +1,6 @@
 #tag Module
 Protected Module Networking
 	#tag Method, Flags = &h0
-		Function CombineURL(BaseURL As String, relativeURL As String, ByRef outputURL As String) As Integer
-		  //Safely combines a given base URL with a given relative URL. Returns the combined URL
-		  
-		  Declare Function InternetCombineUrlW Lib "WinInet" (base As WString, relative As WString, output As Ptr, ByRef size As Integer, flags As Integer) As Boolean
-		  Const ICU_BROWSER_MODE = &h2000000
-		  Dim mb As New MemoryBlock((BaseURL.LenB + relativeURL.LenB) * 4)
-		  Dim count As Integer = mb.Size
-		  If InternetCombineUrlW(BaseURL, relativeURL, mb, count, ICU_BROWSER_MODE) Then
-		    outputURL = mb.WString(0)
-		    Return 0
-		  Else
-		    Return Platform.LastErrorCode
-		  End If
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function DNSLookup(domain As String) As String
 		  //Performs a DNS query on the passed domain name. Returns a string containing the dotted IPv4 address
 		  //of the server. On error, returns ""
@@ -40,20 +23,6 @@ Protected Module Networking
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function EscapeURL(URL As String) As String
-		  Declare Function InternetCanonicalizeUrlW Lib "WinInet" (URL As WString, output As Ptr, ByRef buffersize As Integer, flags As Integer) As Boolean
-		  Dim mb As New MemoryBlock(URL.LenB * 4)
-		  Dim count As Integer = mb.Size
-		  
-		  If InternetCanonicalizeUrlW(URL, mb, count, ICU_BROWSER_MODE) Then
-		    Return mb.WString(0)
-		  Else
-		    Return URL
-		  End If
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function InternetAvailable() As Boolean
 		  //Returns True if the computer appears to have Internet access.
 		  //On Windows XP and earlier, we just check whether GoogleDNS is reachable
@@ -65,31 +34,6 @@ Protected Module Networking
 		    Else
 		      Return IsDestinationReachable("8.8.8.8")  //Google's distributed DNS server.
 		    End If
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function InternetConnect() As Boolean
-		  //Attempts to connect to the internet
-		  //Returns True if the connection succeeded or was already established.
-		  
-		  #If TargetWin32 Then
-		    Declare Function InternetAttemptConnect Lib "WinInet" (Reserved As Integer) As Integer
-		    Return InternetAttemptConnect(0) = 0
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function InternetDial() As Boolean
-		  //DIAL UP ONLY
-		  //Attempts to dial the default dial-up internet connection, if one exists.
-		  //Returns True if the connection succeeded or another connection was already established.
-		  
-		  #If TargetWin32 Then
-		    Declare Function InternetAutodial Lib "WinInet" (flags As Integer, HWND As Integer) As Boolean
-		    Return InternetAutodial(0, -1)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -162,7 +106,7 @@ Protected Module Networking
 
 	#tag Method, Flags = &h0
 		Function Ping(server As String, timeout As Integer = 5000) As Integer
-		  //Sends a single ICMP ping to the specified server address. Server can be an IPv4 address or a domain name. timeout is in milliseconds.
+		  //Sends a single ping to the specified server address. Server can be an IPv4 address or a domain name. timeout is in milliseconds.
 		  //Returns the response time in milliseconds. If the destination is unreachable or any other error occurs, returns -1
 		  //This function blocks execution while waiting for a reply.
 		  //Based heavily on the Ping function from WFS.

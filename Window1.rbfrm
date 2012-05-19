@@ -7,12 +7,12 @@ Begin Window Window1
    Frame           =   0
    FullScreen      =   False
    HasBackColor    =   False
-   Height          =   400
+   Height          =   4.0e+2
    ImplicitInstance=   True
    LiveResize      =   True
    MacProcID       =   0
    MaxHeight       =   32000
-   MaximizeButton  =   False
+   MaximizeButton  =   True
    MaxWidth        =   32000
    MenuBar         =   ""
    MenuBarVisible  =   True
@@ -23,7 +23,7 @@ Begin Window Window1
    Resizeable      =   True
    Title           =   "Untitled"
    Visible         =   True
-   Width           =   600
+   Width           =   1.057e+3
    Begin Canvas Canvas1
       AcceptFocus     =   ""
       AcceptTabs      =   ""
@@ -240,75 +240,6 @@ Begin Window Window1
       Visible         =   True
       Width           =   139
    End
-   Begin Canvas Canvas2
-      AcceptFocus     =   ""
-      AcceptTabs      =   ""
-      AutoDeactivate  =   True
-      Backdrop        =   ""
-      DoubleBuffer    =   False
-      Enabled         =   True
-      EraseBackground =   True
-      Height          =   32
-      HelpTag         =   ""
-      Index           =   -2147483648
-      InitialParent   =   ""
-      Left            =   385
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Scope           =   0
-      TabIndex        =   8
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Top             =   0
-      UseFocusRing    =   True
-      Visible         =   True
-      Width           =   196
-   End
-   Begin TextField TextField1
-      AcceptTabs      =   ""
-      Alignment       =   0
-      AutoDeactivate  =   True
-      AutomaticallyCheckSpelling=   False
-      BackColor       =   &hFFFFFF
-      Bold            =   ""
-      Border          =   True
-      CueText         =   ""
-      DataField       =   ""
-      DataSource      =   ""
-      Enabled         =   True
-      Format          =   ""
-      Height          =   22
-      HelpTag         =   ""
-      Index           =   -2147483648
-      Italic          =   ""
-      Left            =   396
-      LimitText       =   0
-      LockBottom      =   ""
-      LockedInPosition=   False
-      LockLeft        =   True
-      LockRight       =   ""
-      LockTop         =   True
-      Mask            =   ""
-      Password        =   ""
-      ReadOnly        =   ""
-      Scope           =   0
-      TabIndex        =   9
-      TabPanelIndex   =   0
-      TabStop         =   True
-      Text            =   "Hello, World!"
-      TextColor       =   &h000000
-      TextFont        =   "System"
-      TextSize        =   0
-      TextUnit        =   0
-      Top             =   32
-      Underline       =   ""
-      UseFocusRing    =   True
-      Visible         =   True
-      Width           =   174
-   End
    Begin Label ETATest
       AutoDeactivate  =   True
       Bold            =   ""
@@ -320,7 +251,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   6
+      Left            =   0
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -337,11 +268,11 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   220
+      Top             =   262
       Transparent     =   False
       Underline       =   ""
       Visible         =   True
-      Width           =   588
+      Width           =   570
    End
    Begin Timer Timer1
       Height          =   32
@@ -355,17 +286,204 @@ Begin Window Window1
       Top             =   59
       Width           =   32
    End
+   Begin Label Label4
+      AutoDeactivate  =   True
+      Bold            =   ""
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   284
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Multiline       =   ""
+      Scope           =   0
+      Selectable      =   False
+      TabIndex        =   11
+      TabPanelIndex   =   0
+      Text            =   ""
+      TextAlign       =   1
+      TextColor       =   &h000000
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   285
+      Transparent     =   True
+      Underline       =   ""
+      Visible         =   True
+      Width           =   286
+   End
+   Begin Label Label5
+      AutoDeactivate  =   True
+      Bold            =   ""
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   20
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   270
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Multiline       =   ""
+      Scope           =   0
+      Selectable      =   False
+      TabIndex        =   12
+      TabPanelIndex   =   0
+      Text            =   ""
+      TextAlign       =   1
+      TextColor       =   &h000000
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   309
+      Transparent     =   True
+      Underline       =   ""
+      Visible         =   True
+      Width           =   286
+   End
+   Begin PushButton PushButton3
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   ""
+      Caption         =   "C2H"
+      Default         =   ""
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   374
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   13
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   378
+      Underline       =   ""
+      Visible         =   True
+      Width           =   107
+   End
+   Begin Label Label6
+      AutoDeactivate  =   True
+      Bold            =   ""
+      DataField       =   ""
+      DataSource      =   ""
+      Enabled         =   True
+      Height          =   32
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   385
+      LockBottom      =   True
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   True
+      LockTop         =   True
+      Multiline       =   ""
+      Scope           =   0
+      Selectable      =   False
+      TabIndex        =   14
+      TabPanelIndex   =   0
+      Text            =   "Untitled"
+      TextAlign       =   0
+      TextColor       =   &h00000000
+      TextFont        =   "System"
+      TextSize        =   25
+      TextUnit        =   0
+      Top             =   196
+      Transparent     =   False
+      Underline       =   True
+      Visible         =   True
+      Width           =   622
+   End
+   Begin PushButton PushButton4
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   ""
+      Caption         =   "Cap && Scale"
+      Default         =   ""
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   771
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   15
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   327
+      Underline       =   ""
+      Visible         =   True
+      Width           =   107
+   End
+   Begin Canvas Canvas3
+      AcceptFocus     =   ""
+      AcceptTabs      =   ""
+      AutoDeactivate  =   True
+      Backdrop        =   ""
+      DoubleBuffer    =   False
+      Enabled         =   True
+      EraseBackground =   True
+      Height          =   212
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Left            =   705
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   16
+      TabPanelIndex   =   0
+      TabStop         =   True
+      Top             =   103
+      UseFocusRing    =   True
+      Visible         =   True
+      Width           =   238
+   End
 End
 #tag EndWindow
 
 #tag WindowCode
-	#tag Event
-		Sub Open()
-		  Dim s As String = "Hello 'there, world'"
-		  Call Tokenize(s)
-		  Break
-		End Sub
-	#tag EndEvent
+	#tag Property, Flags = &h1
+		Protected screncap As Picture
+	#tag EndProperty
 
 
 #tag EndWindowCode
@@ -412,20 +530,6 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events Canvas2
-	#tag Event
-		Sub Paint(g As Graphics)
-		  g.DrawPicture(TextToPicture(TextField1.Text), 0, 0)
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events TextField1
-	#tag Event
-		Sub TextChange()
-		  Canvas2.Refresh(True)
-		End Sub
-	#tag EndEvent
-#tag EndEvents
 #tag Events Timer1
 	#tag Event
 		Sub Action()
@@ -435,6 +539,40 @@ End
 		    d.TotalSeconds = d.TotalSeconds \ 2
 		  End If
 		  ETATest.Text = "Application started: " + ETA(d)
+		  
+		  Label5.Text = FormatHertz(Platform.CPUSpeed, 4)
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events Label4
+	#tag Event
+		Sub Open()
+		  Me.Text = FormatBytes(6516506106516515165, 16)
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events PushButton3
+	#tag Event
+		Sub Action()
+		  Dim c As Color
+		  Call SelectColor(c, "Pick color")
+		  MsgBox(ColorToHex(c))
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events PushButton4
+	#tag Event
+		Sub Action()
+		  screncap = Platform.CaptureScreen
+		  Canvas3.Refresh(False)
+		  
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events Canvas3
+	#tag Event
+		Sub Paint(g As Graphics)
+		  If screncap <> Nil Then g.DrawPicture(screncap, 0, 0)
 		End Sub
 	#tag EndEvent
 #tag EndEvents

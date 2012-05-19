@@ -1,30 +1,13 @@
 #tag Module
 Protected Module Images
 	#tag Method, Flags = &h0
-		Function ColorToHex(Extends c As Color) As String
-		  //Converts a Color to a hex string, with appropriate zeroes as spaceholders
+		Function ColorToHex(c As Color) As String
+		  //Converts a Color to a hex string, with appropriate zeros as spaceholders
 		  
-		  Dim ret As String
-		  
-		  If Hex(c.red).len = 1 Then
-		    ret = ret + "0" + Hex(c.red)
-		  Else
-		    ret = ret + Hex(c.red)
-		  End If
-		  
-		  If Hex(c.green).len = 1 Then
-		    ret = ret + "0" + Hex(c.green)
-		  Else
-		    ret = ret + Hex(c.green)
-		  End If
-		  
-		  If Hex(c.blue).len = 1 Then
-		    ret = ret + "0" + Hex(c.blue)
-		  Else
-		    ret = ret + Hex(c.blue)
-		  End If
-		  
-		  Return ret
+		  Return _
+		  Right("00" + Hex(c.red), 2) + _
+		  Right("00" + Hex(c.Green), 2) + _
+		  Right("00" + Hex(c.Blue), 2)
 		End Function
 	#tag EndMethod
 
@@ -36,16 +19,17 @@ Protected Module Images
 		  //If the specified file type doesn't have a default icon, this function returns Nil
 		  
 		  #If TargetWin32 Then
-		    Declare Function SHGetFileInfoW Lib "Shell32" (path As WString, attribs As Integer, ByRef info As SHFILEINFO, infosize As Integer, flags As Integer) As Boolean
+		    Declare Function SHGetFileInfoW Lib "Shell32" (path As WString, attribs As Integer, ByRef info As SHFILEINFO, _
+		    infosize As Integer, flags As Integer) As Boolean
 		    
-		    Const FILE_ATTRIBUTE_NORMAL = &h80
 		    Const SHGFI_USEFILEATTRIBUTES = &h000000010
 		    Const SHGFI_DISPLAYNAME = &h000000200
 		    Const SHGFI_TYPENAME = &h000000400
 		    Const SHGFI_ICON = &h000000100
 		    
 		    Dim info As SHFILEINFO
-		    If SHGetFileInfoW("foo." + extension, FILE_ATTRIBUTE_NORMAL, info, info.Size, SHGFI_DISPLAYNAME Or SHGFI_TYPENAME Or SHGFI_USEFILEATTRIBUTES Or SHGFI_ICON) Then
+		    If SHGetFileInfoW("foo." + extension, FILE_ATTRIBUTE_NORMAL, info, info.Size, _
+		      SHGFI_DISPLAYNAME Or SHGFI_TYPENAME Or SHGFI_USEFILEATTRIBUTES Or SHGFI_ICON) Then
 		      Dim theIcon As Picture = New Picture(size, size, 32)
 		      theIcon.Transparent = 1
 		      Call DrawIcon(theIcon.Graphics.Handle(1), 0, 0, info.hIcon, size, size, 0, 0, &h3)
@@ -149,13 +133,34 @@ Protected Module Images
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function PictureToHTML(MyPic As Picture) As String
+		Function PictureToHTML(MyPic As Picture, AltText As String = "") As String
 		  //Given a Picture, returns the base64-encoded HTML representation
-		  //e.g. 
-		  //<img src='data:image/png;base64,iVBORw0KGgoAAAANS...' width=200 height=200 />
-		  Dim s As String = MyPic.GetData(Picture.FormatPNG)
-		  s = "<img src='data:image/png;base64," + EncodeBase64(s) + "' width=" + Str(MyPic.Width) + " height=" + Str(MyPic.Height) + " />"
-		  Return s
+		  //e.g.
+		  //<img src='data:image/png;base64,iVBORw0KGgoAAAANS...' width=200 height=200 alt='A picture of a cat' />
+		  Dim HTML As String = MyPic.GetData(Picture.FormatPNG)
+		  HTML = "<img src='data:image/png;base64," + EncodeBase64(HTML) + "' width=" + Str(MyPic.Width) + " height=" + _
+		  Str(MyPic.Height) + " alt='" + AltText + "' />"
+		  
+		  Return HTML
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Rotate(Extends Pic As Picture, Degrees As Double, Mask As Picture = Nil) As Picture
+		  //Rotates the passed Picture counter-clockwise the number of degrees specified around its center.
+		  //Optionally, pass a mask which will also be rotated and then applied to the returned Picture object.
+		  
+		  Dim px As New PixmapShape(Pic)
+		  px.X = (Pic.Width * 0.5) - 2
+		  px.Y = (Pic.Height * 0.5) - 2
+		  px.Rotation = Degrees / 57.2958 //Degrees to radians
+		  Dim p As New Picture(px.SourceWidth, Px.SourceHeight, Pic.Depth)
+		  p.Graphics.DrawObject(px)
+		  
+		  //Rotate and apply the mask if it exists
+		  If Mask <> Nil Then p.ApplyMask(Mask.Rotate(Degrees))
+		  
+		  Return p
 		End Function
 	#tag EndMethod
 
@@ -193,7 +198,7 @@ Protected Module Images
 		  //If you require that the returned Picture be of a certain size, pass the pixSize parameter. Passing 0 or nothing will return
 		  //a picture of the same size as the icon's default size. pixSize is both the width and height.
 		  
-		  //If you want the Icon Selection Dialog to appear as a child window of a particular Window, then pass the desired Window's Handle property 
+		  //If you want the Icon Selection Dialog to appear as a child window of a particular Window, then pass the desired Window's Handle property
 		  //as the HWND parameter.
 		  
 		  #If TargetWin32 And TargetHasGUI Then  //The RB Picture object is not available in console applications
@@ -223,6 +228,9 @@ Protected Module Images
 
 	#tag Method, Flags = &h0
 		Function TextToPicture(Text As String, Font As String = "System", FontSize As Integer = 11, Bold As Boolean = False, Underline As Boolean = False, Italic As Boolean = False, forecolor As Color = &c000000, BackColor As Color = &cFFFFFF) As Picture
+		  //Given any String, returns a picture of that string. Line breaks are honored.
+		  //The optional parameters ought to be self-explanitory.
+		  
 		  If Text = "" Then
 		    Return New Picture(1, 1, 32)
 		  End If
@@ -231,6 +239,7 @@ Protected Module Images
 		  Dim tlines() As String = Split(Text, EndOfLine)
 		  
 		  For i As Integer = 0 To UBound(tlines)
+		    If tlines(i) = "" Then tlines(i) = " "
 		    Dim p As New Picture(250, 250, 24)
 		    p.Graphics.TextFont = Font
 		    p.Graphics.TextSize = FontSize
