@@ -16,21 +16,6 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Beep(freq As Integer, duration As Integer)
-		  //This function differs from the built-in Beep method in that both the frequency and duration of the beep can (must) be specified.
-		  //Windows Vista and XP64 omit this function.
-		  #If TargetWin32 Then
-		    If System.IsFunctionAvailable("Beep", "Kernel32") Then
-		      Soft Declare Function WinBeep Lib "Kernel32" Alias "Beep" (freq As Integer, duration As Integer) As Boolean
-		      Call WinBeep(freq, duration)
-		    Else
-		      #If TargetHasGUI Then Realbasic.Beep  //Built-in beep not available in ConsoleApplications? Weird.
-		    End If
-		  #endif
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function C2F(C As Double) As Double
 		  //Converts degrees Celcius to degrees Fahrenheit
 		  Return (9/5) * C + 32
@@ -63,14 +48,51 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CreateURLShortcut(URL As String, ShortcutName As String, IconResource As FolderItem = Nil, IconIndex As Integer = - 1) As FolderItem
+		  //Creates a shortcut (.url file) in the users %TEMP% directory named ShortcutName and pointing to URL. Returns
+		  //a FolderItem corresponding to the shortcut file. You must move the returned Shortcut file to the desired directory.
+		  //On error, returns Nil.
+		  //You may optionally pass an IconResource and IconIndex. The IconResource is a Windows resource file that has icon resources,
+		  //for example EXE, DLL, SYS, ICO, and CUR files. The IconIndex parameter is the index of the icon in the IconResource file.
+		  
+		  //See also: Images.SelectIcon; File_Ops.CreateShortcut
+		  
+		  #If TargetWin32 Then
+		    Dim lnkObj As OLEObject
+		    Dim scriptShell As New OLEObject("Wscript.shell")
+		    
+		    If scriptShell <> Nil then
+		      lnkObj = scriptShell.CreateShortcut(SpecialFolder.Temporary.AbsolutePath + ShortcutName + ".url")
+		      If lnkObj <> Nil then
+		        lnkObj.TargetPath = URL
+		        lnkObj.Save
+		        
+		        Dim optionalparams As String
+		        
+		        If IconResource <> Nil Then optionalparams = "IconFile=" + IconResource.AbsolutePath + EndOfLine.Windows + _
+		        "IconIndex=" + Str(IconIndex) + EndOfLine
+		        
+		        If optionalparams.Trim <> "" Then
+		          Dim tos As TextOutputStream
+		          tos = tos.Append(SpecialFolder.Temporary.TrueChild(ShortcutName + ".url"))
+		          tos.Write(optionalparams)
+		          tos.Close
+		        End If
+		        
+		        Return SpecialFolder.Temporary.TrueChild(ShortcutName + ".url")
+		      End If
+		    End If
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function ETA(d As Date, d2 As Date = Nil) As String
 		  //Given a date object, returns the time difference from now, as a long-form string.
-		  //e.g.: "12 minutes from now." or "6 weeks, 4 days, 13 hours, 9 minutes, 12 seconds ago."
+		  //e.g.: "12 minutes from now." or "6 weeks, 4 days, 13 hours, 1 minute, 12 seconds"
 		  //
 		  //If you pass the optional d2 Date object, then the time difference is calculated as the
 		  //difference from d2 (the "present") to d.
-		  //Due to the spectacular number of type-conversion warnings this function generates, it's likely
-		  //that you may lose a couple of seconds here and there.
 		  
 		  Dim words As String
 		  Dim secsremaining As UInt64
@@ -118,7 +140,6 @@ Protected Module Uncategorized
 		  tmp = 0
 		  
 		  
-		  
 		  tmp = secsremaining \ secs_in_day
 		  If tmp > 0 Then
 		    If tmp = 1 Then
@@ -130,9 +151,6 @@ Protected Module Uncategorized
 		  End If
 		  secsremaining = secsremaining - tmp * secs_in_day
 		  tmp = 0
-		  
-		  
-		  
 		  
 		  tmp = secsremaining \ secs_in_hour
 		  If tmp > 0 Then
@@ -147,38 +165,27 @@ Protected Module Uncategorized
 		  tmp = 0
 		  
 		  
-		  
-		  
-		  
 		  tmp = secsremaining \ secs_in_min
 		  If tmp > 0 Then
 		    If tmp > 1 Then
-		      periodname = " minute"
-		    Else
 		      periodname = " minutes"
+		    Else
+		      periodname = " minute"
 		    End If
 		    words = words + Str(tmp) + periodname
 		  End If
 		  secsremaining = secsremaining - tmp * secs_in_min
 		  
-		  If secsremaining > 0 Then
+		  If secsremaining >= 1 Then
 		    If words.Trim <> "" Then words = words + ", "
 		    If tmp > 1 Then
-		      periodname = " second"
-		    Else
 		      periodname = " seconds"
+		    Else
+		      periodname = " second"
 		    End If
 		    words = words + Str(secsremaining) + periodname
 		  End If
 		  words = words + " "
-		  
-		  
-		  
-		  If d.TotalSeconds < d2.TotalSeconds Then
-		    words = words + " ago."
-		  Else
-		    words = words + " from now."
-		  End If
 		  
 		  Return words
 		  

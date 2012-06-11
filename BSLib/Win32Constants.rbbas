@@ -1,5 +1,19 @@
 #tag Module
 Protected Module Win32Constants
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  If Platform.KernelVersion >= Platform.WinVista Then
+			    Return &h1000  //PROCESS_QUERY_LIMITED_INFORMATION
+			  Else
+			    Return PROCESS_QUERY_INFORMATION  //On old Windows, use the old API
+			  End If
+			End Get
+		#tag EndGetter
+		PROCESS_QUERY_LIMITED_INFORMATION As Integer
+	#tag EndComputedProperty
+
+
 	#tag Constant, Name = AW_ACTIVATE, Type = Double, Dynamic = False, Default = \"&h00020000", Scope = Public
 	#tag EndConstant
 
@@ -90,19 +104,79 @@ Protected Module Win32Constants
 	#tag Constant, Name = FILE_ATTRIBUTE_NORMAL, Type = Double, Dynamic = False, Default = \"&h00000080", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = FILE_CASE_PRESERVED_NAMES, Type = Double, Dynamic = False, Default = \"&h00000002", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_CASE_SENSITIVE_SEARCH, Type = Double, Dynamic = False, Default = \"&h00000001", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = FILE_DEVICE_MASS_STORAGE, Type = Double, Dynamic = False, Default = \"&h0000002d", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FILE_COMPRESSION, Type = Double, Dynamic = False, Default = \"&h00000010", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_FLAG_WRITE_THROUGH, Type = Double, Dynamic = False, Default = \"&h80000000", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = FILE_NAMED_STREAMS, Type = Double, Dynamic = False, Default = \"&h00040000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_PERSISTENT_ACLS, Type = Double, Dynamic = False, Default = \"&h00000008", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = FILE_READ_ACCESS, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_READ_ONLY_VOLUME, Type = Double, Dynamic = False, Default = \"&h00080000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_SEQUENTIAL_WRITE_ONCE, Type = Double, Dynamic = False, Default = \"&h00100000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_SHARE_DELETE, Type = Double, Dynamic = False, Default = \"&h00000004", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_SHARE_READ, Type = Double, Dynamic = False, Default = \"&h00000001", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_SHARE_WRITE, Type = Double, Dynamic = False, Default = \"&h2", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_SUPPORTS_ENCRYPTION, Type = Double, Dynamic = False, Default = \"&h00020000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_SUPPORTS_EXTENDED_ATTRIBUTES, Type = Double, Dynamic = False, Default = \"&h00800000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_SUPPORTS_HARD_LINKS, Type = Double, Dynamic = False, Default = \"&h00400000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_SUPPORTS_OBJECT_IDS, Type = Double, Dynamic = False, Default = \"&h00010000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_SUPPORTS_OPEN_BY_FILE_ID, Type = Double, Dynamic = False, Default = \"&h01000000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_SUPPORTS_REPARSE_POINTS, Type = Double, Dynamic = False, Default = \"&h00000080", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_SUPPORTS_SPARSE_FILES, Type = Double, Dynamic = False, Default = \"&h00000040", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_SUPPORTS_TRANSACTIONS, Type = Double, Dynamic = False, Default = \"&h00200000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_SUPPORTS_USN_JOURNAL, Type = Double, Dynamic = False, Default = \"&h02000000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_UNICODE_ON_DISK, Type = Double, Dynamic = False, Default = \"&h00000004", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_VOLUME_IS_COMPRESSED, Type = Double, Dynamic = False, Default = \"&h00008000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_VOLUME_QUOTAS, Type = Double, Dynamic = False, Default = \"&h00000020", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = FORMAT_MESSAGE_FROM_SYSTEM, Type = Double, Dynamic = False, Default = \"&H1000", Scope = Public
@@ -246,6 +320,24 @@ Protected Module Win32Constants
 	#tag Constant, Name = METHOD_BUFFERED, Type = Double, Dynamic = False, Default = \"0", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = MOVEFILE_COPY_ALLOWED, Type = Double, Dynamic = False, Default = \"&h2", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MOVEFILE_CREATE_HARDLINK, Type = Double, Dynamic = False, Default = \"&h10", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MOVEFILE_DELAY_UNTIL_REBOOT, Type = Double, Dynamic = False, Default = \"&h4", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MOVEFILE_FAIL_IF_NOT_TRACKABLE, Type = Double, Dynamic = False, Default = \"&h20", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MOVEFILE_REPLACE_EXISTING, Type = Double, Dynamic = False, Default = \"&h1", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MOVEFILE_WRITE_THROUGH, Type = Double, Dynamic = False, Default = \"&h8", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = NOTSRCCOPY, Type = Double, Dynamic = False, Default = \"&h00330008", Scope = Public
 	#tag EndConstant
 
@@ -258,6 +350,114 @@ Protected Module Win32Constants
 	#tag Constant, Name = OPEN_EXISTING, Type = Double, Dynamic = False, Default = \"3", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = OS_ADVSERVER, Type = Double, Dynamic = False, Default = \"22", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_ANYSERVER, Type = Double, Dynamic = False, Default = \"29", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_APPLIANCE, Type = Double, Dynamic = False, Default = \"36", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_DATACENTER, Type = Double, Dynamic = False, Default = \"21", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_DOMAINMEMBER, Type = Double, Dynamic = False, Default = \"28", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_EMBEDDED, Type = Double, Dynamic = False, Default = \"13", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_FASTUSERSWITCHING, Type = Double, Dynamic = False, Default = \"26", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_HOME, Type = Double, Dynamic = False, Default = \"19", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_MEDIACENTER, Type = Double, Dynamic = False, Default = \"35", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_MEORGREATER, Type = Double, Dynamic = False, Default = \"17", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_NT, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_NT4ORGREATER, Type = Double, Dynamic = False, Default = \"3", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_PERSONALTERMINALSERVER, Type = Double, Dynamic = False, Default = \"25", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_PROFESSIONAL, Type = Double, Dynamic = False, Default = \"20", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_SERVER, Type = Double, Dynamic = False, Default = \"23", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_SERVERADMINUI, Type = Double, Dynamic = False, Default = \"34", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_SMALLBUSINESSSERVER, Type = Double, Dynamic = False, Default = \"32", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_TABLETPC, Type = Double, Dynamic = False, Default = \"33", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_TERMINALCLIENT, Type = Double, Dynamic = False, Default = \"14", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_TERMINALREMOTEADMIN, Type = Double, Dynamic = False, Default = \"15", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_TERMINALSERVER, Type = Double, Dynamic = False, Default = \"24", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WEBSERVER, Type = Double, Dynamic = False, Default = \"31", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WELCOMELOGONUI, Type = Double, Dynamic = False, Default = \"27", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WIN2000ADVSERVER, Type = Double, Dynamic = False, Default = \"10", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WIN2000DATACENTER, Type = Double, Dynamic = False, Default = \"11", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WIN2000ORGREATER, Type = Double, Dynamic = False, Default = \"7", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WIN2000PRO, Type = Double, Dynamic = False, Default = \"8", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WIN2000SERVER, Type = Double, Dynamic = False, Default = \"9", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WIN2000TERMINAL, Type = Double, Dynamic = False, Default = \"12", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WIN95ORGREATER, Type = Double, Dynamic = False, Default = \"2", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WIN95_GOLD, Type = Double, Dynamic = False, Default = \"16", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WIN98ORGREATER, Type = Double, Dynamic = False, Default = \"5", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WIN98_GOLD, Type = Double, Dynamic = False, Default = \"6", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WINDOWS, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_WOW6432, Type = Double, Dynamic = False, Default = \"30", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = OS_XPORGREATER, Type = Double, Dynamic = False, Default = \"18", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = PATCOPY, Type = Double, Dynamic = False, Default = \"&h00F00021", Scope = Public
 	#tag EndConstant
 
@@ -267,10 +467,37 @@ Protected Module Win32Constants
 	#tag Constant, Name = PATPAINT, Type = Double, Dynamic = False, Default = \"&h00FB0A09", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = PRF_DONTFINDLNK, Type = Double, Dynamic = False, Default = \"&h0008", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PRF_FIRSTDIRDEF, Type = Double, Dynamic = False, Default = \"&h0004\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PRF_REQUIREABSOLUTE, Type = Double, Dynamic = False, Default = \"&h0010\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PRF_TRYPROGRAMEXTENSIONS, Type = Double, Dynamic = False, Default = \"&h0002", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PRF_VERIFYEXISTS, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PROCESSOR_ARCHITECTURE_AMD64, Type = Double, Dynamic = False, Default = \"9", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PROCESSOR_ARCHITECTURE_IA64, Type = Double, Dynamic = False, Default = \"6", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PROCESSOR_ARCHITECTURE_INTEL, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PROCESSOR_ARCHITECTURE_UNKNOWN, Type = Double, Dynamic = False, Default = \"&hffff", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = PROCESS_QUERY_INFORMATION, Type = Double, Dynamic = False, Default = \"&h400", Scope = Public
 	#tag EndConstant
 
-	#tag Constant, Name = PROCESS_QUERY_LIMITED_INFORMATION, Type = Double, Dynamic = False, Default = \"&h1000", Scope = Public
+	#tag Constant, Name = PROCESS_SET_INFORMATION, Type = Double, Dynamic = False, Default = \"&h200", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = PROCESS_TERMINATE, Type = Double, Dynamic = False, Default = \"&h1", Scope = Public
@@ -393,6 +620,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = SM_CLEANBOOT, Type = Double, Dynamic = False, Default = \"67", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = SM_SHUTTINGDOWN, Type = Double, Dynamic = False, Default = \"&h2000", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = SRCAND, Type = Double, Dynamic = False, Default = \"&h008800C6", Scope = Public
 	#tag EndConstant
 
@@ -408,6 +638,75 @@ Protected Module Win32Constants
 	#tag Constant, Name = SRCPAINT, Type = Double, Dynamic = False, Default = \"&h00EE0086", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = SSF_DESKTOPHTML, Type = Double, Dynamic = False, Default = \"&h00000200\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_DONTPRETTYPATH, Type = Double, Dynamic = False, Default = \"&h00000800\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_DOUBLECLICKINWEBVIEW, Type = Double, Dynamic = False, Default = \"&h00000080\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_FILTER, Type = Double, Dynamic = False, Default = \"&h00010000\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_HIDDENFILEEXTS, Type = Double, Dynamic = False, Default = \"&h00000004\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_HIDEICONS, Type = Double, Dynamic = False, Default = \"&h00004000\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_MAPNETDRVBUTTON, Type = Double, Dynamic = False, Default = \"&h00001000\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_NOCONFIRMRECYCLE, Type = Double, Dynamic = False, Default = \"&h00008000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_NONETCRAWLING, Type = Double, Dynamic = False, Default = \"&h00100000\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_SEPPROCESS, Type = Double, Dynamic = False, Default = \"&h00080000\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_SERVERADMINUI, Type = Double, Dynamic = False, Default = \"&h00000004\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_SHOWALLOBJECTS, Type = Double, Dynamic = False, Default = \"&h00000001", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_SHOWATTRIBCOL, Type = Double, Dynamic = False, Default = \"&h00000100\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_SHOWCOMPCOLOR, Type = Double, Dynamic = False, Default = \"&h00000008\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_SHOWEXTENSIONS, Type = Double, Dynamic = False, Default = \"&h00000002\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_SHOWINFOTIP, Type = Double, Dynamic = False, Default = \"&h00002000\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_SHOWSTARTPAGE, Type = Double, Dynamic = False, Default = \"&h00400000\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_SHOWSUPERHIDDEN, Type = Double, Dynamic = False, Default = \"&h00040000\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_SHOWSYSFILES, Type = Double, Dynamic = False, Default = \"&h00000020\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_SORTCOLUMNS, Type = Double, Dynamic = False, Default = \"&h00000010\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_STARTPANELON, Type = Double, Dynamic = False, Default = \"&h00200000\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_WEBVIEW, Type = Double, Dynamic = False, Default = \"&h00020000\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SSF_WIN95CLASSIC, Type = Double, Dynamic = False, Default = \"&h00000400", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = STD_ERROR_HANDLE, Type = Double, Dynamic = False, Default = \"-12", Scope = Public
 	#tag EndConstant
 
@@ -417,10 +716,19 @@ Protected Module Win32Constants
 	#tag Constant, Name = STD_OUTPUT_HANDLE, Type = Double, Dynamic = False, Default = \"-11", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = SW_SHOW, Type = Double, Dynamic = False, Default = \"5", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SW_SHOWDEFAULT, Type = Double, Dynamic = False, Default = \"10", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = TOKEN_ADJUST_PRIVILEGES, Type = Double, Dynamic = False, Default = \"&h00000020", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = TOKEN_QUERY, Type = Double, Dynamic = False, Default = \"&h00000008", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = TRUNCATE_EXISTING, Type = Double, Dynamic = False, Default = \"5", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = WHITENESS, Type = Double, Dynamic = False, Default = \"&h00FF0062", Scope = Public
@@ -492,6 +800,11 @@ Protected Module Win32Constants
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="PROCESS_QUERY_LIMITED_INFORMATION"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

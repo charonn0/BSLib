@@ -142,27 +142,6 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CaptureScreen() As Picture
-		  //Calls GetPartialScreenShot with a rectangle comprising all of the desktop rectangle. Returns a Picture
-		  
-		  #If TargetWin32 Then Return GetPartialScreenShot(0, ScreenVirtualWidth, 0, ScreenVirtualHeight)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function CaptureWindow(HWND As Integer) As Picture
-		  //Returns a picture of the specified window. Pass window.Handle or any Win32 window handle
-		  
-		  #If TargetWin32 And TargetHasGUI Then
-		    Declare Sub GetWindowRect Lib "User32" (HWND As Integer, ByRef sm As RECT)
-		    Dim r as RECT
-		    GetWindowRect(HWND, r)
-		    Return GetPartialScreenShot(r.Left, r.Right, r.Top, r.Bottom)
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Sub CloseDrive(Extends f As FolderItem)
 		  //Given a FolderItem, this function commands the drive containing the FolderItem to close. If the drive is not an ejectable drive, or if
 		  //the drive is already closed then this does nothing
@@ -300,7 +279,7 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CreateFile(name As WString, access As Integer, sharemode As Integer, SecAtrribs As Integer, CreateDisp As Integer, flags As Integer, template As Integer) As Integer
+		Protected Function CreateFile(name As String, access As Integer, sharemode As Integer, SecAtrribs As Integer, CreateDisp As Integer, flags As Integer, template As Integer) As Integer
 		  //Used everywhere.
 		  #If TargetWin32 Then
 		    Declare Function CreateFileW Lib "Kernel32"(name As WString, access As Integer, sharemode As Integer, SecAtrribs As Integer, _
@@ -312,10 +291,11 @@ Protected Module Platform
 
 	#tag Method, Flags = &h1
 		Protected Function CreateProcess(AppName As WString, commandline As Ptr, ProcessAttribs As SECURITY_ATTRIBUTES, ThreadAttribs As SECURITY_ATTRIBUTES, inheritHandles As Boolean, flags As Integer, environ As Ptr, currentDir As Ptr, startInfo As STARTUPINFO, ByRef info As PROCESS_INFORMATION) As Boolean
-		  Declare Function CreateProcessW Lib "Kernel32" (AppName As WString, commandline As Ptr, ProcessAttribs As SECURITY_ATTRIBUTES, ThreadAttribs As SECURITY_ATTRIBUTES, _
-		  inheritHandles As Boolean, flags As Integer, environ As Ptr, currentDir As Ptr, startInfo As STARTUPINFO, ByRef info As PROCESS_INFORMATION) As Boolean
-		  Return CreateProcessW(AppName, commandline, ProcessAttribs, ThreadAttribs, inheritHandles, flags, environ, currentDir, startInfo, info)
-		  
+		  #If TargetWin32 Then
+		    Declare Function CreateProcessW Lib "Kernel32" (AppName As WString, commandline As Ptr, ProcessAttribs As SECURITY_ATTRIBUTES, ThreadAttribs As SECURITY_ATTRIBUTES, _
+		    inheritHandles As Boolean, flags As Integer, environ As Ptr, currentDir As Ptr, startInfo As STARTUPINFO, ByRef info As PROCESS_INFORMATION) As Boolean
+		    Return CreateProcessW(AppName, commandline, ProcessAttribs, ThreadAttribs, inheritHandles, flags, environ, currentDir, startInfo, info)
+		  #endif
 		End Function
 	#tag EndMethod
 
@@ -559,12 +539,8 @@ Protected Module Platform
 		      Declare Function QueryDosDeviceW Lib "Kernel32" (devicePath As WString, drivePath As Ptr, drivePathSize As Integer) As Integer
 		      Dim pHandle As Integer
 		      Dim realsize As Integer
+		      pHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, processID)
 		      
-		      If Platform.IsOlderThan(Platform.WinVista) Then
-		        pHandle = OpenProcess(PROCESS_QUERY_INFORMATION, 0, processID)
-		      Else
-		        pHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, processID)
-		      End If
 		      Dim path As New MemoryBlock(255)
 		      If System.IsFunctionAvailable("GetProcessImageFileNameW", "Kernel32") Then
 		        Soft Declare Function GetProcessImageFileNameW Lib "Kernel32" (pHandle As Integer, path As Ptr, pathsize As Integer) As Integer
@@ -607,21 +583,30 @@ Protected Module Platform
 
 	#tag Method, Flags = &h1
 		Protected Function FindFileOnPath(fileName As String, searchDir As FolderItem = Nil) As FolderItem
-		  Declare Function PathResolve Lib "Shell32" (path As Ptr, startDir As Ptr, flags As Integer) As Boolean
-		  Const PRF_VERIFYEXISTS = &h0001
-		  Const PRF_TRYPROGRAMEXTENSIONS = &h0002
-		  Const PRF_FIRSTDIRDEF  = &h0004
-		  Const PRF_DONTFINDLNK  = &h0008      // if PRF_TRYPROGRAMEXTENSIONS is specified
-		  Const PRF_REQUIREABSOLUTE = &h0010
+		  //Given a filename, will attempt to locate the named file on the system path,
+		  //looking first in the optional searchDir directory
 		  
-		  Dim mb As New MemoryBlock(255)
-		  Dim bm As MemoryBlock
-		  If searchDir <> Nil Then bm = searchDir.AbsolutePath
-		  
-		  Dim flags As Integer = PRF_REQUIREABSOLUTE Or PRF_VERIFYEXISTS
-		  If PathResolve(mb, Nil, flags) Then
-		    Return GetFolderItem(mb.WString(0) + "\" + fileName)
-		  End If
+		  #If TargetWin32 Then
+		    Declare Function PathResolve Lib "Shell32" (path As Ptr, startDir As Ptr, flags As Integer) As Boolean
+		    Const PRF_VERIFYEXISTS = &h0001
+		    Const PRF_TRYPROGRAMEXTENSIONS = &h0002
+		    Const PRF_FIRSTDIRDEF  = &h0004
+		    Const PRF_DONTFINDLNK  = &h0008      // if PRF_TRYPROGRAMEXTENSIONS is specified
+		    Const PRF_REQUIREABSOLUTE = &h0010
+		    
+		    Dim mb As New MemoryBlock(255)
+		    Dim bm As MemoryBlock
+		    Dim flags As Integer = PRF_REQUIREABSOLUTE Or PRF_VERIFYEXISTS
+		    
+		    If searchDir <> Nil Then
+		      bm = searchDir.AbsolutePath
+		      flags = flags Or PRF_FIRSTDIRDEF
+		    End If
+		    
+		    If PathResolve(mb, Nil, flags) Then
+		      Return GetFolderItem(mb.WString(0) + "\" + fileName)
+		    End If
+		  #endif
 		End Function
 	#tag EndMethod
 
@@ -647,39 +632,13 @@ Protected Module Platform
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Function GetMetric(metric As Integer) As Integer
+	#tag Method, Flags = &h1
+		Protected Function GetMetric(metric As Integer) As Integer
 		  //Queries sundry system metrics. Available metrics are listed here: http://msdn.microsoft.com/en-us/library/windows/desktop/ms724385%28v=vs.85%29.aspx
 		  
 		  #If TargetWin32 Then
 		    Declare Function GetSystemMetrics Lib "User32"  (nIndex As Integer) As integer
 		    Return GetSystemMetrics(metric)
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function GetPartialScreenShot(left As Integer, right As Integer, top As Integer, bottom As Integer) As Picture
-		  //Returns a Picture of the defined rectangle from current desktop.
-		  //Rectangle coordinates are relative to the upper left corner of the user's leftmost screen, in pixels
-		  
-		  #If TargetWin32 Then
-		    Declare Function GetDesktopWindow Lib "User32" () As Integer
-		    Declare Function GetDC Lib "User32" (HWND As Integer) As Integer
-		    Declare Function BitBlt Lib "GDI32" (DCdest As Integer, xDest As Integer, yDest As Integer, nWidth As Integer, nHeight As Integer, _
-		    DCdource As Integer, xSource As Integer, ySource As Integer, rasterOp As Integer) As Boolean
-		    Declare Function ReleaseDC Lib "User32" (HWND As Integer, DC As Integer) As Integer
-		    
-		    Dim screenWidth, screenHeight As Integer
-		    screenHeight = bottom - top
-		    screenWidth = right - left
-		    Dim HWND As Integer = GetDesktopWindow()
-		    Dim screenCap As New Picture(screenWidth, screenHeight, 24)
-		    Dim deskHDC As Integer = GetDC(HWND)
-		    Call BitBlt(screenCap.Graphics.Handle(Graphics.HandleTypeHDC), 0, 0, ScreenWidth, ScreenHeight, DeskHDC, left, top, SRCCOPY Or CAPTUREBLT)
-		    Call ReleaseDC(HWND, deskHDC)
-		    
-		    Return screenCap
 		  #endif
 		End Function
 	#tag EndMethod
@@ -884,14 +843,6 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function LeftHandedMouse() As Boolean
-		  //Returns True if the user has configured the Right mouse button as the primary
-		  //rather than secondary mouse button (i.e. a left-handed user)
-		  Return GetMetric(23) <> 0
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Sub LogOff()
 		  //Logs off the current user
 		  
@@ -972,33 +923,28 @@ Protected Module Platform
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Function MouseButtonCount() As Integer
-		  //Returns the number of mouse buttons
-		  Return GetMetric(43)
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h21
 		Private Function NTPowerInfoHelper(InfoLevel As Integer) As PROCESSOR_POWER_INFORMATION()
-		  Declare Function CallNtPowerInformation Lib "PowrProf" (infoLevel As Integer, InputBuffer As Ptr, _
-		  buffSize As Integer, OutputBuffer As Ptr, outbufferSize As Integer) As Integer
-		  
-		  Dim info As New MemoryBlock(24 * NumberOfProcessors)
-		  Call CallNtPowerInformation(InfoLevel, Nil, 0, info, info.Size)
-		  
-		  Dim ret() As PROCESSOR_POWER_INFORMATION
-		  For i As Integer = 0 To info.Size - 24 Step 24
-		    Dim ppi As PROCESSOR_POWER_INFORMATION
-		    ppi.ProcessorNumber = info.UInt32Value(i)
-		    ppi.MaxMhz = info.UInt32Value(i + 4)
-		    ppi.CurrentMhz = info.UInt32Value(i + 8)
-		    ppi.MhzLimit = info.UInt32Value(i + 12)
-		    ppi.MaxIdleState = info.UInt32Value(i + 16)
-		    ppi.CurrentIdleState = info.UInt32Value(i + 20)
-		    ret.Append(ppi)
-		  Next
-		  Return ret
+		  #If TargetWin32 Then
+		    Declare Function CallNtPowerInformation Lib "PowrProf" (infoLevel As Integer, InputBuffer As Ptr, _
+		    buffSize As Integer, OutputBuffer As Ptr, outbufferSize As Integer) As Integer
+		    
+		    Dim info As New MemoryBlock(24 * NumberOfProcessors)
+		    Call CallNtPowerInformation(InfoLevel, Nil, 0, info, info.Size)
+		    
+		    Dim ret() As PROCESSOR_POWER_INFORMATION
+		    For i As Integer = 0 To info.Size - 24 Step 24
+		      Dim ppi As PROCESSOR_POWER_INFORMATION
+		      ppi.ProcessorNumber = info.UInt32Value(i)
+		      ppi.MaxMhz = info.UInt32Value(i + 4)
+		      ppi.CurrentMhz = info.UInt32Value(i + 8)
+		      ppi.MhzLimit = info.UInt32Value(i + 12)
+		      ppi.MaxIdleState = info.UInt32Value(i + 16)
+		      ppi.CurrentIdleState = info.UInt32Value(i + 20)
+		      ret.Append(ppi)
+		    Next
+		    Return ret
+		  #endif
 		End Function
 	#tag EndMethod
 
@@ -1111,61 +1057,9 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function ScreenCount() As Integer
-		  //Returns the number of screens/monitors used on the current desktop.
-		  Return GetMetric(80)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ScreenHeight() As Integer
-		  //Returns the height of the main screen, in pixels
-		  Return GetMetric(1)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ScreenVirtualHeight() As Integer
-		  //Returns the height of the bounding rectangle around all monitors. On single-screen systems this is identical to ScreenHeight
-		  Return GetMetric(79)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ScreenVirtualWidth() As Integer
-		  //Returns the width of the bounding rectangle around all monitors. On single-screen systems this is identical to ScreenWidth
-		  Return GetMetric(78)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ScreenWidth() As Integer
-		  //Returns the width of the main screen, in pixels
-		  Return GetMetric(0)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function ShowSounds() As Boolean
-		  //True if the user requires an application to present information visually in situations where it would otherwise
-		  //present the information only in audible form. i.e. for deaf users.
-		  Return GetMetric(70) <> 0
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Sub ShutDown()
 		  //Shuts the computer down.
 		  Call ExitWindows(EWX_SHUTDOWN)
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub SystemParametersInfo(action as UInt32, param1 as UInt32, param2 as Ptr, change as UInt32)
-		  #If TargetWin32 Then
-		    Declare Function SystemParametersInfoW Lib "User32" (action as UInt32, param1 as UInt32, param2 as Ptr, change as UInt32) As Boolean
-		    Call SystemParametersInfoW(action, param1, param2, Change )
-		  #endif
 		End Sub
 	#tag EndMethod
 
@@ -1509,28 +1403,6 @@ Protected Module Platform
 			End Get
 		#tag EndGetter
 		Protected CurrentThreadID As Integer
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h1
-		#tag Getter
-			Get
-			  Dim mb as new MemoryBlock( 1024 )
-			  Const SPI_GETDESKWALLPAPER = &h73
-			  SystemParametersInfo(SPI_GETDESKWALLPAPER, mb.Size, mb, 0)
-			  Return GetFolderItem(mb.WString(0))
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  If Value = Nil Then Return
-			  Const SPI_SETDESKWALLPAPER = &h14
-			  Dim mb As New MemoryBlock(2048)
-			  Dim wallpaper As String = Value.AbsolutePath
-			  mb.WString(0) = wallpaper
-			  SystemParametersInfo(SPI_SETDESKWALLPAPER, mb.Size, mb, 0)
-			End Set
-		#tag EndSetter
-		Protected CurrentWallpaper As FolderItem
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h1

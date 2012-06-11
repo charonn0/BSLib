@@ -506,10 +506,8 @@ Protected Module File_Ops
 		  #Else
 		    #pragma Unused source
 		    #pragma Unused destination
-		    #pragma Warning "The GZip Plugin Does Not Support ConsoleApplications"
-		    #If DebugBuild Then
-		      Break //The GZip Plugin Does Not Support ConsoleApplications
-		    #EndIf
+		    #pragma Error "The GZip Plugin Does Not Support Console Applications"
+		    
 		  #EndIf
 		End Function
 	#tag EndMethod
@@ -579,10 +577,8 @@ Protected Module File_Ops
 		  #Else
 		    #pragma Unused source
 		    #pragma Unused destination
-		    #pragma Warning "The GZip Plugin Does Not Support ConsoleApplications"
-		    #If DebugBuild Then
-		      Break //The GZip Plugin Does Not Support ConsoleApplications
-		    #EndIf
+		    #pragma Error "The GZip Plugin Does Not Support Console Applications"
+		    
 		  #EndIf
 		End Function
 	#tag EndMethod
@@ -839,6 +835,24 @@ Protected Module File_Ops
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function OpenWithPermissions(File As FolderItem, Perms As PermissionsMask) As TextOutputStream
+		  Dim handle As Integer = _
+		  Platform.CreateFile( _
+		  File.AbsolutePath, _
+		  Perms.Access, _
+		  Perms.ShareMode, _
+		  Perms.SecurityAttributes, _
+		  Perms.CreateDisposition, _
+		  Perms.Flags, _
+		  Perms.Template)
+		  If handle > 0 Then
+		    Return New TextOutputStream(handle, 1)
+		  End If
+		  
+		End Function
+	#tag EndMethod
+
 	#tag DelegateDeclaration, Flags = &h0
 		Delegate Sub ProgressCallback(PercentDone As Double)
 	#tag EndDelegateDeclaration
@@ -908,9 +922,6 @@ Protected Module File_Ops
 		  
 		  #If TargetWin32
 		    Declare Function MoveFileExW Lib "Kernel32" (sourceFile As WString, destinationFile As WString, flags As Integer) As Boolean
-		    
-		    Const MOVEFILE_DELAY_UNTIL_REBOOT = 4
-		    Const MOVEFILE_REPLACE_EXISTING = 1
 		    
 		    Return MoveFileExW(source.AbsolutePath, destination.AbsolutePath, MOVEFILE_DELAY_UNTIL_REBOOT Or MOVEFILE_REPLACE_EXISTING)
 		  #endif
@@ -1167,6 +1178,31 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function Truncate(Extends File As FolderItem) As Boolean
+		  //Truncates the file to zero bytes. Returns False on error (e.g. the file was in use, not found, etc.)
+		  
+		  Dim handle As Integer = Platform.CreateFile(File.Name, GENERIC_WRITE, 0, 0, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
+		  If handle > 0 Then
+		    Call Platform.CloseHandle(handle)
+		    Return True
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function TruncateAndOpen(Extends File As FolderItem) As TextOutputStream
+		  //Truncates the file to zero bytes. Returns a TextOutputStream to the file.
+		  
+		  Dim handle As Integer = Platform.CreateFile(File.Name, GENERIC_WRITE, 0, 0, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
+		  If handle > 0 Then
+		    Call Platform.CloseHandle(handle)
+		    Return TextOutputStream.Create(File)
+		    
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function UnlockFile(fHandle As Integer) As Boolean
 		  //See the LockFile function
 		  #If TargetWin32 Then
@@ -1303,6 +1339,16 @@ Protected Module File_Ops
 		    End If
 		  End If
 	#tag EndNote
+
+
+	#tag Structure, Name = PermissionsMask, Flags = &h0
+		Access As Integer
+		  ShareMode As Integer
+		  SecurityAttributes As Integer
+		  CreateDisposition As Integer
+		  Flags As Integer
+		Template As Integer
+	#tag EndStructure
 
 
 	#tag ViewBehavior

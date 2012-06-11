@@ -481,6 +481,25 @@ End
 #tag EndWindow
 
 #tag WindowCode
+	#tag Event
+		Sub Open()
+		  'Dim f As FolderItem = GetOpenFolderItem("")
+		  ''Dim perms As PermissionsMask
+		  ''Perms.Access = GENERIC_READ Or GENERIC_WRITE
+		  ''Perms.CreateDisposition = OPEN_ALWAYS
+		  ''Perms.Flags = FILE_ATTRIBUTE_NORMAL
+		  ''Dim tos As TextOutputStream = OpenWithPermissions(f, perms)
+		  ''Break
+		  'Call f.Truncate
+		  'f.Delete
+		  
+		  'Dim d() As Dictionary = Platform.IPAdaptors()
+		  'Dim stats As MIB_IPSTATS = Platform.IPStats
+		  'Break
+		End Sub
+	#tag EndEvent
+
+
 	#tag Property, Flags = &h1
 		Protected screncap As Picture
 	#tag EndProperty
@@ -498,7 +517,7 @@ End
 #tag Events PushButton2
 	#tag Event
 		Sub Action()
-		  Beep(Slider1.Value, Slider2.Value)
+		  Win32UI.AudioFeedback.Beep(Slider1.Value, Slider2.Value)
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -533,12 +552,11 @@ End
 #tag Events Timer1
 	#tag Event
 		Sub Action()
-		  Static d As Date
-		  If d = Nil Then
-		    d = New Date
-		    d.TotalSeconds = d.TotalSeconds \ 2
-		  End If
-		  ETATest.Text = "Application started: " + ETA(d)
+		  Dim d As New Date
+		  Dim rand As New Random
+		  d.TotalSeconds = d.TotalSeconds + Rand.InRange(345345, 3453453453453)
+		  
+		  ETATest.Text = "Application started: " + ETA(d) + " ago"
 		  
 		  Label5.Text = FormatHertz(Platform.CPUSpeed, 4)
 		End Sub
@@ -557,13 +575,17 @@ End
 		  Dim c As Color
 		  Call SelectColor(c, "Pick color")
 		  MsgBox(ColorToHex(c))
+		  
+		  Dim p As Picture = CaptureControl(Me)
+		  Break
+		  #pragma Unused p
 		End Sub
 	#tag EndEvent
 #tag EndEvents
 #tag Events PushButton4
 	#tag Event
 		Sub Action()
-		  screncap = Platform.CaptureScreen
+		  screncap = CaptureScreen
 		  Canvas3.Refresh(False)
 		  
 		End Sub

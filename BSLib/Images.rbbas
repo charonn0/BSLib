@@ -227,7 +227,7 @@ Protected Module Images
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function TextToPicture(Text As String, Font As String = "System", FontSize As Integer = 11, Bold As Boolean = False, Underline As Boolean = False, Italic As Boolean = False, forecolor As Color = &c000000, BackColor As Color = &cFFFFFF) As Picture
+		Function TextToPicture(Text As String, Font As String = "System", FontSize As Single = 11.0, Bold As Boolean = False, Underline As Boolean = False, Italic As Boolean = False, forecolor As Color = &c000000, BackColor As Color = &cFFFFFF) As Picture
 		  //Given any String, returns a picture of that string. Line breaks are honored.
 		  //The optional parameters ought to be self-explanitory.
 		  
@@ -260,7 +260,7 @@ Protected Module Images
 		    p.Graphics.Bold = Bold
 		    p.Graphics.Italic = Italic
 		    p.Graphics.Underline = Underline
-		    p.Graphics.DrawString(nm, 1, ((p.Height/2) + (strHeight/4)))
+		    p.Graphics.DrawString(nm, 1, ((p.Height\2) + (strHeight\4)))
 		    lines.Append(p)
 		    requiredHeight = requiredHeight + p.Height
 		    If p.Width > requiredWidth Then requiredWidth = p.Width

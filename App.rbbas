@@ -3,7 +3,12 @@ Protected Class App
 Inherits Application
 	#tag Event
 		Sub Open()
-		  Call MsgBox("BSLib", 64, "BSLib")
+		  'Call MsgBox("BSLib", 64, "BSLib")
+		  If Platform.UAC_IsEnabled Then
+		    MsgBox("UAC is on")
+		  Else
+		    MsgBox("UAC is not on")
+		  End If
 		End Sub
 	#tag EndEvent
 
