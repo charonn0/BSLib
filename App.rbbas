@@ -3,12 +3,9 @@ Protected Class App
 Inherits Application
 	#tag Event
 		Sub Open()
-		  'Call MsgBox("BSLib", 64, "BSLib")
-		  If Platform.UAC_IsEnabled Then
-		    MsgBox("UAC is on")
-		  Else
-		    MsgBox("UAC is not on")
-		  End If
+		  Call MsgBox("Hello :-)", 64, "BSLib")
+		  Dim t() As FolderItem = GetFolderItem("C:\Users\Andrew").GetTree
+		  Break
 		End Sub
 	#tag EndEvent
 

@@ -292,9 +292,9 @@ Protected Module File_Ops
 
 	#tag Method, Flags = &h0
 		Function Extension(Extends f As FolderItem) As String
-		  Dim fn As String = f.Name
-		  Dim ext As String = NthField(fn, ".", CountFields(fn, "."))
-		  Return ext
+		  //Returns the file Extension, if any, without the leading full stop "."
+		  If InStr(f.Name, ".") <= 0 Then Return ""
+		  Return NthField(f.Name, ".", CountFields(f.Name, "."))
 		End Function
 	#tag EndMethod
 
@@ -337,8 +337,8 @@ Protected Module File_Ops
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function FindNextStream(sHandle As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA) As Boolean
+	#tag Method, Flags = &h1
+		Protected Function FindNextStream(sHandle As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA) As Boolean
 		  If System.IsFunctionAvailable("FindNextStreamW", "Kernel32") Then
 		    Soft Declare Function FindNextStreamW Lib "Kernel32" (sHandle As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA) As Boolean
 		    Return FindNextStreamW(sHandle, buffer)
@@ -350,9 +350,6 @@ Protected Module File_Ops
 		Function getChildren(dir As FolderItem) As FolderItem()
 		  //This function recursively builds a FolderItem array consisting of all files beneath a given Directory.
 		  //It does not return subfolders, only their contents
-		  //Don't use this function for extremely deep folder hierarchies or hierarchies known to have circular link references or you risk a stack overflow.
-		  //This function should be cross-platform safe.
-		  
 		  
 		  Dim files(), dirs() As FolderItem
 		  dirs.Append(dir)
