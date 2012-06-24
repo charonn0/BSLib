@@ -3,8 +3,6 @@ Protected Module PowerState
 	#tag Method, Flags = &h21
 		Private Function BatteryState() As SYSTEM_BATTERY_STATE()
 		  #If TargetWin32 Then
-		    Declare Function CallNtPowerInformation Lib "PowrProf" (infoLevel As Integer, InputBuffer As Ptr, _
-		    buffSize As Integer, OutputBuffer As Ptr, outbufferSize As Integer) As Integer
 		    
 		    Const Battery = 5
 		    
@@ -34,7 +32,6 @@ Protected Module PowerState
 
 	#tag Method, Flags = &h1
 		Protected Function IsDevicePoweredUp(devHandle As Integer) As Boolean
-		  Declare Function GetDevicePowerState Lib "Kernel32" (dHandle As Integer, ByRef IsOn As Boolean) As Boolean
 		  Dim ret As Boolean
 		  Call GetDevicePowerState(devHandle, ret)
 		  Return ret
@@ -45,18 +42,16 @@ Protected Module PowerState
 	#tag Method, Flags = &h1
 		Protected Function IsFileOnActiveDrive(target As FolderItem) As Boolean
 		  #If TargetWin32 Then
-		    Declare Function GetVolumeNameForVolumeMountPointW Lib "Kernel32" (mountPoint As WString, volumeName As Ptr, bufferSize As Integer) As Boolean
-		    
 		    Dim dhandle As Integer
 		    Dim drvRoot As String = target.AbsolutePath
-		    dhandle = Platform.CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		    dhandle = CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		    If dhandle = -1 Then
-		      dhandle = Platform.LastErrorCode
+		      dhandle = GetLastError
 		      Return True
 		    End If
 		    
 		    Dim ret As Boolean = IsDevicePoweredUp(dhandle)
-		    Call Platform.CloseHandle(dhandle)
+		    Call CloseHandle(dhandle)
 		    Return ret
 		  #endif
 		End Function

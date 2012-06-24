@@ -4,12 +4,9 @@ Inherits RuntimeException
 	#tag Method, Flags = &h1000
 		Sub Constructor(Win32ErrorNumber As Integer)
 		  #If TargetWin32 Then
-		    Declare Function FormatMessageW Lib "Kernel32" (dwFlags As Integer, lpSource As Integer, dwMessageId As Integer, dwLanguageId As Integer, lpBuffer As ptr, _
-		    nSize As Integer, Arguments As Integer) As Integer
-		    
 		    Me.ErrorNumber = Win32ErrorNumber
 		    Dim buffer As New MemoryBlock(2048)
-		    If FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, 0, Me.ErrorNumber, 0 , Buffer, Buffer.Size, 0) <> 0 Then
+		    If FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, Me.ErrorNumber, 0 , Buffer, Buffer.Size, 0) <> 0 Then
 		      Me.Message = Buffer.WString(0)
 		    Else
 		      Me.Message = "An unknown error was reported by Win32. Error number: " + Str(Me.ErrorNumber)

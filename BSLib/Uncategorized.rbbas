@@ -345,17 +345,15 @@ Protected Module Uncategorized
 		  //the file/directory it refers to exists.
 		  
 		  #If TargetWin32 Then
-		    Declare Function PathCanonicalizeW Lib "Shlwapi" (OutBuffer As Ptr, InBuffer As Ptr) As Boolean
-		    Declare Function PathAppendW Lib "Shlwapi" (firstHalf As Ptr, secondHalf As Ptr) As Boolean
 		    If CurrentDir = Nil Then CurrentDir = App.ExecutableFile.Parent
 		    
 		    Dim outBuff As New MemoryBlock(1024)
 		    outBuff.WString(0) = CurrentDir.AbsolutePath
 		    Dim inBuff As New MemoryBlock(1024)
 		    inBuff.WString(0) = RelativePath
-		    If PathAppendW(outBuff, inBuff) Then
+		    If PathAppend(outBuff, inBuff) Then
 		      inBuff.WString(0) = outBuff.WString(0)
-		      If PathCanonicalizeW(outBuff, inBuff) Then
+		      If PathCanonicalize(outBuff, inBuff) Then
 		        Return outBuff.WString(0)
 		      End If
 		    End If
@@ -417,14 +415,12 @@ Protected Module Uncategorized
 		  '                     s(1) = --foo
 		  '                     s(2) = "C:\My Dir\"
 		  
-		  
 		  #If TargetWin32 Then
-		    Declare Function PathGetArgsW Lib "Shlwapi" (path As WString) As WString
 		    Dim ret() As String
 		    Dim cmdLine As String = Input
 		    While cmdLine.Len > 0
 		      Dim tmp As String
-		      Dim args As String = PathGetArgsW(cmdLine)
+		      Dim args As String = PathGetArgs(cmdLine)
 		      If Len(args) = 0 Then
 		        tmp = ReplaceAll(cmdLine.Trim, Chr(34), "")
 		        ret.Append(tmp)
@@ -463,26 +459,14 @@ Protected Module Uncategorized
 		    //see: http://msdn.microsoft.com/en-us/library/aa379205(VS.85).aspx
 		    //and: http://msdn.microsoft.com/en-us/library/aa379352(VS.85).aspx
 		    
-		    Const RPC_S_UUID_LOCAL_ONLY = 1824
-		    Const RPC_S_UUID_NO_ADDRESS = 1739
-		    
-		    Declare Function RpcStringFree Lib "Rpcrt4" Alias "RpcStringFreeA" (Addr As Ptr) As Integer
-		    Declare Function UuidCreate Lib "Rpcrt4" (Uuid As Ptr) As Integer
-		    Declare Function UuidToString Lib "Rpcrt4" Alias "UuidToStringA" (Uuid As Ptr, ByRef p As ptr) As Integer
-		    
 		    Static mb As New MemoryBlock(16)
-		    Call UuidCreate( mb ) //can compare to RPC_S_UUID_LOCAL_ONLY and RPC_S_UUID_NO_ADDRESS for more info
-		    
+		    Call UuidCreate(mb) //can compare to RPC_S_UUID_LOCAL_ONLY and RPC_S_UUID_NO_ADDRESS for more info
 		    Static ptrUUID As New MemoryBlock(16)
-		    
 		    Dim ppAddr As ptr
 		    Call UuidToString(mb, ppAddr)
-		    
 		    Dim mb2 As MemoryBlock = ppAddr
 		    strUUID = mb2.CString(0)
-		    
 		    Call RpcStringFree(ptrUUID)
-		    
 		    
 		  #ElseIf TargetLinux
 		    // see http://linux.die.net/man/3/uuid_generate

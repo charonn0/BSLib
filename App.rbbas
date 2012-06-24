@@ -4,8 +4,6 @@ Inherits Application
 	#tag Event
 		Sub Open()
 		  Call MsgBox("Hello :-)", 64, "BSLib")
-		  Dim t() As FolderItem = GetFolderItem("C:\Users\Andrew").GetTree
-		  Break
 		End Sub
 	#tag EndEvent
 

@@ -6,8 +6,7 @@ Protected Module Platform
 		  //Pass the Window.Handle for the parent window, if desired.
 		  
 		  #If TargetWin32 Then
-		    Declare Function ShellAboutW Lib "Shell32" (HWND As Integer, msgString As WString, otherStuff As WString, hIcon As Integer) As Boolean
-		    Call ShellAboutW(parentWindow, AboutTitle, AboutOther, 0)
+		    Call ShellAbout(parentWindow, AboutTitle, AboutOther, 0)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -18,15 +17,11 @@ Protected Module Platform
 		  //See the SE_* Constants in Win32Constants for privilege names.
 		  //Returns 0 on success, or a Win32 error number on failure.
 		  #If TargetWin32 Then
-		    Declare Function OpenProcessToken Lib "AdvApi32" (handle As Integer, access As Integer, ByRef tHandle As Integer) As Boolean
-		    Declare Function LookupPrivilegeValueW Lib "AdvApi32" (sysName As WString, privName As WString, Luid As Ptr) As Boolean
-		    Declare Function AdjustTokenPrivileges Lib "AdvApi32" (tHandle As Integer, disableAllPrivs As Boolean, newState As Ptr, buffLength As Integer, prevPrivs As Ptr, ByRef retLen As Integer) As Boolean
-		    
-		    Dim thisProc As Integer = CurrentProcess()
+		    Dim thisProc As Integer = GetCurrentProcess()
 		    Dim tHandle As Integer
 		    If OpenProcessToken(thisProc, TOKEN_ADJUST_PRIVILEGES Or TOKEN_QUERY, tHandle) Then
 		      Dim luid As New MemoryBlock(8)
-		      If LookupPrivilegeValueW(Nil, PrivilegeName, luid) Then
+		      If LookupPrivilegeValue(Nil, PrivilegeName, luid) Then
 		        Dim newState As New MemoryBlock(16)
 		        newState.UInt32Value(0) = 1
 		        newState.UInt32Value(4) = luid.UInt32Value(0)
@@ -37,13 +32,13 @@ Protected Module Platform
 		        If AdjustTokenPrivileges(tHandle, False, newState, newState.Size, prevPrivs, retLen) Then
 		          Return 0
 		        Else
-		          Return LastErrorCode
+		          Return GetLastError()
 		        End If
 		      Else
-		        Return LastErrorCode
+		        Return GetLastError()
 		      End If
 		    Else
-		      Return LastErrorCode
+		      Return GetLastError()
 		    End If
 		  #endif
 		End Function
@@ -89,7 +84,7 @@ Protected Module Platform
 		Protected Function BIOSDate() As String
 		  //Returns the date string of the BIOS as reported in the Windows registry.
 		  #If TargetWin32 Then
-		    If Platform.IsAtLeast(Platform.WinVista) Then
+		    If Platform.KernelVersion >= 6.0 Then  //Vista and up
 		      Dim reg As New RegistryItem("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\", False)
 		      Return reg.Child("BIOS").Value("BIOSReleaseDate")
 		    Else
@@ -106,7 +101,7 @@ Protected Module Platform
 		Protected Function BIOSVendor() As String
 		  //Returns the Vendor string of the BIOS as reported in the Windows registry.
 		  #If TargetWin32 Then
-		    If Platform.IsAtLeast(Platform.WinVista) Then
+		    If Platform.KernelVersion >= 6.0 Then
 		      Dim reg As New RegistryItem("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\", False)
 		      Return reg.Child("BIOS").Value("BIOSVendor")
 		    Else
@@ -126,7 +121,7 @@ Protected Module Platform
 		  //Returns the Version string of the BIOS as reported in the Windows registry.
 		  
 		  #If TargetWin32 Then
-		    If Platform.IsAtLeast(Platform.WinVista) Then
+		    If Platform.KernelVersion >= 6.0 Then
 		      Dim reg As New RegistryItem("HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\", False)
 		      Return reg.Child("BIOS").Value("BIOSVersion")
 		    Else
@@ -147,45 +142,31 @@ Protected Module Platform
 		  //the drive is already closed then this does nothing
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetVolumeNameForVolumeMountPointW Lib "Kernel32" (mountPoint As WString, volumeName As Ptr, bufferSize As Integer) As Boolean
-		    
 		    Dim dhandle As Integer
 		    Dim mb As New MemoryBlock(55)
 		    Dim nilBuffer As New MemoryBlock(0)
 		    
-		    If GetVolumeNameForVolumeMountPointW(f.AbsolutePath, mb, mb.Size) Then
+		    If GetVolumeNameForVolumeMountPoint(f.AbsolutePath, mb, mb.Size) Then
 		      Dim drvRoot As String = "\\.\" + mb.StringValue(0, 55)
-		      dhandle = Platform.CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		      dhandle = CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		    Else
 		      Return
 		    End If
 		    
 		    Dim IOCTL_STORAGE_LOAD_MEDIA As Integer = Platform.CTL_CODE(IOCTL_STORAGE_BASE, &h0203, METHOD_BUFFERED, FILE_READ_ACCESS)
 		    Call DeviceIoControl(dhandle, IOCTL_STORAGE_LOAD_MEDIA, nilBuffer, 0, nilBuffer, 0, nilBuffer, 0)
-		    Call Platform.CloseHandle(dhandle)
+		    Call CloseHandle(dhandle)
 		  #endif
 		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function CloseHandle(Handle As Integer) As Boolean
-		  #If TargetWin32 Then
-		    Declare Function MyCloseHandle Lib "Kernel32" Alias "CloseHandle" (HWND As Integer) As Boolean
-		    
-		    Return MyCloseHandle(Handle)
-		  #endif
-		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
 		Protected Function ComputerName() As String
 		  //Returns the system's NetBIOS name.
 		  #If TargetWin32 Then
-		    Declare Function GetComputerNameW Lib "Kernel32" (name As Ptr, ByRef size As Integer) As Boolean
-		    
 		    Dim mb As New MemoryBlock(16)
 		    Dim size As Integer = mb.Size
-		    Call GetComputerNameW(mb, size)
+		    Call GetComputerName(mb, size)
 		    Return mb.WString( 0 )
 		  #endif
 		End Function
@@ -204,10 +185,8 @@ Protected Module Platform
 		      //As a result, all RB applications under 64 bit Windows are executed within the Win32 subsystem of Win64 (WoW64)
 		      //WoW64 accomplishes its task by, primarily, lying to the application about its environment. We have to
 		      //specifically ask not to be lied to in these cases. Hence, this function call:
-		      Soft Declare Sub GetNativeSystemInfo Lib "Kernel32" (ByRef info As SYSTEM_INFO)
 		      GetNativeSystemInfo(info)
 		    Else
-		      Soft Declare Sub GetSystemInfo Lib "Kernel32" (ByRef info As SYSTEM_INFO)
 		      GetSystemInfo(info)
 		    End If
 		    
@@ -249,8 +228,6 @@ Protected Module Platform
 		  //Returns a CPUUsagePercents structure representing the system-wide CPU usage percents (user mode, kernel mode, and idle.)
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetSystemTimes Lib "kernel32.dll" (idleTime As Ptr, kernelTime As Ptr, userTime As Ptr) As Boolean
-		    Declare Function FileTimeToSystemTime Lib "kernel32.dll" (fileTime As Ptr, systemTime As Ptr) As Boolean
 		    Dim user, kernel, idle As MemoryBlock
 		    user = New MemoryBlock(8)
 		    kernel = New MemoryBlock(8)
@@ -279,27 +256,6 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CreateFile(name As String, access As Integer, sharemode As Integer, SecAtrribs As Integer, CreateDisp As Integer, flags As Integer, template As Integer) As Integer
-		  //Used everywhere.
-		  #If TargetWin32 Then
-		    Declare Function CreateFileW Lib "Kernel32"(name As WString, access As Integer, sharemode As Integer, SecAtrribs As Integer, _
-		    CreateDisp As Integer, flags As Integer, template As Integer) As Integer
-		    Return CreateFileW(name, access, sharemode, SecAtrribs, CreateDisp, flags, template)
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function CreateProcess(AppName As WString, commandline As Ptr, ProcessAttribs As SECURITY_ATTRIBUTES, ThreadAttribs As SECURITY_ATTRIBUTES, inheritHandles As Boolean, flags As Integer, environ As Ptr, currentDir As Ptr, startInfo As STARTUPINFO, ByRef info As PROCESS_INFORMATION) As Boolean
-		  #If TargetWin32 Then
-		    Declare Function CreateProcessW Lib "Kernel32" (AppName As WString, commandline As Ptr, ProcessAttribs As SECURITY_ATTRIBUTES, ThreadAttribs As SECURITY_ATTRIBUTES, _
-		    inheritHandles As Boolean, flags As Integer, environ As Ptr, currentDir As Ptr, startInfo As STARTUPINFO, ByRef info As PROCESS_INFORMATION) As Boolean
-		    Return CreateProcessW(AppName, commandline, ProcessAttribs, ThreadAttribs, inheritHandles, flags, environ, currentDir, startInfo, info)
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Function CTL_CODE(lngDevFileSys As Integer, lngFunction As Integer, lngMethod As Integer, lngAccess As Integer) As Integer
 		  //This function generates IOCTL control codes used in calls to DeviceIoControl
 		  
@@ -311,46 +267,22 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function CurrentProcess() As Integer
-		  //Returns a handle to the current process.
-		  #If TargetWin32 Then
-		    Declare Function GetCurrentProcess Lib "Kernel32" () As Integer
-		    Return GetCurrentProcess()
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Function CurrentUser() As String
 		  //Returns the username of the account under which the application is running.
 		  //On Error, returns an empty string
 		  //Do not use this function to determine if the user is the Administrator. Use IsAdmin instead.
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetUserNameW Lib "AdvApi32" (buffer As Ptr, ByRef buffSize As Integer) As Boolean
-		    
 		    Dim mb As New MemoryBlock(0)
 		    Dim nmLen As Integer = mb.Size
-		    Call GetUserNameW(mb, nmLen)
+		    Call GetUserName(mb, nmLen)
 		    mb = New MemoryBlock(nmLen * 2)
 		    nmLen = mb.Size
-		    If GetUserNameW(mb, nmLen) Then
+		    If GetUserName(mb, nmLen) Then
 		      Return mb.WString(0)
 		    Else
 		      Return ""
 		    End If
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function DeviceIoControl(hDevice As Integer, dwIoControlCode As Integer, lpInBuffer As Ptr, nInBufferSize As Integer, lpOutBuffer As Ptr, nOutBufferSize As Integer, lpBytesReturned As Ptr, lpOverlapped As Integer) As Integer
-		  //Used for sending control messages to hardware devices, e.g. EjectDrive
-		  #If TargetWin32 Then
-		    Declare Function MyDeviceIoControl Lib "Kernel32" Alias "DeviceIoControl" (hDevice As Integer, dwIoControlCode As Integer, lpInBuffer As Ptr, _
-		    nInBufferSize As Integer, lpOutBuffer As Ptr, nOutBufferSize As Integer, lpBytesReturned As Ptr, lpOverlapped As Integer) As Integer
-		    
-		    Return MyDeviceIOControl(hDevice, dwIoControlCode, lpInBuffer, nInBufferSize, lpOutBuffer, nOutBufferSize, lpBytesReturned, lpOverlapped)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -375,7 +307,7 @@ Protected Module Platform
 		    Dim IO_CODE As Integer = Platform.CTL_CODE(FILE_DEVICE_MASS_STORAGE, &h0500, 0, 0)
 		    
 		    Dim drvRoot As String = "\\.\" + Left(target.AbsolutePath, 2)
-		    Dim drvHWND As Integer = Platform.CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		    Dim drvHWND As Integer = CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		    Dim mb As New MemoryBlock(34)
 		    Dim bRet As New MemoryBlock(4)
 		    
@@ -407,22 +339,20 @@ Protected Module Platform
 		  //Given a FolderItem, this function commands the drive containing the FolderItem to eject. If the drive is not an ejectable drive
 		  //then this does nothing
 		  #If TargetWin32 Then
-		    Declare Function GetVolumeNameForVolumeMountPointW Lib "Kernel32" (mountPoint As WString, volumeName As Ptr, bufferSize As Integer) As Boolean
-		    
 		    Dim dhandle As Integer
 		    Dim mb As New MemoryBlock(55)
 		    Dim nilBuffer As New MemoryBlock(0)
 		    
-		    If GetVolumeNameForVolumeMountPointW(f.AbsolutePath, mb, mb.Size) Then
+		    If GetVolumeNameForVolumeMountPoint(f.AbsolutePath, mb, mb.Size) Then
 		      Dim drvRoot As String = "\\.\" + mb.StringValue(0, 55)
-		      dhandle = Platform.CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		      dhandle = CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		    Else
 		      Return
 		    End If
 		    
 		    Dim IOCTL_STORAGE_EJECT_MEDIA As Integer = Platform.CTL_CODE(IOCTL_STORAGE_BASE, &h0202, METHOD_BUFFERED, FILE_READ_ACCESS)
 		    Call DeviceIoControl(dhandle, IOCTL_STORAGE_EJECT_MEDIA, nilBuffer, 0, nilBuffer, 0, nilBuffer, 0)
-		    Call Platform.CloseHandle(dhandle)
+		    Call CloseHandle(dhandle)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -444,11 +374,8 @@ Protected Module Platform
 		  //To get the REAL last error code, you should call LastErrorCode *immediately* to avoid having another function change the last error.
 		  
 		  #If TargetWin32 Then
-		    Declare Function FormatMessageW Lib "Kernel32" (dwFlags As Integer, lpSource As Integer, dwMessageId As Integer, dwLanguageId As Integer, lpBuffer As ptr, _
-		    nSize As Integer, Arguments As Integer) As Integer
-		    
 		    Dim buffer As New MemoryBlock(2048)
-		    If FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, 0, err, 0 , Buffer, Buffer.Size, 0) <> 0 Then
+		    If FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, err, 0 , Buffer, Buffer.Size, 0) <> 0 Then
 		      Return Buffer.WString(0)
 		    Else
 		      Return str(err)
@@ -462,11 +389,10 @@ Protected Module Platform
 		  //Shuts down, reboots, or logs off the computer. Returns 0 on success, or a Win32 error code on error.
 		  
 		  #If TargetWin32 Then
-		    Declare Function ExitWindowsEx Lib "User32" (flags As Integer, reason As Integer) As Boolean
 		    If EnablePrivilege("SeShutdownPrivilege") Then
 		      Call ExitWindowsEx(mode, 0)
 		    End If
-		    Return LastErrorCode
+		    Return GetLastError()
 		  #endif
 		End Function
 	#tag EndMethod
@@ -477,26 +403,13 @@ Protected Module Platform
 		  //For example, ExpandEnvironmentVariable("%systemroot%") might expand to "C:\Windows"
 		  
 		  #If TargetWin32 Then
-		    Declare Function ExpandEnvironmentStringsW Lib "Kernel32" (EnvString As WString, parsedString As Ptr, buffSize As Integer) As Integer
 		    Dim mb As New MemoryBlock(0)
-		    mb = New MemoryBlock(2 * ExpandEnvironmentStringsW(EnvVar, mb, mb.Size))
-		    If ExpandEnvironmentStringsW(EnvVar, mb, mb.Size) > 0 Then
+		    mb = New MemoryBlock(2 * ExpandEnvironmentStrings(EnvVar, mb, mb.Size))
+		    If ExpandEnvironmentStrings(EnvVar, mb, mb.Size) > 0 Then
 		      Return mb.WString(0)
 		    End If
 		  #endif
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Sub FatalExit(ErrorMessage As String)
-		  //Displays the Windows default fatal error message box, with the passed ErrorMessage, then exits the application.
-		  //Vista and newer only.
-		  
-		  If System.IsFunctionAvailable("FatalAppExitW", "Kernel32") Then
-		    Soft Declare Sub FatalAppExitW Lib "Kernel32" (Action As Integer, Message As WString)
-		    FatalAppExitW(0, ErrorMessage)
-		  End If
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
@@ -505,12 +418,9 @@ Protected Module Platform
 		  //Returns Nil if it cannot resolve the file. Most likely this would be due to insufficient access rights
 		  
 		  #If TargetWin32 Then
-		    Declare Function OpenProcess Lib "Kernel32" (dwDesiredAccessAs As Integer, bInheritHandle As Integer, dwProcId As Integer) As Integer
 		    Dim cleanup As Boolean = EnablePrivilege(SE_DEBUG_PRIVILEGE)
 		    
-		    If Platform.IsExactly(Platform.Win2000) Then
-		      //Windows 2000 only
-		      Soft Declare Function GetModuleFileNameExW Lib "PSAPI" (hProcess As Integer, hModule As Integer, ModuleName As Ptr, nSize As Integer) As Integer
+		    If KernelVersion = 5.0 Then
 		      Dim Modules As New MemoryBlock(255)  // 255 = SIZE_MINIMUM * sizeof(HMODULE)
 		      Dim ModuleName As New MemoryBlock(255)
 		      Dim nSize As Integer
@@ -520,12 +430,12 @@ Protected Module Platform
 		      If hProcess <> 0 Then
 		        ModuleName = New MemoryBlock(255)
 		        nSize = 255
-		        Call GetModuleFileNameExW(hProcess, Modules.Int32Value(0), ModuleName, 255)
+		        Call PSAPI.GetModuleFileNameEx(hProcess, Modules.Int32Value(0), ModuleName, 255)
 		        Result=Result+ModuleName.WString(0)
 		      Else
 		        Return Nil
 		      End If
-		      Call Platform.CloseHandle(hProcess)
+		      Call CloseHandle(hProcess)
 		      
 		      Result = Replace(Result, "\??\", "")
 		      Result = Replace(Result, "\SystemRoot\", SpecialFolder.Windows.AbsolutePath)
@@ -535,26 +445,22 @@ Protected Module Platform
 		        ret = GetFolderItem(Result)
 		      End If
 		      Return ret
-		    ElseIf Platform.IsAtLeast(Platform.WinXP) Then
-		      Declare Function QueryDosDeviceW Lib "Kernel32" (devicePath As WString, drivePath As Ptr, drivePathSize As Integer) As Integer
+		    ElseIf KernelVersion > 5.0 Then
 		      Dim pHandle As Integer
 		      Dim realsize As Integer
+		      Dim path As New MemoryBlock(255)
+		      
 		      pHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, processID)
 		      
-		      Dim path As New MemoryBlock(255)
 		      If System.IsFunctionAvailable("GetProcessImageFileNameW", "Kernel32") Then
-		        Soft Declare Function GetProcessImageFileNameW Lib "Kernel32" (pHandle As Integer, path As Ptr, pathsize As Integer) As Integer
 		        If pHandle <> 0 Then
-		          realsize = GetProcessImageFileNameW(pHandle, path, path.Size)
+		          realsize = Kernel32.GetProcessImageFileName(pHandle, path, path.Size)
 		        Else
 		          Return Nil
 		        End If
-		        
 		      Else
-		        
-		        Soft Declare Function GetProcessImageFileNameW Lib "PSAPI" (pHandle As Integer, path As Ptr, pathsize As Integer) As Integer
 		        If pHandle <> 0 Then
-		          realsize = GetProcessImageFileNameW(pHandle, path, path.Size)
+		          realsize = Kernel32.GetProcessImageFileName(pHandle, path, path.Size)
 		        Else
 		          Return Nil
 		        End If
@@ -567,7 +473,7 @@ Protected Module Platform
 		        
 		        For i As Integer = 65 To 90  //A-Z in ASCII
 		          Dim mb As New MemoryBlock(255)
-		          Call QueryDosDeviceW(Chr(i) + ":", mb, mb.Size)
+		          Call QueryDosDevice(Chr(i) + ":", mb, mb.Size)
 		          If mb.Wstring(0) = t Then
 		            retpath = Chr(i) + ":" + retpath
 		            Return GetFolderItem(retpath)
@@ -587,13 +493,6 @@ Protected Module Platform
 		  //looking first in the optional searchDir directory
 		  
 		  #If TargetWin32 Then
-		    Declare Function PathResolve Lib "Shell32" (path As Ptr, startDir As Ptr, flags As Integer) As Boolean
-		    Const PRF_VERIFYEXISTS = &h0001
-		    Const PRF_TRYPROGRAMEXTENSIONS = &h0002
-		    Const PRF_FIRSTDIRDEF  = &h0004
-		    Const PRF_DONTFINDLNK  = &h0008      // if PRF_TRYPROGRAMEXTENSIONS is specified
-		    Const PRF_REQUIREABSOLUTE = &h0010
-		    
 		    Dim mb As New MemoryBlock(255)
 		    Dim bm As MemoryBlock
 		    Dim flags As Integer = PRF_REQUIREABSOLUTE Or PRF_VERIFYEXISTS
@@ -603,9 +502,7 @@ Protected Module Platform
 		      flags = flags Or PRF_FIRSTDIRDEF
 		    End If
 		    
-		    If PathResolve(mb, Nil, flags) Then
-		      Return GetFolderItem(mb.WString(0) + "\" + fileName)
-		    End If
+		    If PathResolve(mb, Nil, flags) Then Return GetFolderItem(mb.WString(0) + "\" + fileName)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -633,24 +530,12 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function GetMetric(metric As Integer) As Integer
-		  //Queries sundry system metrics. Available metrics are listed here: http://msdn.microsoft.com/en-us/library/windows/desktop/ms724385%28v=vs.85%29.aspx
-		  
-		  #If TargetWin32 Then
-		    Declare Function GetSystemMetrics Lib "User32"  (nIndex As Integer) As integer
-		    Return GetSystemMetrics(metric)
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Function GetWindowText(HWND As Integer) As String
 		  //Returns the title or caption of the window or control specified by HWND. You must acquire a handle yourself
 		  //for windows and controls not part of you app.
 		  #If TargetWin32 Then
-		    Declare Function GetWindowTextW Lib "user32" ( hWnd As integer, lpString As ptr, cch As integer ) As integer
 		    Dim mb As New MemoryBlock(255)
-		    Call GetWindowTextW(HWND, mb, mb.Size)
+		    Call GetWindowText(HWND, mb, mb.Size)
 		    Return mb.WString(0)
 		  #endif
 		End Function
@@ -661,13 +546,9 @@ Protected Module Platform
 		  //Returns a MEMEORYSTATUSEX structure.
 		  
 		  #If TargetWin32 Then
-		    Declare Function GlobalMemoryStatusEx Lib "Kernel32" (ByRef MemStatus As MEMORYSTATUSEX) As Boolean
-		    
 		    Dim info As MEMORYSTATUSEX
 		    info.sSize = info.Size
-		    If GlobalMemoryStatusEx(info) Then
-		      Return info
-		    End If
+		    If GlobalMemoryStatusEx(info) Then Return info
 		  #endif
 		End Function
 	#tag EndMethod
@@ -676,8 +557,6 @@ Protected Module Platform
 		Protected Function HostName() As String
 		  //Returns the system's HostName
 		  #If TargetWin32 Then
-		    Declare Function GetHostName Lib "ws2_32" (name As Ptr, size As Integer) As Integer
-		    
 		    Dim mb As New MemoryBlock(1024)
 		    If gethostname(mb, mb.Size) = 0 Then
 		      Return mb.CString(0)
@@ -692,7 +571,6 @@ Protected Module Platform
 		  //for a local Network adpater, as strings.
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetAdaptersInfo Lib "Iphlpapi" (info As Ptr, ByRef size As Integer) As Integer
 		    Dim x, y As Integer
 		    Dim info As New MemoryBlock(1280)
 		    y = info.Size
@@ -733,11 +611,8 @@ Protected Module Platform
 		  //Returns a MIB_IPSTATS structure. Refer to the Win32Structs.MIB_IPSTATS structure.
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetIpStatistics Lib "Iphlpapi" (ByRef Info As MIB_IPSTATS) As Integer
 		    Dim ib As MIB_IPSTATS
-		    If GetIpStatistics(ib) = 0 Then
-		      Return ib
-		    End If
+		    If GetIpStatistics(ib) = 0 Then Return ib
 		  #endif
 		End Function
 	#tag EndMethod
@@ -748,62 +623,15 @@ Protected Module Platform
 		  //Note that even if this Returns True, that not all privileges many be enabled. See: EnablePrivilege
 		  
 		  #If TargetWin32 Then
-		    Declare Function IsUserAnAdmin Lib "Shell32" () As Boolean
 		    Return IsUserAnAdmin()
 		  #endif
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function IsAtLeast(OSVersion As Double) As Boolean
-		  //Returns True if the current OS is the same version or newer than the specified OSVersion
-		  //For example on a computer running Windows XP, Platform.IsAtLeast(WinVista) Will Return False
-		  //but Platform.IsAtLeast(WinXP) will Return True.
-		  //See also: Platform.IsOlderThan and Platform.IsExactly
-		  
-		  #If TargetWin32 Then Return KernelVersion >= OSVersion
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function IsComputerOn() As Boolean
-		  //Returns True if the local machine is receiving electrical power and is operating properly,
-		  //otherwise the return value is undefined.
-		  Return True
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function IsExactly(OSVersion As Double) As Boolean
-		  //Returns True if the current OS version is exactly the same as the OSVersion specified.
-		  //For example on a computer running Windows XP, Vista, 98, NT4, etc. Platform.IsExactly(Win2000) Will Return False
-		  //Server versions of consumer Windows will generally match the kernel version of the consumer version.
-		  //For example, Windows Server 2008 and Windows Vista are both 6.0 but Windows XP and Windows Server 2003 are 5.1 and 5.2 respectively.
-		  //See also: Platform.IsAtLeast and Platform.IsOlderThan
-		  
-		  #If TargetWin32 Then Return KernelVersion = OSVersion
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function IsOlderThan(OSVersion As Double) As Boolean
-		  //Returns True if the current OS kernel version is older than the OSVersion specified.
-		  //For example on a computer running Windows XP, Platform.IsOlderThan(Win2000) and Platform.IsOlderThan(WinXP) will both Return False
-		  //Whereas on a computer running Windows 2000, Platform.IsOlderThan(WinXP) returns True.
-		  //See also: Platform.IsAtLeast and Platform.IsExactly
-		  
-		  #If TargetWin32 Then Return KernelVersion < OSVersion
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
 		Protected Function IsServiceAccount(Accountname As String) As Boolean
 		  If System.IsFunctionAvailable("NetIsServiceAccount", "Netapi") Then
-		    Soft Declare Function NetIsServiceAccount Lib "Netapi" (ServerName As Ptr, Accountname As WString, ByRef isService As Boolean) As Integer
-		    
 		    Dim ret As Boolean
-		    
 		    Call NetIsServiceAccount(Nil, Accountname, ret)
 		    Return ret
 		  End If
@@ -814,7 +642,7 @@ Protected Module Platform
 	#tag Method, Flags = &h1
 		Protected Function IsShuttingDown() As Boolean
 		  //Returns True if Windows is shutting down or logging off.
-		  Return GetMetric(&h2000) <> 0
+		  Return GetSystemMetrics(&h2000) <> 0
 		End Function
 	#tag EndMethod
 
@@ -826,18 +654,6 @@ Protected Module Platform
 		    Dim sysDrive As FolderItem = SpecialFolder.Windows.Parent  //Assumes that Windows is installed in a first-level directory
 		    Dim drive As String = NthField(f.AbsolutePath, "\", 1) + "\"
 		    Return sysDrive.AbsolutePath = drive
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function LastErrorCode() As Integer
-		  //Returns the last error for the current process.
-		  //Error codes are documented here: http://msdn.microsoft.com/en-us/library/ms681381%28v=VS.85%29.aspx
-		  
-		  #If TargetWin32 Then
-		    Declare Function GetLastError Lib "Kernel32" () As Integer
-		    Return GetLastError()
 		  #endif
 		End Function
 	#tag EndMethod
@@ -926,9 +742,6 @@ Protected Module Platform
 	#tag Method, Flags = &h21
 		Private Function NTPowerInfoHelper(InfoLevel As Integer) As PROCESSOR_POWER_INFORMATION()
 		  #If TargetWin32 Then
-		    Declare Function CallNtPowerInformation Lib "PowrProf" (infoLevel As Integer, InputBuffer As Ptr, _
-		    buffSize As Integer, OutputBuffer As Ptr, outbufferSize As Integer) As Integer
-		    
 		    Dim info As New MemoryBlock(24 * NumberOfProcessors)
 		    Call CallNtPowerInformation(InfoLevel, Nil, 0, info, info.Size)
 		    
@@ -953,11 +766,8 @@ Protected Module Platform
 		  //Returns the number of LOGICAL processor cores. e.g. a quad core processor with hyperthreading will have 8 logical cores.
 		  
 		  #If TargetWin32 Then
-		    Declare Sub GetSystemInfo Lib "Kernel32" (ByRef info As SYSTEM_INFO)
-		    
 		    Dim info As SYSTEM_INFO
 		    GetSystemInfo(info)
-		    
 		    Return info.numberOfProcessors
 		  #endif
 		End Function
@@ -992,10 +802,7 @@ Protected Module Platform
 		  //capable compiler then the results of this function will become unreliable and I will be immensely pleased.
 		  
 		  #If TargetWin32 Then
-		    Declare Function OpenProcess Lib "Kernel32" (ByVal dwDesiredAccessAs As Integer, ByVal bInheritHandle As Integer, _
-		    ByVal dwProcId As Integer) As Integer
-		    Declare Function IsWow64Process Lib "Kernel32" (handle As Integer, ByRef is64 As Boolean) As Boolean
-		    Dim pHandle As Integer = OpenProcess(PROCESS_QUERY_INFORMATION, 0, CurrentProcess)
+		    Dim pHandle As Integer = OpenProcess(PROCESS_QUERY_INFORMATION, 0, GetCurrentProcess)
 		    
 		    Dim is64 As Boolean
 		    If IsWow64Process(pHandle, is64) Then
@@ -1070,8 +877,6 @@ Protected Module Platform
 		  //On error, returns an empty string.
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetTimeZoneInformation Lib "Kernel32" (ByRef TZInfo As TIME_ZONE_INFORMATION) As Integer
-		    
 		    Const daylightSavingsOn = 2
 		    Const daylightSavingsOff = 1
 		    Const daylightSavingsUnknown = 0
@@ -1121,7 +926,6 @@ Protected Module Platform
 		  Dim ret As Integer
 		  #If TargetWin32 Then
 		    If System.IsFunctionAvailable("RtlQueryElevationFlags", "NTDLL") Then
-		      Soft Declare Function RtlQueryElevationFlags Lib "NTDLL" (ByRef flags As Integer) As Integer
 		      Call RtlQueryElevationFlags(ret)
 		    End If
 		  #endif
@@ -1157,8 +961,6 @@ Protected Module Platform
 		  //On error, returns an impossible offset (-48)
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetTimeZoneInformation Lib "Kernel32" (ByRef TZInfo As TIME_ZONE_INFORMATION) As Integer
-		    
 		    Const daylightSavingsOn = 2
 		    Const daylightSavingsOff = 1
 		    Const daylightSavingsUnknown = 0
@@ -1183,11 +985,10 @@ Protected Module Platform
 		  //e.g. "Windows 7 Ultimate x64 Service Pack 1"
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetVersionExA Lib "Kernel32" (ByRef info As OSVERSIONINFOEX)As Boolean
 		    Dim info As OSVERSIONINFOEX
 		    info.StructSize = Info.Size
 		    
-		    If GetVersionExA(info) Then
+		    If GetVersionEx(info) Then
 		      Dim ret As String
 		      Select Case info.MajorVersion
 		        
@@ -1298,16 +1099,13 @@ Protected Module Platform
 		  //Given a FolderItem, returns a Dictionary containing the properties of the containing volume. On error, returns Nil.
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetVolumeInformationW Lib "Kernel32" (path As WString, volumeName As Ptr, volnameSize As Integer, _
-		    volumeSerialNumber As Ptr, ByRef maximumNameLength As Integer, ByRef FSFlags As Integer, filesystem As Ptr, fsNameSize As Integer) As Boolean
-		    
 		    Dim volumeName As New MemoryBlock(255)
 		    Dim fsName As New MemoryBlock(255)
 		    Dim drive As String = NthField(volume.AbsolutePath, "\", 1) + "\"
 		    Dim serialNumber As New MemoryBlock(255)
 		    Dim maxLen, flags As Integer
 		    
-		    If GetVolumeInformationW(drive, volumeName, volumeName.Size, serialNumber, maxLen, flags, fsName, fsName.Size) Then
+		    If GetVolumeInformation(drive, volumeName, volumeName.Size, serialNumber, maxLen, flags, fsName, fsName.Size) Then
 		      Dim ret As New Dictionary
 		      ret.Value("Filesystem") = fsName.WString(0)
 		      ret.Value("Label") = volumeName.WString(0)
@@ -1336,39 +1134,10 @@ Protected Module Platform
 			  //1 = Safe Mode
 			  //2 = Safe Mode with networking.
 			  
-			  #If TargetWin32 Then Return GetMetric(SM_CLEANBOOT)
+			  #If TargetWin32 Then Return GetSystemMetrics(SM_CLEANBOOT)
 			End Get
 		#tag EndGetter
 		Protected BootMode As Integer
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h1
-		#tag Getter
-			Get
-			  //Returns True if the current process is "system critical"
-			  //Always returns false unless you set it to True first.
-			  
-			  return mBSODIfAppQuits
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  //Sets whether the current process is "system critical"
-			  //                                          WARNING!!
-			  //Setting this to TRUE will do EXACTLY WHAT THE NAME SAYS. If your process dies, so does Windows.
-			  //(Though the user must have lauched your app with Admin rights.)
-			  #pragma Unused value
-			  #If TargetWin32 Then
-			    If EnablePrivilege(SE_DEBUG_PRIVILEGE) Then
-			      Declare Function RtlSetProcessIsCritical Lib "NTDLL" (NewStatus As Boolean, ByRef OldStatus As Boolean, needscb As Boolean) As Boolean
-			      If RtlSetProcessIsCritical(value, mBSODIfAppQuits, False) Then
-			        mBSODIfAppQuits = value
-			      End If
-			    End If
-			  #endif
-			End Set
-		#tag EndSetter
-		Protected BSODIfAppQuits As Boolean
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h1
@@ -1378,11 +1147,10 @@ Protected Module Platform
 			  //On error, returns 0
 			  
 			  #If TargetWin32 Then
-			    Declare Function GetVersionExA Lib "Kernel32" (ByRef info As OSVERSIONINFOEX) As Boolean
 			    Dim info As OSVERSIONINFOEX
 			    info.StructSize = Info.Size
 			    
-			    If GetVersionExA(info) Then
+			    If GetVersionEx(info) Then
 			      Return info.BuildNumber
 			    Else
 			      Return 0
@@ -1396,23 +1164,9 @@ Protected Module Platform
 	#tag ComputedProperty, Flags = &h1
 		#tag Getter
 			Get
-			  #If TargetWin32 Then
-			    Declare Function GetCurrentThreadId Lib "Kernel32" () As Integer
-			    Return GetCurrentThreadId()
-			  #endif
-			End Get
-		#tag EndGetter
-		Protected CurrentThreadID As Integer
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h1
-		#tag Getter
-			Get
 			  //Returns True if the computer is a tablet PC.
 			  
 			  #If TargetWin32 Then
-			    Declare Function IsOS Lib "Shlwapi" (OSFeature As Integer) As Boolean
-			    Const OS_SERVER = 23
 			    Return IsOS(OS_SERVER)
 			  #endif
 			End Get
@@ -1428,11 +1182,10 @@ Protected Module Platform
 			  //On error, returns 0.0
 			  
 			  #If TargetWin32 Then
-			    Declare Function GetVersionExA Lib "Kernel32" (ByRef info As OSVERSIONINFOEX) As Boolean
 			    Dim info As OSVERSIONINFOEX
 			    info.StructSize = Info.Size
 			    
-			    If GetVersionExA(info) Then
+			    If GetVersionEx(info) Then
 			      Return info.MajorVersion + (info.MinorVersion / 10)
 			    Else
 			      Return 0.0
@@ -1450,8 +1203,7 @@ Protected Module Platform
 			  //"dv-MV" for Divehi (Maldives). The returned string can be up to 85 (wide) characters long.
 			  
 			  #If TargetWin32 Then
-			    If Platform.IsAtLeast(Platform.WinVista) Then
-			      Soft Declare Function GetSystemDefaultLocaleName Lib "Kernel32" (buffer As Ptr, buffSize As Integer) As Integer
+			    If Platform.KernelVersion >= 6.0 Then
 			      Dim mb As New MemoryBlock(85)
 			      Dim buffSize As Integer = mb.Size
 			      buffSize = GetSystemDefaultLocaleName(mb, buffSize)
@@ -1477,11 +1229,10 @@ Protected Module Platform
 			  //On error, returns -0.0
 			  
 			  #If TargetWin32 Then
-			    Declare Function GetVersionExA Lib "Kernel32" (ByRef info As OSVERSIONINFOEX) As Boolean
 			    Dim info As OSVERSIONINFOEX
 			    info.StructSize = Info.Size
 			    
-			    If GetVersionExA(info) Then
+			    If GetVersionEx(info) Then
 			      Return info.ServicePackMajor + (info.ServicePackMinor / 10)
 			    Else
 			      Return -0.0
@@ -1498,7 +1249,7 @@ Protected Module Platform
 			  //From the WFS. Gets the current volume level (0-65535). Note: on Vista and newer, this method is deprecated and may not
 			  //work at all if the sound card implements Protected Path.
 			  #If TargetWin32 Then
-			    If Platform.IsAtLeast(Platform.WinVista) Then Return 0   //Vista and newer MAY work, but often not.
+			    If Platform.KernelVersion >= 6.0 Then Return 0   //Vista and newer MAY work, but often not.
 			    
 			    Declare Function mixerOpen Lib "winmm" ( ByRef handle As Integer, id As Integer, _
 			    callback As Integer, instance As Integer, open As Integer ) As Integer
@@ -1554,7 +1305,7 @@ Protected Module Platform
 			  //work at all if the sound card implements Protected Path.
 			  
 			  #If TargetWin32 Then
-			    If Platform.IsAtLeast(Platform.WinVista) Then Return   //Vista and newer MAY work, but often not.
+			    If Platform.KernelVersion >= 6.0 Then Return   //Vista and newer MAY work, but often not.
 			    
 			    Declare Function mixerOpen Lib "winmm" ( ByRef handle As Integer, id As Integer, _
 			    callback As Integer, instance As Integer, open As Integer ) As Integer
@@ -1615,8 +1366,6 @@ Protected Module Platform
 			  //Returns True if the computer is a tablet PC.
 			  
 			  #If TargetWin32 Then
-			    Declare Function IsOS Lib "Shlwapi" (OSFeature As Integer) As Boolean
-			    Const OS_TABLETPC = 33
 			    Return IsOS(OS_TABLETPC)
 			  #endif
 			End Get

@@ -5,8 +5,6 @@ Protected Module Win32Crypto
 		  //Hashes the data string using the specified hash algorithm (see the constants for this Module for available algorithms.)
 		  //Returns a hex-formatted string of the binary hash
 		  
-		  Declare Sub CryptDestroyHash Lib "AdvApi32" (hashHandle as Integer )
-		  
 		  Dim hashHandle As Integer
 		  Dim hashPtr As MemoryBlock = HashData(baseCryptoProvider, data, hashHandle, algorithm)
 		  If hashPtr = Nil Then Return ""
@@ -18,12 +16,6 @@ Protected Module Win32Crypto
 
 	#tag Method, Flags = &h21
 		Private Function HashData(provider as Integer, data as String, ByRef handle as Integer, algorithm As Integer) As MemoryBlock
-		  Declare Function CryptCreateHash Lib "AdvApi32" (provider as Integer, algorithm as Integer, key as Integer, flags as Integer, _
-		  ByRef hashHandle as Integer) as Boolean
-		  Declare Function CryptHashData Lib "AdvApi32" (hashHandle as Integer, data as Ptr, length as Integer, flags as Integer) as Boolean
-		  Declare Function CryptGetHashParam Lib "AdvApi32" (hashHandle as Integer, type as Integer, value as Ptr, ByRef length as Integer, _
-		  flags as Integer) as Boolean
-		  
 		  Const HP_HASHVAL = &h0002  // Hash value
 		  Const HP_HASHSIZE = &h0004  // Hash value size
 		  
@@ -53,33 +45,6 @@ Protected Module Win32Crypto
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Function VerifyAuthenticodeSig(f As FolderItem) As Boolean
-		  #pragma Unused f
-		  'Declare Function WinVerifyTrust Lib "Wintrust" (HWND As Integer, ActionID As GUID, WVTData As WINTRUST_DATA) As Integer
-		  'Const WTD_REVOCATION_CHECK_END_CERT = &h20
-		  'Const WTD_NO_POLICY_USAGE_FLAG = &h4
-		  '
-		  'Dim gud As GUID
-		  'gud.data1 = &haac56b
-		  'gud.data2 = &hcd44
-		  'gud.data3 = &h11d0
-		  'gud.data4 = Chr(&h8c) + Chr(&hc2) + Chr(&h0) + Chr(&hc0) + Chr(&h4f) + Chr(&hc2) + Chr(&h95) + Chr(&hee)
-		  'Dim wtv As WINTRUST_DATA
-		  'wtv.cbStruct = wtv.Size
-		  'wtv.UIChoice = 2  //No UI
-		  'wtv.fwdRevocationChecks = 0  //No revocation checks
-		  'wtv.UnionChoice = 1  //File
-		  'Dim mb As New MemoryBlock(260 * 2)
-		  'wtv.Union = mb
-		  'wtv.StateAction = 0
-		  'wtv.WVTStateData = 0
-		  'wtv.ProvFlags = WTD_NO_POLICY_USAGE_FLAG Or WTD_REVOCATION_CHECK_END_CERT
-		  'wtv.UIContext = 0 //Execute.
-		  'Dim trusted As Integer = WinVerifyTrust(0, gud, wtv)
-		End Function
-	#tag EndMethod
-
 
 	#tag ComputedProperty, Flags = &h21
 		#tag Getter
@@ -90,15 +55,8 @@ Protected Module Win32Crypto
 			  Static provider As Integer
 			  
 			  If provider = 0 Then
-			    Declare Function CryptAcquireContextW Lib "AdvApi32" (ByRef provider as Integer, container as Integer, providerName as WString, _
-			    providerType as Integer, flags as Integer) as Boolean
-			    
-			    Const MS_DEF_PROV = "Microsoft Enhanced RSA and AES Cryptogrphic Provider"
-			    Const PROV_RSA_FULL = 1
-			    Const CRYPT_NEWKEYSET = &h00000008
-			    
-			    If Not CryptAcquireContextW(provider, 0, MS_DEF_PROV, PROV_RSA_FULL, 0) Then
-			      If Not CryptAcquireContextW(provider, 0, MS_DEF_PROV, PROV_RSA_FULL, CRYPT_NEWKEYSET) Then
+			    If Not CryptAcquireContext(provider, 0, MS_DEF_PROV, PROV_RSA_FULL, 0) Then
+			      If Not CryptAcquireContext(provider, 0, MS_DEF_PROV, PROV_RSA_FULL, CRYPT_NEWKEYSET) Then
 			        Return 0
 			      End If
 			    End If
@@ -118,15 +76,8 @@ Protected Module Win32Crypto
 			  Static provider As Integer
 			  
 			  If provider = 0 Then
-			    Declare Function CryptAcquireContextW Lib "AdvApi32" (ByRef provider as Integer, container as Integer, providerName as WString, _
-			    providerType as Integer, flags as Integer) as Boolean
-			    
-			    Const MS_DEF_PROV = "Microsoft Base Cryptographic Provider v1.0"
-			    Const PROV_RSA_FULL = 1
-			    Const CRYPT_NEWKEYSET = &h00000008
-			    
-			    If Not CryptAcquireContextW(provider, 0, MS_DEF_PROV, PROV_RSA_FULL, 0) Then
-			      If Not CryptAcquireContextW(provider, 0, MS_DEF_PROV, PROV_RSA_FULL, CRYPT_NEWKEYSET) Then
+			    If Not CryptAcquireContext(provider, 0, MS_DEF_PROV, PROV_RSA_FULL, 0) Then
+			      If Not CryptAcquireContext(provider, 0, MS_DEF_PROV, PROV_RSA_FULL, CRYPT_NEWKEYSET) Then
 			        Return 0
 			      End If
 			    End If

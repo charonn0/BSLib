@@ -19,45 +19,17 @@ Protected Module Images
 		  //If the specified file type doesn't have a default icon, this function returns Nil
 		  
 		  #If TargetWin32 Then
-		    Declare Function SHGetFileInfoW Lib "Shell32" (path As WString, attribs As Integer, ByRef info As SHFILEINFO, _
-		    infosize As Integer, flags As Integer) As Boolean
-		    
-		    Const SHGFI_USEFILEATTRIBUTES = &h000000010
-		    Const SHGFI_DISPLAYNAME = &h000000200
-		    Const SHGFI_TYPENAME = &h000000400
-		    Const SHGFI_ICON = &h000000100
-		    
 		    Dim info As SHFILEINFO
-		    If SHGetFileInfoW("foo." + extension, FILE_ATTRIBUTE_NORMAL, info, info.Size, _
+		    If SHGetFileInfo("foo." + extension, FILE_ATTRIBUTE_NORMAL, info, info.Size, _
 		      SHGFI_DISPLAYNAME Or SHGFI_TYPENAME Or SHGFI_USEFILEATTRIBUTES Or SHGFI_ICON) Then
 		      Dim theIcon As Picture = New Picture(size, size, 32)
 		      theIcon.Transparent = 1
-		      Call DrawIcon(theIcon.Graphics.Handle(1), 0, 0, info.hIcon, size, size, 0, 0, &h3)
-		      DestroyIcon(info.hIcon)
+		      Call DrawIconEx(theIcon.Graphics.Handle(1), 0, 0, info.hIcon, size, size, 0, 0, &h3)
+		      Call DestroyIcon(info.hIcon)
 		      Return theIcon
 		    Else
 		      Return Nil
 		    End If
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub DestroyIcon(hIcon As Integer)
-		  #If TargetWin32 Then
-		    Declare Function MyDestroyIcon Lib "user32" Alias "DestroyIcon" (hIcon As Integer) As Integer
-		    Call MyDestroyIcon(hIcon)
-		  #endif
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function DrawIcon(hDC As Integer, xLeft As Integer, yTop As Integer, hIcon As Integer, cxWidth As Integer, cyWidth As Integer, istepIfAniCur As Integer, hbrFlickerFreeDraw As Integer, diFlags As Integer) As Integer
-		  #If TargetWin32 Then
-		    Declare Function DrawIconEx Lib "User32" (hDC As Integer, xLeft As Integer, yTop As Integer, hIcon As Integer, cxWidth As Integer, cyWidth As Integer, istepIfAniCur As Integer, _
-		    hbrFlickerFreeDraw As Integer, diFlags As Integer) As Integer
-		    
-		    Return DrawIconEx(hDC, xLeft, yTop, hIcon, cxWidth, cyWidth, istepIfAniCur, hbrFlickerFreeDraw, diFlags)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -68,20 +40,18 @@ Protected Module Images
 		  //Icons are located in EXE, DLL, etc. type files, and are referenced by their index.
 		  
 		  #If TargetWin32 Then
-		    Declare Function ExtractIconExW Lib "Shell32" (ResourceFile As WString, Index As Integer, largeIco As Ptr, smallIco As Ptr, Icons As Integer) As Integer
-		    
 		    Dim theIcon As Picture = New Picture(pixsize, pixsize, 32)
 		    theIcon.Transparent = 1
 		    
 		    Dim largeIco As New MemoryBlock(4)
 		    Try
-		      Call ExtractIconExW(resource.AbsolutePath, Index, largeIco, Nil, 1)
-		      Call DrawIcon(theIcon.Graphics.Handle(Graphics.HandleTypeHDC), 0, 0, largeIco.Int32Value(0), pixsize, pixsize, 0, 0, &h3)
+		      Call ExtractIconEx(resource.AbsolutePath, Index, largeIco, Nil, 1)
+		      Call DrawIconEx(theIcon.Graphics.Handle(Graphics.HandleTypeHDC), 0, 0, largeIco.Int32Value(0), pixsize, pixsize, 0, 0, &h3)
 		    Catch
-		      DestroyIcon(largeIco.Int32Value(0))
+		      Call DestroyIcon(largeIco.Int32Value(0))
 		      Return Nil
 		    End Try
-		    DestroyIcon(largeIco.Int32Value(0))
+		    Call DestroyIcon(largeIco.Int32Value(0))
 		    Return theIcon
 		  #endif
 		  
@@ -202,8 +172,6 @@ Protected Module Images
 		  //as the HWND parameter.
 		  
 		  #If TargetWin32 And TargetHasGUI Then  //The RB Picture object is not available in console applications
-		    Declare Function PickIconDlg Lib "Shell32" (HWND As Integer, resource As Ptr, resourceLen As Integer, ByRef Index As Integer) As Integer
-		    
 		    If IconResource = Nil Then Return Nil
 		    
 		    Dim resourceLen, Index As Integer

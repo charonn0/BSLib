@@ -89,6 +89,12 @@ Protected Module Win32Constants
 	#tag Constant, Name = CREATE_NEW, Type = Double, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = CRYPT_NEWKEYSET, Type = Double, Dynamic = False, Default = \"&h00000008\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = DNS_TYPE_A, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = DSTINVERT, Type = Double, Dynamic = False, Default = \"&h00550009", Scope = Public
 	#tag EndConstant
 
@@ -120,6 +126,24 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_NAMED_STREAMS, Type = Double, Dynamic = False, Default = \"&h00040000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_NOTIFY_CHANGE_ATTRIBUTES, Type = Double, Dynamic = False, Default = \"&h00000004", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_NOTIFY_CHANGE_DIR_NAME, Type = Double, Dynamic = False, Default = \"&h00000002\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_NOTIFY_CHANGE_FILE_NAME, Type = Double, Dynamic = False, Default = \"&h00000001\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_NOTIFY_CHANGE_LAST_WRITE, Type = Double, Dynamic = False, Default = \"&h00000010", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_NOTIFY_CHANGE_SECURITY, Type = Double, Dynamic = False, Default = \"&h00000100\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_NOTIFY_CHANGE_SIZE, Type = Double, Dynamic = False, Default = \"&h00000008\r", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_PERSISTENT_ACLS, Type = Double, Dynamic = False, Default = \"&h00000008", Scope = Public
@@ -338,6 +362,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = MOVEFILE_WRITE_THROUGH, Type = Double, Dynamic = False, Default = \"&h8", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = MS_DEF_PROV, Type = String, Dynamic = False, Default = \"Microsoft Enhanced RSA and AES Cryptogrphic Provider", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = NOTSRCCOPY, Type = Double, Dynamic = False, Default = \"&h00330008", Scope = Public
 	#tag EndConstant
 
@@ -506,6 +533,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = PROCESS_VM_READ, Type = Double, Dynamic = False, Default = \"&h10", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = PROV_RSA_FULL, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = SE_ASSIGNPRIMARYTOKEN_NAME, Type = String, Dynamic = False, Default = \"SeAssignPrimaryTokenPrivilege", Scope = Public
 	#tag EndConstant
 
@@ -617,6 +647,18 @@ Protected Module Win32Constants
 	#tag Constant, Name = SE_UNSOLICITED_INPUT_NAME, Type = String, Dynamic = False, Default = \"SeUnsolicitedInputPrivilege", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = SHGFI_DISPLAYNAME, Type = Double, Dynamic = False, Default = \"&h000000200", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SHGFI_ICON, Type = Double, Dynamic = False, Default = \"&h000000100", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SHGFI_TYPENAME, Type = Double, Dynamic = False, Default = \"&h000000400", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SHGFI_USEFILEATTRIBUTES, Type = Double, Dynamic = False, Default = \"&h000000010", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = SM_CLEANBOOT, Type = Double, Dynamic = False, Default = \"67", Scope = Public
 	#tag EndConstant
 
@@ -707,7 +749,7 @@ Protected Module Win32Constants
 	#tag Constant, Name = SSF_WIN95CLASSIC, Type = Double, Dynamic = False, Default = \"&h00000400", Scope = Public
 	#tag EndConstant
 
-	#tag Constant, Name = STD_ERROR_HANDLE, Type = Double, Dynamic = False, Default = \"-12", Scope = Public
+	#tag Constant, Name = STD_ERROR_HANDLE, Type = Double, Dynamic = False, Default = \"-12\r", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = STD_INPUT_HANDLE, Type = Double, Dynamic = False, Default = \"-10", Scope = Public
@@ -732,6 +774,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = WHITENESS, Type = Double, Dynamic = False, Default = \"&h00FF0062", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WT_EXECUTEONLYONCE, Type = Double, Dynamic = False, Default = \"&h00000008\r", Scope = Public
 	#tag EndConstant
 
 

@@ -10,10 +10,8 @@ Protected Module File_Ops
 		  #If TargetWin32 Then
 		    Dim ret() As String
 		    
-		    If Platform.IsOlderThan(Platform.WinVista) And Platform.IsAtLeast(Platform.Win2000) Then
-		      Soft Declare Sub NtQueryInformationFile Lib "NTDLL" (fHandle As Integer, ByRef status As IO_STATUS_BLOCK, FileInformation As Ptr, FILength As UInt32, InfoClass As Int32)
-		      
-		      Dim fHandle As Integer = Platform.CreateFile(target.AbsolutePath, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		    If Platform.KernelVersion < 6.0 And Platform.KernelVersion >= 5.0 Then
+		      Dim fHandle As Integer = CreateFile(target.AbsolutePath, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		      If fHandle > 0 Then
 		        Dim mb As New MemoryBlock(64 * 1024)
 		        Dim status As IO_STATUS_BLOCK
@@ -28,7 +26,7 @@ Protected Module File_Ops
 		          End If
 		        Wend
 		      End If
-		    ElseIf Platform.IsAtLeast(Platform.WinVista) Then
+		    ElseIf Platform.KernelVersion >= 6.0 Then
 		      Dim buffer As WIN32_FIND_STREAM_DATA
 		      Dim sHandle As Integer = FindFirstStream(target.AbsolutePath, 0, buffer, 0)
 		      
@@ -114,8 +112,7 @@ Protected Module File_Ops
 		  
 		  #If TargetWin32 Then
 		    If System.IsFunctionAvailable("CreateHardLinkW", "Kernel32") Then
-		      Soft Declare Function CreateHardLinkW Lib "Kernel32" (newFile As WString, existingFile As WString, reserved As Ptr) As Boolean
-		      Return CreateHardLinkW(destination.AbsolutePath, source.AbsolutePath, Nil)
+		      Return CreateHardLink(destination.AbsolutePath, source.AbsolutePath, Nil)
 		    Else
 		      Raise New PlatformNotSupportedException
 		    End If
@@ -161,14 +158,14 @@ Protected Module File_Ops
 		  #If TargetWin32 Then
 		    If target = Nil Then Return Nil
 		    If Not Target.Exists Then Return Nil
-		    Dim fHandle As Integer = Platform.CreateFile(target.AbsolutePath + ":" + StreamName + ":$DATA", 0, _
+		    Dim fHandle As Integer = CreateFile(target.AbsolutePath + ":" + StreamName + ":$DATA", 0, _
 		    FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, CREATE_NEW, 0, 0)
 		    If fHandle > 0 Then
 		      target = GetFolderItem(target.AbsolutePath + ":" + StreamName + ":$DATA")
-		      Call Platform.CloseHandle(fHandle)
+		      Call CloseHandle(fHandle)
 		      Return target
 		    Else
-		      If Platform.LastErrorCode = 80 Then  //ERROR_FILE_EXISTS
+		      If GetLastError = 80 Then  //ERROR_FILE_EXISTS
 		        target = GetFolderItem(target.AbsolutePath + ":" + StreamName + ":$DATA")
 		        Return target
 		      End If
@@ -186,14 +183,12 @@ Protected Module File_Ops
 		  
 		  #If TargetWin32 Then
 		    If System.IsFunctionAvailable("CreateSymbolicLinkW", "Kernel32") Then
-		      Soft Declare Function CreateSymbolicLinkW Lib "Kernel32" (newFile As WString, existingFile As WString, flags As Integer) As Boolean
-		      
 		      Dim flags As Integer
 		      If source.Directory Then
 		        flags = &h1
 		      End If
 		      
-		      Return CreateSymbolicLinkW(destination.AbsolutePath, source.AbsolutePath, flags)
+		      Return CreateSymbolicLink(destination.AbsolutePath, source.AbsolutePath, flags)
 		    Else
 		      Return False
 		    End If
@@ -209,11 +204,7 @@ Protected Module File_Ops
 		  //Or if the user does not have write access to the Target file.
 		  
 		  #If TargetWin32
-		    Declare Function MoveFileExW Lib "Kernel32" (sourceFile As WString, destinationFile As WString, flags As Integer) As Boolean
-		    
-		    Const MOVEFILE_DELAY_UNTIL_REBOOT = 4
-		    
-		    Return MoveFileExW(source.AbsolutePath, Nil, MOVEFILE_DELAY_UNTIL_REBOOT)
+		    Return MoveFileEx(source.AbsolutePath, Nil, MOVEFILE_DELAY_UNTIL_REBOOT)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -225,10 +216,8 @@ Protected Module File_Ops
 		  //StreamName will delete the file altogether (same as FolderItem.Delete)
 		  
 		  #If TargetWin32 Then
-		    Declare Function DeleteFileW Lib "Kernel32" (path As WString) As Boolean
-		    
 		    If f <> Nil Then
-		      Return DeleteFileW(f.AbsolutePath + ":" + StreamName + ":$DATA")
+		      Return DeleteFile(f.AbsolutePath + ":" + StreamName + ":$DATA")
 		    Else
 		      Return False
 		    End If
@@ -278,10 +267,8 @@ Protected Module File_Ops
 		  //6 = A 64-bit Windows-based application.
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetBinaryTypeW Lib "Kernel32" (appFile As WString, ByRef binType As Integer) As Boolean
-		    
 		    Dim type As Integer
-		    If GetBinaryTypeW(f.AbsolutePath, type) Then
+		    If GetBinaryType(f.AbsolutePath, type) Then
 		      Return type
 		    Else
 		      Return -1
@@ -299,14 +286,6 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function FindClose(FindHandle As Integer) As Boolean
-		  //Closes the passed FindFirst* handle.
-		  Soft Declare Function MyFindClose Lib "Kernel32" Alias "FindClose" (fHandle As Integer) As Boolean
-		  Return MyFindClose(FindHandle)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function FindDefaultApp(Extends documentFile As FolderItem) As FolderItem
 		  //Given a documentFile FolderItem, will return a FolderItem corresponding to the application currently
 		  //associated with the file (e.g. a .doc file might return C:\Program Files\Microsoft Office\winword.exe)
@@ -316,33 +295,11 @@ Protected Module File_Ops
 		  //corresponding to the documentFile itself (e.g. "C:\foo\bar.exe" is associated with itself.)
 		  
 		  #If TargetWin32 Then
-		    Declare Function FindExecutableW Lib "Shell32" (file As WString, directory As WString, result As Ptr) As Integer
-		    
 		    Dim mb As New MemoryBlock(260)
-		    If FindExecutableW(documentFile.AbsolutePath, Nil, mb) > 32 Then
+		    If FindExecutable(documentFile.AbsolutePath, Nil, mb) > 32 Then
 		      Return GetFolderItem(mb.WString(0))
 		    End If
 		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function FindFirstStream(filename As String, InfoLevel As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA, reserved As Integer = 0) As Integer
-		  If System.IsFunctionAvailable("FindFirstStreamW", "Kernel32") Then
-		    Soft Declare Function FindFirstStreamW Lib "Kernel32" (filename As WString, InfoLevel As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA, _
-		    reserved As Integer) As Integer
-		    
-		    Return FindFirstStreamW(filename, InfoLevel, buffer, reserved)
-		  End If
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h1
-		Protected Function FindNextStream(sHandle As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA) As Boolean
-		  If System.IsFunctionAvailable("FindNextStreamW", "Kernel32") Then
-		    Soft Declare Function FindNextStreamW Lib "Kernel32" (sHandle As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA) As Boolean
-		    Return FindNextStreamW(sHandle, buffer)
-		  End If
 		End Function
 	#tag EndMethod
 
@@ -379,12 +336,9 @@ Protected Module File_Ops
 		  //not refer directly to the volume root.
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetDiskFreeSpaceExW Lib "Kernel32" (dirname As WString, ByRef freeBytesAvailable As UInt64, ByRef totalbytes As UInt64, _
-		    ByRef totalFreeBytes As UInt64) As Boolean
-		    
 		    Dim drvRoot As String = Left(Drive.AbsolutePath, 1) + ":\"
 		    Dim total, free, x As UInt64
-		    Call GetDiskFreeSpaceExW(drvRoot, x, total, free)
+		    Call GetDiskFreeSpaceEx(drvRoot, x, total, free)
 		    
 		    Return free
 		  #endif
@@ -397,12 +351,9 @@ Protected Module File_Ops
 		  //not refer directly to the volume root.
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetDiskFreeSpaceExW Lib "Kernel32" (dirname As WString, ByRef freeBytesAvailable As UInt64, ByRef totalbytes As UInt64, _
-		    ByRef totalFreeBytes As UInt64) As Boolean
-		    
 		    Dim drvRoot As String = Left(Drive.AbsolutePath, 1) + ":\"
 		    Dim total, free, x As UInt64
-		    Call GetDiskFreeSpaceExW(drvRoot, x, total, free)
+		    Call GetDiskFreeSpaceEx(drvRoot, x, total, free)
 		    
 		    Return total
 		  #endif
@@ -414,22 +365,7 @@ Protected Module File_Ops
 		  //See: Archive, Encrypted, Hidden, IsNormal, ReadOnly, and SystemFile functions in this module.
 		  
 		  #If TargetWin32 Then
-		    Declare Function GetFileAttributesW Lib "Kernel32" (path As WString) As Integer
-		    Return GetFileAttributesW(f.AbsolutePath)
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function GetShortName(Extends target As FolderItem) As String
-		  //Same thing as FolderItem.ShellPath
-		  
-		  #If TargetWin32 Then
-		    Declare Function GetShortPathNameW Lib "Kernel32" (longName As WString, shortName As Ptr, buffSize As Integer) As Integer
-		    
-		    Dim mb As New MemoryBlock(1024)
-		    Call GetShortPathNameW(target.AbsolutePath, mb, mb.Size)
-		    Return mb.Wstring(0)
+		    Return GetFileAttributes(f.AbsolutePath)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -489,7 +425,7 @@ Protected Module File_Ops
 		    If destination.Parent = SpecialFolder.Temporary Then
 		      #If TargetWin32 Then
 		        If Not source.ReplaceWith(destination, True) Then
-		          Dim err As New Win32Exception(Platform.LastErrorCode)
+		          Dim err As New Win32Exception(GetLastError)
 		          Raise err
 		        Else
 		          Return True
@@ -559,7 +495,7 @@ Protected Module File_Ops
 		      If destination.Parent = SpecialFolder.Temporary Then
 		        #If TargetWin32 Then
 		          If Not source.ReplaceWith(destination, True) Then
-		            Dim err As New Win32Exception(Platform.LastErrorCode)
+		            Dim err As New Win32Exception(GetLastError)
 		            Raise err
 		          Else
 		            Return True
@@ -625,32 +561,13 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function isAccessible(Extends f As FolderItem) As Integer
-		  //Returns 0 if the file exists and is Readable
-		  //Returns a Win32 error code on failure. Refer to http://msdn.microsoft.com/en-us/library/ms681381(v=vs.85).aspx
-		  //for error code explainations, or use Platform.ErrorMessageFromCode for an error message.
-		  
-		  #If TargetWin32 Then
-		    Dim HWND As Integer = Platform.CreateFile(f.AbsolutePath, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)
-		    If HWND = -1 Then
-		      Return Platform.LastErrorCode
-		    Else
-		      Call Platform.CloseHandle(HWND)
-		      Return 0
-		    End If
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function IsDangerous(Extends target As FolderItem) As Boolean
 		  //Returns True if the target FolderItem has an extension (e.g. ".exe") which Windows deems dangerous.
 		  //See the remarks here: http://msdn.microsoft.com/en-us/library/windows/desktop/bb773465%28v=vs.85%29.aspx
 		  //XP with SP1 or newer only.
 		  
 		  #If TargetWin32 Then
-		    If Platform.IsAtLeast(Platform.WinVista) Or (Platform.IsExactly(Platform.WinXP) And Platform.ServicePack >= 1) Then
-		      Soft Declare Function AssocIsDangerous Lib "Shlwapi" (ext As WString) As Boolean
+		    If Platform.KernelVersion >= 6.0 Or (Platform.KernelVersion = 5.1 And Platform.ServicePack >= 1) Then
 		      Return AssocIsDangerous("." + target.Extension)
 		    End If
 		  #endif
@@ -681,8 +598,6 @@ Protected Module File_Ops
 		  //See: http://msdn.microsoft.com/en-us/library/windows/desktop/ms722429%28v=vs.85%29.aspx
 		  
 		  #If TargetWin32 Then
-		    Declare Function SaferiIsExecutableFileType Lib "AdvApi32" (path As WString, omitEXE As Boolean) As Boolean
-		    
 		    Return SaferiIsExecutableFileType(target.AbsolutePath, False)
 		  #endif
 		End Function
@@ -734,20 +649,6 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function LaunchWithArgs(extends f as FolderItem, ParamArray args as String) As Boolean
-		  //Same as FolderItem.Launch, but with arguments. Returns True if the operation succeeded.
-		  #If TargetWin32 Then
-		    Declare Function ShellExecuteW Lib "Shell32"(hwnd as Integer, operation as WString, file as WString, params as WString, _
-		    directory as WString, show as Integer) As Integer
-		    
-		    Dim params as String
-		    params = Join( args, " " )
-		    Return ShellExecuteW( 0, "open", f.AbsolutePath, params, "", 1 ) > 32
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function LockFile(Extends lockedFile As FolderItem) As Integer
 		  //Locks the file for exclusive use. You must call UnlockFile with the integer returned from this function to unlock the file.
 		  //A positive return value is returned on success, 0 if lockedFile is Nil, and a negative number on error (a negative return value
@@ -757,20 +658,17 @@ Protected Module File_Ops
 		  //raise an IOException. Likewise, you cannot lock a file currently open in a TextInputStream, TextOutputStream, or BinaryStream.
 		  
 		  #If TargetWin32 Then
-		    Declare Function MyLockFile Lib "kernel32" Alias "LockFile" (hFile As Integer, dwFileOffsetLow As Integer, dwFileOffsetHigh As Integer, _
-		    nNumberOfBytesToLockLow As Integer, nNumberOfBytesToLockHigh As Integer) As Boolean
-		    
 		    If lockedFile = Nil Then Return 0
 		    
-		    Dim fHandle As Integer = Platform.CreateFile(lockedFile.AbsolutePath, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)
+		    Dim fHandle As Integer = CreateFile(lockedFile.AbsolutePath, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)
 		    If fHandle > 0 Then
-		      If myLockFile(fHandle, 0, 0, 1, 0) Then
+		      If LockFile(fHandle, 0, 0, 1, 0) Then
 		        Return fHandle   //You MUST keep this return value if you want to unlock the file later!!!
 		      Else
-		        Return Platform.LastErrorCode * -1
+		        Return GetLastError * -1
 		      End If
 		    Else
-		      Return Platform.LastErrorCode * -1
+		      Return GetLastError * -1
 		    End If
 		  #endif
 		End Function
@@ -820,11 +718,9 @@ Protected Module File_Ops
 		  //Under construction. Takes a string and normalizes it as a Windows path
 		  
 		  #If TargetWin32 Then
-		    Declare Function PathAddBackslashW Lib "Shlwapi" (thePath As Ptr) As Integer
-		    
 		    Dim mb As New MemoryBlock(1024)
 		    mb.WString(0) = path
-		    Dim i As Integer= PathAddBackslashW(mb)
+		    Dim i As Integer= PathAddBackslash(mb)
 		    path = mb.WString(0)
 		    path = Left(path, i)
 		    Return path
@@ -835,7 +731,7 @@ Protected Module File_Ops
 	#tag Method, Flags = &h0
 		Function OpenWithPermissions(File As FolderItem, Perms As PermissionsMask) As TextOutputStream
 		  Dim handle As Integer = _
-		  Platform.CreateFile( _
+		  CreateFile( _
 		  File.AbsolutePath, _
 		  Perms.Access, _
 		  Perms.ShareMode, _
@@ -891,17 +787,15 @@ Protected Module File_Ops
 		  //Dim abso As String = RelativeToAbsolute("Windows\..\Program Files\MyApp\MyApp Libs\..\MyApp.exe", f)
 		  ////abso = C:\Program Files\MyApp\MyApp.exe
 		  #If TargetWin32 Then
-		    Declare Function PathCanonicalizeW Lib "Shlwapi" (OutBuffer As Ptr, InBuffer As Ptr) As Boolean
-		    Declare Function PathAppendW Lib "Shlwapi" (firstHalf As Ptr, secondHalf As Ptr) As Boolean
 		    If CurrentDir = Nil Then CurrentDir = App.ExecutableFile.Parent
 		    
 		    Dim outBuff As New MemoryBlock(1024)
 		    outBuff.WString(0) = CurrentDir.AbsolutePath
 		    Dim inBuff As New MemoryBlock(1024)
 		    inBuff.WString(0) = RelativePath
-		    If PathAppendW(outBuff, inBuff) Then
+		    If PathAppend(outBuff, inBuff) Then
 		      inBuff.WString(0) = outBuff.WString(0)
-		      If PathCanonicalizeW(outBuff, inBuff) Then
+		      If PathCanonicalize(outBuff, inBuff) Then
 		        Return outBuff.WString(0)
 		      End If
 		    End If
@@ -918,9 +812,7 @@ Protected Module File_Ops
 		  //HKEY_LOCAL_MACHINE registry hive (HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations)
 		  
 		  #If TargetWin32
-		    Declare Function MoveFileExW Lib "Kernel32" (sourceFile As WString, destinationFile As WString, flags As Integer) As Boolean
-		    
-		    Return MoveFileExW(source.AbsolutePath, destination.AbsolutePath, MOVEFILE_DELAY_UNTIL_REBOOT Or MOVEFILE_REPLACE_EXISTING)
+		    Return MoveFileEx(source.AbsolutePath, destination.AbsolutePath, MOVEFILE_DELAY_UNTIL_REBOOT Or MOVEFILE_REPLACE_EXISTING)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -930,23 +822,19 @@ Protected Module File_Ops
 		  //Replaces the source file with the destination file.
 		  //If forceSync is true then the disk buffers are forced to flush all changes to the disk
 		  //Specify the backupFile parameter to create a backup copy of the source file
-		  //If this function fails, look at Platform.LastErrorCode for the error reason.
+		  //If this function fails, look at GetLastError for the error reason.
 		  
 		  #If TargetWin32
 		    If source.Directory Or destination.Directory Then Return False
-		    
-		    Declare Function ReplaceFileW Lib "Kernel32" (sourceFile As WString, destinationFile As WString, backupFile As Ptr, flags As Integer, _
-		    reserved1 As Integer, reserved2 As Integer) As Boolean
-		    
 		    Dim rpFlags As Integer
 		    If forceSync Then rpFlags = 1    //REPLACEFILE_WRITE_THROUGH = 1
 		    
 		    If backupFile = Nil Then
-		      Return ReplaceFileW(source.AbsolutePath, destination.AbsolutePath, Nil, rpFlags, 0, 0)
+		      Return ReplaceFile(source.AbsolutePath, destination.AbsolutePath, Nil, rpFlags, 0, 0)
 		    Else
 		      Dim backupPath As New MemoryBlock(LenB(backupFile.AbsolutePath) * 2 + 2)
 		      backupPath.WString(0) = backupFile.AbsolutePath
-		      Return ReplaceFileW(source.AbsolutePath, destination.AbsolutePath, backupPath, rpFlags, 0, 0)
+		      Return ReplaceFile(source.AbsolutePath, destination.AbsolutePath, backupPath, rpFlags, 0, 0)
 		    End If
 		  #endif
 		End Function
@@ -957,9 +845,8 @@ Protected Module File_Ops
 		  //See: Archive, Encrypted, Hidden, IsNormal, ReadOnly, and SystemFile functions in this module.
 		  
 		  #If TargetWin32 Then
-		    Declare Function SetFileAttributesW Lib "Kernel32" (path As WString, fattribs As Integer) As Boolean
 		    If attribs = 0 Then attribs = &h80
-		    Return SetFileAttributesW(f.AbsolutePath, attribs)
+		    Return SetFileAttributes(f.AbsolutePath, attribs)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -970,11 +857,7 @@ Protected Module File_Ops
 		  
 		  #If TargetWin32 Then
 		    Dim param As String = "/select, """ + f.AbsolutePath + """"
-		    Soft Declare Sub ShellExecuteW Lib "Shell32" (hwnd As Integer, op As WString, file As WString, params As WString, directory As Integer, _
-		    cmd As Integer)
-		    
-		    Const SW_SHOW = 5
-		    ShellExecuteW(0, "open", "explorer", param, 0, SW_SHOW)
+		    Call ShellExecute(0, "open", "explorer", param, 0, SW_SHOW)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -984,8 +867,7 @@ Protected Module File_Ops
 		  //Returns True if the specified FolderItem is located on a high-latentcy (<40000 baud) network location.
 		  
 		  #If TargetWin32 Then
-		    Declare Function PathIsSlowW Lib "Shell32" (path As WString, attribs As Integer) As Boolean
-		    Return PathIsSlowW(f.AbsolutePath, -1)
+		    Return PathIsSlow(f.AbsolutePath, -1)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -995,7 +877,6 @@ Protected Module File_Ops
 		  //Housekeeping. Call this function with the value returned from WatchDirectoryForChanges to clean up when you're done watching.
 		  //FIXME: messy
 		  #If TargetWin32 Then
-		    Declare Function UnregisterWait Lib "Kernel32" (wHandle As Integer) As Boolean
 		    Call UnregisterWait(WatchHandle)
 		  #endif
 		End Sub
@@ -1014,9 +895,8 @@ Protected Module File_Ops
 		  #If TargetWin32 Then
 		    If StreamIndex = 0 Then Return ""  //Stream zero is the unnamed main stream
 		    
-		    If Platform.IsOlderThan(Platform.WinVista) And Platform.IsAtLeast(Platform.Win2000) Then
-		      Soft Declare Sub NtQueryInformationFile Lib "NTDLL" (fHandle As Integer, ByRef status As IO_STATUS_BLOCK, FileInformation As Ptr, FILength As UInt32, InfoClass As Int32)
-		      Dim fHandle As Integer = Platform.CreateFile(target.AbsolutePath, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		    If Platform.KernelVersion < 6.0 And Platform.KernelVersion >= 5.0 Then
+		      Dim fHandle As Integer = CreateFile(target.AbsolutePath, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		      If fHandle > 0 Then
 		        Dim mb As New MemoryBlock(64 * 1024)
 		        Dim status As IO_STATUS_BLOCK
@@ -1035,7 +915,7 @@ Protected Module File_Ops
 		      Else
 		        Raise New IOException
 		      End If
-		    ElseIf Platform.IsAtLeast(Platform.WinVista) Then
+		    ElseIf Platform.KernelVersion >= 6.0 Then
 		      Dim buffer As WIN32_FIND_STREAM_DATA
 		      Dim sHandle As Integer = FindFirstStream(target.AbsolutePath, 0, buffer, 0)
 		      Dim ret As String
@@ -1079,10 +959,10 @@ Protected Module File_Ops
 		  #If TargetWin32 Then
 		    If target <> Nil Then
 		      If target.Exists Then
-		        Dim fHandle As Integer = Platform.CreateFile(target.AbsolutePath + ":" + StreamName + ":$DATA", 0, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		        Dim fHandle As Integer = CreateFile(target.AbsolutePath + ":" + StreamName + ":$DATA", 0, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		        If fHandle > 0 Then
 		          target = GetFolderItem(target.AbsolutePath + ":" + StreamName + ":$DATA")
-		          Call Platform.CloseHandle(fHandle)
+		          Call CloseHandle(fHandle)
 		          Return target
 		        Else
 		          Return Nil
@@ -1102,10 +982,9 @@ Protected Module File_Ops
 		  //On error, returns -1
 		  
 		  #If TargetWin32 Then
-		    If Platform.IsOlderThan(Platform.WinVista) And Platform.IsAtLeast(Platform.Win2000) Then
-		      Soft Declare Sub NtQueryInformationFile Lib "NTDLL" (fHandle As Integer, ByRef status As IO_STATUS_BLOCK, FileInformation As Ptr, FILength As UInt32, InfoClass As Int32)
+		    If Platform.KernelVersion >= 5.0 And Platform.KernelVersion < 6.0 Then
 		      
-		      Dim fHandle As Integer = Platform.CreateFile(f.AbsolutePath, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		      Dim fHandle As Integer = CreateFile(f.AbsolutePath, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		      If fHandle > 0 Then
 		        Dim mb As New MemoryBlock(64 * 1024)
 		        Dim status As IO_STATUS_BLOCK
@@ -1124,7 +1003,7 @@ Protected Module File_Ops
 		      Else
 		        Return -1
 		      End If
-		    ElseIf Platform.IsAtLeast(Platform.WinVista) Then
+		    ElseIf Platform.KernelVersion >= 6.0 Then
 		      Dim buffer As WIN32_FIND_STREAM_DATA
 		      Dim sHandle As Integer = FindFirstStream(f.AbsolutePath, 0, buffer, 0)
 		      Dim ret As Integer
@@ -1178,9 +1057,9 @@ Protected Module File_Ops
 		Function Truncate(Extends File As FolderItem) As Boolean
 		  //Truncates the file to zero bytes. Returns False on error (e.g. the file was in use, not found, etc.)
 		  
-		  Dim handle As Integer = Platform.CreateFile(File.Name, GENERIC_WRITE, 0, 0, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
+		  Dim handle As Integer = CreateFile(File.Name, GENERIC_WRITE, 0, 0, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
 		  If handle > 0 Then
-		    Call Platform.CloseHandle(handle)
+		    Call CloseHandle(handle)
 		    Return True
 		  End If
 		End Function
@@ -1190,9 +1069,9 @@ Protected Module File_Ops
 		Function TruncateAndOpen(Extends File As FolderItem) As TextOutputStream
 		  //Truncates the file to zero bytes. Returns a TextOutputStream to the file.
 		  
-		  Dim handle As Integer = Platform.CreateFile(File.Name, GENERIC_WRITE, 0, 0, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
+		  Dim handle As Integer = CreateFile(File.Name, GENERIC_WRITE, 0, 0, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
 		  If handle > 0 Then
-		    Call Platform.CloseHandle(handle)
+		    Call CloseHandle(handle)
 		    Return TextOutputStream.Create(File)
 		    
 		  End If
@@ -1203,13 +1082,10 @@ Protected Module File_Ops
 		Function UnlockFile(fHandle As Integer) As Boolean
 		  //See the LockFile function
 		  #If TargetWin32 Then
-		    Declare Function myUnlockFile Lib "kernel32" Alias "UnlockFile" (ByVal hFile As integer, ByVal dwFileOffsetLow As integer, ByVal dwFileOffsetHigh As integer, _
-		    ByVal nNumberOfBytesToUnlockLow As integer, ByVal nNumberOfBytesToUnlockHigh As integer) As Boolean
-		    
-		    Dim ret As Boolean = myUnlockFile(fHandle, 0, 0, 1, 0)
-		    Call Platform.CloseHandle(fHandle)
-		    
-		    Return ret
+		    If Kernel32.UnlockFile(fHandle, 0, 0, 1, 0) Then
+		      Call CloseHandle(fHandle)
+		      Return True
+		    End If
 		  #endif
 		End Function
 	#tag EndMethod
@@ -1226,18 +1102,14 @@ Protected Module File_Ops
 		    If f = Nil Then Return Nil
 		    If Not f.Exists Then Return Nil
 		    
-		    Declare Function GetFileVersionInfoSizeW Lib "Version" (fileName As WString, ignored As Integer) As Integer
-		    Declare Function GetFileVersionInfoW Lib "Version" (fileName As WString, ignored As Integer, bufferSize As Integer, buffer As Ptr) As Boolean
-		    Declare Function VerQueryValueW Lib "Version" (inBuffer As Ptr, subBlock As WString, outBuffer As Ptr, ByRef outBufferLen As Integer) As Boolean
-		    
-		    Dim infoSize As Integer = GetFileVersionInfoSizeW(f.AbsolutePath, 0)
+		    Dim infoSize As Integer = GetFileVersionInfoSize(f.AbsolutePath, 0)
 		    If infoSize <= 0 Then Return Nil
 		    
 		    Dim buff As New MemoryBlock(infoSize)
-		    If GetFileVersionInfoW(f.AbsolutePath, 0, buff.Size, buff) Then
+		    If GetFileVersionInfo(f.AbsolutePath, 0, buff.Size, buff) Then
 		      Dim mb As New MemoryBlock(4)
 		      Dim retBuffLen As Integer
-		      If VerQueryValueW(buff, "\VarFileInfo\Translation", mb, retBuffLen) Then
+		      If VerQueryValue(buff, "\VarFileInfo\Translation", mb, retBuffLen) Then
 		        Dim fields() As String = Split("Comments InternalName ProductName CompanyName LegalCopyright ProductVersion FileDescription LegalTrademarks PrivateBuild FileVersion OriginalFilename SpecialBuild", " ")
 		        Dim j, k As String
 		        j = Hex(mb.Ptr(0).Int16Value(0))
@@ -1246,7 +1118,7 @@ Protected Module File_Ops
 		        Dim ret As New Dictionary
 		        For Each datum As String In fields
 		          mb = New MemoryBlock(4)
-		          If VerQueryValueW(buff, "\StringFileInfo\" + langCode + "\" + datum, mb, retBuffLen) Then
+		          If VerQueryValue(buff, "\StringFileInfo\" + langCode + "\" + datum, mb, retBuffLen) Then
 		            ret.Value(datum) = mb.Ptr(0).WString(0)
 		          End If
 		        Next
@@ -1273,26 +1145,14 @@ Protected Module File_Ops
 		  //Returns a handle (integer) which you later give to StopWatchingDirectory
 		  
 		  #If TargetWin32 Then
-		    Declare Function RegisterWaitForSingleObject Lib "Kernel32" (ByRef waitHandle As Integer, objectHandle As Integer, callback As Ptr, context As Ptr, _
-		    waitMilliseconds As Integer, flags As Integer) As Boolean
-		    Declare Function FindFirstChangeNotificationW Lib "Kernel32" (dirPath As WString, watchChildren As Boolean, eventTypeFilter As Integer) As Integer
-		    
 		    If dir = Nil Then Return 0
 		    If Not dir.Exists Or Not dir.Directory Then Return 0
-		    
-		    Const WT_EXECUTEONLYONCE = &h00000008
-		    Const FILE_NOTIFY_CHANGE_FILE_NAME = &h00000001
-		    Const FILE_NOTIFY_CHANGE_DIR_NAME = &h00000002
-		    Const FILE_NOTIFY_CHANGE_ATTRIBUTES = &h00000004
-		    Const FILE_NOTIFY_CHANGE_SIZE = &h00000008
-		    Const FILE_NOTIFY_CHANGE_LAST_WRITE = &h00000010
-		    Const FILE_NOTIFY_CHANGE_SECURITY = &h00000100
 		    
 		    Dim customData As MemoryBlock = dir.AbsolutePath  //Supposedly this gets passed to the callback function, but it doesn't for some reason.
 		    Dim allFilters As Integer = FILE_NOTIFY_CHANGE_ATTRIBUTES Or FILE_NOTIFY_CHANGE_DIR_NAME Or FILE_NOTIFY_CHANGE_FILE_NAME Or _
 		    FILE_NOTIFY_CHANGE_LAST_WRITE Or FILE_NOTIFY_CHANGE_SECURITY Or FILE_NOTIFY_CHANGE_SIZE
 		    
-		    Dim monHandle As Integer = FindFirstChangeNotificationW(dir.AbsolutePath, True, allFilters)
+		    Dim monHandle As Integer = FindFirstChangeNotification(dir.AbsolutePath, True, allFilters)
 		    If monHandle > 0 Then
 		      Dim waitHandle As Integer
 		      If RegisterWaitForSingleObject(waitHandle, monHandle, callbackFunction, customData, &hFFFFFFFF, WT_EXECUTEONLYONCE) Then

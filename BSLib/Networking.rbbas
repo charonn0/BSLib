@@ -4,15 +4,14 @@ Protected Module Networking
 		Function CombineURL(BaseURL As String, relativeURL As String, ByRef outputURL As String) As Integer
 		  //Safely combines a given base URL with a given relative URL. Returns the combined URL
 		  
-		  Declare Function InternetCombineUrlW Lib "WinInet" (base As WString, relative As WString, output As Ptr, ByRef size As Integer, flags As Integer) As Boolean
-		  Const ICU_BROWSER_MODE = &h2000000
+		  
 		  Dim mb As New MemoryBlock((BaseURL.LenB + relativeURL.LenB) * 4)
 		  Dim count As Integer = mb.Size
-		  If InternetCombineUrlW(BaseURL, relativeURL, mb, count, ICU_BROWSER_MODE) Then
+		  If InternetCombineUrl(BaseURL, relativeURL, mb, count, ICU_BROWSER_MODE) Then
 		    outputURL = mb.WString(0)
 		    Return 0
 		  Else
-		    Return Platform.LastErrorCode
+		    Return GetLastError
 		  End If
 		End Function
 	#tag EndMethod
@@ -24,11 +23,8 @@ Protected Module Networking
 		  //FIXME: very buggy
 		  
 		  #If TargetWin32 Then
-		    Declare Function DnsQuery_A Lib "DNSAPI" (hostname As CString, type As Int16, options As Integer, reserved1 As Integer, ByRef result As Ptr, reserved As Integer) As Integer
-		    Declare Sub DnsRecordListFree Lib "DNSAPI" (listPtr As Integer, freeType As Integer)
-		    Const DNS_TYPE_A = &h0001
 		    Dim mb As Ptr
-		    Dim x As Integer = DnsQuery_A(ConvertEncoding(domain, Encodings.ASCII), DNS_TYPE_A, 0, 0, mb, 0)
+		    Dim x As Integer = DnsQuery(ConvertEncoding(domain, Encodings.ASCII), DNS_TYPE_A, 0, 0, mb, 0)
 		    If x = 0 Then
 		      Dim mb1 As MemoryBlock = mb
 		      Return IPv4IntToDot(mb1.UInt32Value(24))  //Convert the integer to a dotted string
@@ -41,11 +37,10 @@ Protected Module Networking
 
 	#tag Method, Flags = &h0
 		Function EscapeURL(URL As String) As String
-		  Declare Function InternetCanonicalizeUrlW Lib "WinInet" (URL As WString, output As Ptr, ByRef buffersize As Integer, flags As Integer) As Boolean
 		  Dim mb As New MemoryBlock(URL.LenB * 4)
 		  Dim count As Integer = mb.Size
 		  
-		  If InternetCanonicalizeUrlW(URL, mb, count, ICU_BROWSER_MODE) Then
+		  If InternetCanonicalizeUrl(URL, mb, count, ICU_BROWSER_MODE) Then
 		    Return mb.WString(0)
 		  Else
 		    Return URL
@@ -59,8 +54,7 @@ Protected Module Networking
 		  //On Windows XP and earlier, we just check whether GoogleDNS is reachable
 		  
 		  #If TargetWin32 Then
-		    If Platform.IsAtLeast(Platform.WinVista) Then
-		      Soft Declare Function IsInternetConnected Lib "Connect" () As Integer
+		    If System.IsFunctionAvailable("IsInternetConnected", "Connect") Then
 		      Return IsInternetConnected = 0
 		    Else
 		      Return IsDestinationReachable("8.8.8.8")  //Google's distributed DNS server.
@@ -75,7 +69,6 @@ Protected Module Networking
 		  //Returns True if the connection succeeded or was already established.
 		  
 		  #If TargetWin32 Then
-		    Declare Function InternetAttemptConnect Lib "WinInet" (Reserved As Integer) As Integer
 		    Return InternetAttemptConnect(0) = 0
 		  #endif
 		End Function
@@ -88,7 +81,6 @@ Protected Module Networking
 		  //Returns True if the connection succeeded or another connection was already established.
 		  
 		  #If TargetWin32 Then
-		    Declare Function InternetAutodial Lib "WinInet" (flags As Integer, HWND As Integer) As Boolean
 		    Return InternetAutodial(0, -1)
 		  #endif
 		End Function
@@ -125,12 +117,10 @@ Protected Module Networking
 		  //dropped, System.IsFunctionAvailable("IsDestinationReachableW", "Sensapi") will still return True so we check the kernel version instead.
 		  
 		  #If TargetWin32 Then
-		    If Platform.IsAtLeast(Platform.Win2000) And Platform.IsOlderThan(Platform.WinVista) Then
-		      Soft Declare Function IsDestinationReachableW Lib "Sensapi" (destination As Wstring, ByRef info As QOCINFO) As Boolean
-		      
+		    If Platform.KernelVersion > 5.0 And Platform.KernelVersion < 6.0 Then
 		      Dim info As QOCINFO
 		      info.sSize = info.Size
-		      Return IsDestinationReachableW(destination, info)
+		      Return IsDestinationReachable(destination, info)
 		    Else
 		      Return Ping(destination) > -1
 		    End If
@@ -144,11 +134,9 @@ Protected Module Networking
 		  //On error, or if no connections are alive, returns False
 		  
 		  #If TargetWin32 Then
-		    Declare Function IsNetworkAlive Lib "Sensapi" (ByRef netFlags As Integer) As Boolean
-		    
 		    Dim flags As Integer
 		    If IsNetWorkAlive(flags) Then
-		      If Platform.LastErrorCode = 0 Then
+		      If GetLastError = 0 Then
 		        Return True
 		      Else
 		        Return False
@@ -168,15 +156,6 @@ Protected Module Networking
 		  //Based heavily on the Ping function from WFS.
 		  
 		  #If TargetWin32 Then
-		    Declare Function IcmpCreateFile Lib "ICMP" () As Integer
-		    Declare Sub IcmpCloseHandle Lib "ICMP" (handle As Integer)
-		    Declare Function IcmpSendEcho Lib "ICMP" (handle As Integer, address As Integer, data As Integer, size As Integer, options As Ptr, _
-		    reply As Ptr, replySize As Integer, timeout As Integer) As Integer
-		    Declare Function inet_addr Lib "ws2_32" (addr As CString) As Integer
-		    Declare Function gethostbyname Lib "ws2_32" (addr As CString) As Ptr
-		    Declare Sub WSAStartup Lib "ws2_32" (versRequest As Integer, data As Ptr)
-		    Declare Sub WSACleanup Lib "ws2_32" ()
-		    
 		    Dim mb As New MemoryBlock(256 + 128 + 8 + 4)
 		    WSAStartup(&h0101, mb)
 		    

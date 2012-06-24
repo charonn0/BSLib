@@ -4,7 +4,6 @@ Protected Module Explorer
 		Private Function ShellGetSettings() As SHELLFLAGSTATE
 		  
 		  #If TargetWin32 Then
-		    Declare Sub SHGetSettings Lib "Shell32" (ByRef flagStruct As SHELLFLAGSTATE, flags As Integer)
 		    Dim info As SHELLFLAGSTATE
 		    Const AllFlags = &h7FFFBF
 		    SHGetSettings(info, AllFlags)

@@ -5,15 +5,12 @@ Protected Module Console
 		  //Clears the screen and moves the cursor to the top left corner (0,0)
 		  
 		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-		    Declare Function FillConsoleOutputCharacterW Lib "Kernel32" (cHandle As Integer, character As Integer, length As Integer, startCoord As COORD, _
-		    ByRef charsWritten As Integer) As Boolean
-		    
 		    Dim cord As COORD = Buffer.dwSize
 		    Dim charCount As Integer = cord.X * cord.Y
 		    cord.X = 0
 		    cord.Y = 0
 		    
-		    If FillConsoleOutputCharacterW(StdOutHandle, 0, charCount, cord, charCount) Then
+		    If FillConsoleOutputCharacter(StdOutHandle, 0, charCount, cord, charCount) Then
 		      Return SetCursorPosition(cord)
 		    Else
 		      Return False
@@ -32,17 +29,15 @@ Protected Module Console
 		  //On error, raises a Win32Exception with the Last Win32 error code
 		  
 		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-		    Declare Function ReadConsoleOutputCharacterW Lib "Kernel32" (cHandle As Integer, chars As Ptr, Length As Integer, buffCords As COORD, charsRead As Ptr) As Boolean
-		    
 		    Dim mb As New MemoryBlock(4)
 		    Dim p As New MemoryBlock(4)
 		    Dim cords As COORD
 		    cords.X = x
 		    cords.Y = y
-		    If ReadConsoleOutputCharacterW(StdOutHandle, mb, mb.Size, cords, p) Then
+		    If ReadConsoleOutputCharacter(StdOutHandle, mb, mb.Size, cords, p) Then
 		      Return mb.CString(0)
 		    Else
-		      Raise New Win32Exception(Platform.LastErrorCode)
+		      Raise New Win32Exception(GetLastError)
 		    End If
 		    
 		  #Else
@@ -59,11 +54,9 @@ Protected Module Console
 		  
 		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
 		    If System.IsFunctionAvailable("GetConsoleOriginalTitleW", "Kernel32") Then
-		      Soft Declare Function GetConsoleOriginalTitleW Lib "Kernel32" (Contitle As Ptr, mbsize As Integer) As Integer
-		      
 		      Dim mb As New MemoryBlock(0)
-		      mb = New MemoryBlock(GetConsoleOriginalTitleW(mb, 0))
-		      Call GetConsoleOriginalTitleW(mb, mb.Size)
+		      mb = New MemoryBlock(GetConsoleOriginalTitle(mb, 0))
+		      Call GetConsoleOriginalTitle(mb, mb.Size)
 		      Return mb.Wstring(0)
 		    Else  //WinXP and earlier
 		      If OriginalTitle = "" Then  //The title was NOT previously changed using Console.ConsoleTitle
@@ -87,7 +80,6 @@ Protected Module Console
 		  //Your custom HandlerRoutine must return TRUE to prevent the application from exiting, or FALSE to allow termination.
 		  
 		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-		    Declare Function SetConsoleCtrlHandler Lib "Kernel32" (handlerRoutine As Ptr, add As Boolean) As Boolean
 		    Return SetConsoleCtrlHandler(NewFunction, True)
 		  #Else
 		    #pragma Unused NewFunction
@@ -119,8 +111,6 @@ Protected Module Console
 		  //On error, raises a Win32Exception with the Last Win32 error code
 		  
 		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-		    Declare Function WriteConsoleOutputCharacterW Lib "Kernel32" (cHandle As Integer, chars As Ptr, Length As Integer, buffCoords As COORD, charWritten As Ptr) As Boolean
-		    
 		    Dim ret As String = GetChar(x, y)
 		    Dim mb As New MemoryBlock(4)
 		    Dim p As New MemoryBlock(4)
@@ -129,10 +119,10 @@ Protected Module Console
 		    cords.Y = y
 		    mb.CString(0) = char
 		    
-		    If WriteConsoleOutputCharacterW(StdOutHandle, mb, mb.Size, cords, p) Then
+		    If WriteConsoleOutputCharacter(StdOutHandle, mb, mb.Size, cords, p) Then
 		      Return ret
 		    Else
-		      Raise New Win32Exception(Platform.LastErrorCode)
+		      Raise New Win32Exception(GetLastError)
 		    End If
 		  #Else
 		    #pragma Unused x
@@ -147,7 +137,6 @@ Protected Module Console
 		  //Resets the Control+C behavior to default. See: OverrideCTRL_C.
 		  
 		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-		    Declare Function SetConsoleCtrlHandler Lib "Kernel32" (handlerRoutine As Ptr, add As Boolean) As Boolean
 		    Return SetConsoleCtrlHandler(Nil, False)
 		  #endif
 		End Function
@@ -159,7 +148,6 @@ Protected Module Console
 		  //behavior using the OverrideCTRL_C function.
 		  
 		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-		    Declare Function GenerateConsoleCtrlEvent Lib "Kernel32" (ctrlEvent As Integer, processGroup As Integer) As Boolean
 		    Const CTRL_C_EVENT = 0
 		    Call GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0)
 		  #endif
@@ -172,9 +160,6 @@ Protected Module Console
 		  //text already printed to the buffer.
 		  
 		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-		    Declare Function FillConsoleOutputAttribute Lib "Kernel32" (cHandle As Integer, attrib As UInt16, len As Integer, startCoord As COORD, _
-		    ByRef charsWritten As Integer) As Boolean
-		    
 		    Dim cord As COORD = Buffer.dwSize
 		    Dim charCount As Integer = cord.X * cord.Y
 		    cord.X = 0
@@ -195,8 +180,6 @@ Protected Module Console
 		  //text formatting for new text.
 		  
 		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-		    Declare Function SetConsoleTextAttribute Lib "Kernel32" (hConsole As Integer, attribs As UInt16) As Boolean
-		    
 		    Dim stdOutHandle As Integer = StdOutHandle()
 		    If stdOutHandle <= 0 Then Return 0
 		    Dim buffInfo As CONSOLE_SCREEN_BUFFER_INFO = Buffer
@@ -211,25 +194,10 @@ Protected Module Console
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h1
-		Protected Function SetCursorPosition(coords As COORD) As Boolean
-		  //Sets the cursor position to the specified coordinates. See ConsoleX and ConsoleY
-		  
-		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-		    Declare Function SetConsoleCursorPosition Lib "Kernel32" (cHandle As Integer, cord As COORD) As Boolean
-		    Return SetConsoleCursorPosition(StdOutHandle, coords)
-		  #Else
-		    #pragma Unused coords
-		  #endif
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h0
 		Function SetRGBColors(NewColors() As UInt32) As Boolean
 		  //TODO: Finish this
 		  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-		    Soft Declare Function SetConsoleScreenBufferInfoEx Lib "Kernel32" (cHandle As Integer, info As CONSOLE_SCREEN_BUFFER_INFOEX) As Boolean
-		    
 		    Dim info As CONSOLE_SCREEN_BUFFER_INFOEX
 		    info.dwSize = Buffer.dwSize
 		    info.CursorPosition = Buffer.CursorPosition
@@ -244,25 +212,6 @@ Protected Module Console
 		    Return SetConsoleScreenBufferInfoEx(StdOutHandle,info)
 		  #Else
 		    #pragma Unused NewColors
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Function ShowMessageBox(msg As String, title As String, options As Integer = 0) As Integer
-		  //Shows a messagebox even if the application has no GUI (a console application)
-		  //Buttons, icons, and other options are documented at http://msdn.microsoft.com/en-us/library/ms645505%28v=vs.85%29.aspx
-		  //Some options have been defined as Win32Constants.MB_*
-		  //Returns an Integer corresponding to the button pressed by the user (just like REALbasic's MsgBox.)
-		  //Return values from 1 to 7 are identical to REALbasic's MsgBox return values.
-		  
-		  #If TargetWin32 Then  //Windows Console Applications only
-		    Declare Function MessageBoxW Lib "User32" (HWND As Integer, text As WString, caption As WString, type As Integer) As Integer
-		    Return MessageBoxW(0, msg, title, options)
-		  #Else
-		    #pragma Unused msg
-		    #pragma Unused title
-		    #pragma Unused options
 		  #endif
 		End Function
 	#tag EndMethod
@@ -310,7 +259,6 @@ Protected Module Console
 			  //Returns a CONSOLE_SCREEN_BUFFER_INFO structure for the current process's screen buffer
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-			    Declare Function GetConsoleScreenBufferInfo Lib "Kernel32" (hConsole As Integer, ByRef buffinfo As CONSOLE_SCREEN_BUFFER_INFO) As Boolean
 			    Dim buffInfo As CONSOLE_SCREEN_BUFFER_INFO
 			    Dim stdOutHandle As Integer = StdOutHandle()
 			    If GetConsoleScreenBufferInfo(stdOutHandle, buffInfo) Then
@@ -335,10 +283,6 @@ Protected Module Console
 			  //value = the number of columns high the buffer should be
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-			    Declare Function SetConsoleScreenBufferSize Lib "Kernel32" (cHandle As Integer, coords As COORD) As Boolean
-			    Declare Function SetConsoleWindowInfo Lib "Kernel32" (cHandle As Integer, Absolute As Boolean, ByRef coords As SMALL_RECT) As Boolean
-			    Declare Function GetLargestConsoleWindowSize Lib "Kernel32" (cHandle As Integer) As COORD
-			    
 			    Dim cord As COORD
 			    Dim winSize As SMALL_RECT = Buffer.sdWindow
 			    
@@ -381,10 +325,6 @@ Protected Module Console
 			  //value = the number of columns wide the buffer should be
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-			    Declare Function SetConsoleScreenBufferSize Lib "Kernel32" (cHandle As Integer, coords As COORD) As Boolean
-			    Declare Function SetConsoleWindowInfo Lib "Kernel32" (cHandle As Integer, Absolute As Boolean, ByRef coords As SMALL_RECT) As Boolean
-			    Declare Function GetLargestConsoleWindowSize Lib "Kernel32" (cHandle As Integer) As COORD
-			    
 			    Dim cord As COORD
 			    Dim winSize As SMALL_RECT = Buffer.sdWindow
 			    
@@ -419,9 +359,8 @@ Protected Module Console
 			Get
 			  //Returns the console window title.
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-			    Declare Function GetConsoleTitleW Lib "Kernel32" (Contitle As Ptr, mbsize As Integer) As Integer
 			    Dim mb As New MemoryBlock(256)
-			    Call GetConsoleTitleW(mb, mb.Size)
+			    Call GetConsoleTitle(mb, mb.Size)
 			    If mb.Size = 0 Then Return ""
 			    Return mb.Wstring(0)
 			  #endif
@@ -432,11 +371,9 @@ Protected Module Console
 			  //Sets the console window title.
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-			    Declare Function SetConsoleTitleW Lib "Kernel32" (cTitle As WString) As Boolean
-			    
 			    If OriginalTitle = "" Then OriginalTitle = ConsoleTitle
-			    If Not SetConsoleTitleW(value) Then
-			      Raise New Win32Exception(Platform.LastErrorCode)
+			    If Not SetConsoleTitle(value) Then
+			      Raise New Win32Exception(GetLastError)
 			    End If
 			  #Else
 			    #pragma Unused value
@@ -452,7 +389,6 @@ Protected Module Console
 			  //Returns the height, in pixels, of the console cursor.
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-			    Declare Function GetConsoleCursorInfo Lib "Kernel32" (cHandle As Integer, ByRef CurseInfo As CONSOLE_CURSOR_INFO) As Boolean
 			    Dim conInfo As CONSOLE_CURSOR_INFO
 			    Call GetConsoleCursorInfo(StdOutHandle, conInfo)
 			    
@@ -465,8 +401,6 @@ Protected Module Console
 			  //Sets the height, in pixels, of the console cursor.
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-			    Declare Function GetConsoleCursorInfo Lib "Kernel32" (cHandle As Integer, ByRef CurseInfo As CONSOLE_CURSOR_INFO) As Boolean
-			    Declare Function SetConsoleCursorInfo Lib "Kernel32" (cHandle As Integer, ByRef CurseInfo As CONSOLE_CURSOR_INFO) As Boolean
 			    Dim conInfo As CONSOLE_CURSOR_INFO
 			    Call GetConsoleCursorInfo(StdOutHandle, conInfo)
 			    conInfo.Height = value
@@ -485,7 +419,6 @@ Protected Module Console
 			  //Returns True if the console cursor is visible.
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-			    Declare Function GetConsoleCursorInfo Lib "Kernel32" (cHandle As Integer, ByRef CurseInfo As CONSOLE_CURSOR_INFO) As Boolean
 			    Dim conInfo As CONSOLE_CURSOR_INFO
 			    Call GetConsoleCursorInfo(StdOutHandle, conInfo)
 			    
@@ -498,8 +431,6 @@ Protected Module Console
 			  //Hides or shows the console's cursor.
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-			    Declare Function GetConsoleCursorInfo Lib "Kernel32" (cHandle As Integer, ByRef CurseInfo As CONSOLE_CURSOR_INFO) As Boolean
-			    Declare Function SetConsoleCursorInfo Lib "Kernel32" (cHandle As Integer, ByRef CurseInfo As CONSOLE_CURSOR_INFO) As Boolean
 			    Dim conInfo As CONSOLE_CURSOR_INFO
 			    Call GetConsoleCursorInfo(StdOutHandle, conInfo)
 			    conInfo.Visible = value
@@ -524,7 +455,7 @@ Protected Module Console
 			  //Sets the X (horizontal) position of the cursor
 			  Dim cord As COORD = Buffer.CursorPosition
 			  cord.X = value
-			  Call SetCursorPosition(cord)
+			  Call SetConsoleCursorPosition(StdOutHandle, cord)
 			End Set
 		#tag EndSetter
 		CursorX As Integer
@@ -542,7 +473,7 @@ Protected Module Console
 			  //Sets the Y (vertical) position of the cursor
 			  Dim cord As COORD = Buffer.CursorPosition
 			  cord.Y = value
-			  Call SetCursorPosition(cord)
+			  Call SetConsoleCursorPosition(StdOutHandle, cord)
 			End Set
 		#tag EndSetter
 		CursorY As Integer
@@ -555,7 +486,6 @@ Protected Module Console
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
 			    If System.IsFunctionAvailable("GetConsoleDisplayMode", "Kernel32") Then
-			      Soft Declare Function GetConsoleDisplayMode Lib "Kernel32" (ByRef flags As Integer) As Boolean
 			      Dim flags As Integer
 			      Call GetConsoleDisplayMode(flags)
 			      If flags = 1 or flags = 2 Then
@@ -575,10 +505,6 @@ Protected Module Console
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
 			    If System.IsFunctionAvailable("SetConsoleDisplayMode", "Kernel32") Then
-			      Soft Declare Function SetConsoleDisplayMode Lib "Kernel32" (conHandle As Integer, flags As Integer, rect As Ptr) As Boolean
-			      Declare Function GetStdHandle Lib "Kernel32" (hIOStreamType As Integer) As Integer
-			      
-			      Const STD_OUTPUT_HANDLE = -12
 			      Dim stdOutHandle As Integer = StdOutHandle()
 			      If stdOutHandle <= 0 Then Return
 			      
@@ -604,7 +530,6 @@ Protected Module Console
 			  //Assigning FALSE to this value causes the application to honor CTRL+C after previously being ignored.
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-			    Declare Function SetConsoleCtrlHandler Lib "Kernel32" (handlerRoutine As Ptr, add As Boolean) As Boolean
 			    Call SetConsoleCtrlHandler(Nil, value)
 			  #Else
 			    #pragma Unused value
@@ -624,11 +549,7 @@ Protected Module Console
 			  //Gets the console buffer stdin handle.
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
 			    Static stdHandle As Integer
-			    If stdHandle <= 0 Then
-			      Declare Function GetStdHandle Lib "Kernel32" (hIOStreamType As Integer) As Integer
-			      Const STD_ERROR_HANDLE = -12
-			      stdHandle = GetStdHandle(STD_ERROR_HANDLE)
-			    End If
+			    If stdHandle <= 0 Then stdHandle = GetStdHandle(STD_ERROR_HANDLE)
 			    Return stdHandle
 			  #endif
 			End Get
@@ -642,11 +563,7 @@ Protected Module Console
 			  //Gets the console buffer stdin handle.
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
 			    Static stdHandle As Integer
-			    If stdHandle <= 0 Then
-			      Declare Function GetStdHandle Lib "Kernel32" (hIOStreamType As Integer) As Integer
-			      Const STD_INPUT_HANDLE = -10
-			      stdHandle = GetStdHandle(STD_INPUT_HANDLE)
-			    End If
+			    If stdHandle <= 0 Then stdHandle = GetStdHandle(STD_INPUT_HANDLE)
 			    Return stdHandle
 			  #endif
 			End Get
@@ -660,11 +577,7 @@ Protected Module Console
 			  //Gets the console buffer stdout handle.
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
 			    Static stdOutHandle As Integer
-			    If stdOutHandle <= 0 Then
-			      Declare Function GetStdHandle Lib "Kernel32" (hIOStreamType As Integer) As Integer
-			      Const STD_OUTPUT_HANDLE = -11
-			      stdOutHandle = GetStdHandle(STD_OUTPUT_HANDLE)
-			    End If
+			    If stdOutHandle <= 0 Then stdOutHandle = GetStdHandle(STD_OUTPUT_HANDLE)
 			    Return stdOutHandle
 			  #endif
 			End Get
@@ -677,12 +590,6 @@ Protected Module Console
 			Set
 			  //Sets whether the console window is visible or not
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
-			    Declare Function GetConsoleWindow Lib "Kernel32" () As Integer
-			    Declare Function ShowWindow Lib "User32" (HWND As Integer, cmd As Integer) As Boolean
-			    
-			    Const SW_RESTORE = 9
-			    Const SW_HIDE = 0
-			    
 			    Dim conHWND As Integer = GetConsoleWindow()
 			    
 			    If value Then
