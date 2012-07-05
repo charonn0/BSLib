@@ -121,7 +121,7 @@ Protected Module File_Ops
 		        buffSize = linkname.Size
 		      Loop Until Not FindNextFileNameW(findHandle, buffSize, linkname)
 		    End If
-		    
+		    Call FindClose(findHandle)
 		    Return linkCount
 		  #endif
 		End Function
@@ -414,7 +414,7 @@ Protected Module File_Ops
 		        buffSize = linkname.Size
 		      Loop Until Not FindNextFileNameW(findHandle, buffSize, linkname)
 		    End If
-		    
+		    Call FindClose(findHandle)
 		    Return ret
 		  #endif
 		End Function
