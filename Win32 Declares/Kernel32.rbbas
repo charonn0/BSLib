@@ -61,7 +61,15 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function FindFirstFileNameW Lib "Kernel32" (filename As WString, flags As Integer, ByRef StringLength As Integer, LinkName As Ptr) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Soft Declare Function FindFirstStream Lib "Kernel32" Alias "FindFirstStreamW" (filename As WString, InfoLevel As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA, Reserved As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function FindNextFileNameW Lib "Kernel32" (FindHandle As Integer, ByRef StringLength As Integer, LinkName As Ptr) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0

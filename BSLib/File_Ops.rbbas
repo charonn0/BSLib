@@ -104,6 +104,30 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CountHardLinks(target As FolderItem) As Integer
+		  //Returns the number of NTFS hard links which point to the same file as the specified folderitem
+		  //Windows Vista and newer only.
+		  //Returns 0 on error.
+		  
+		  #If TargetWin32 Then
+		    Dim findHandle, buffSize, linkCount As Integer
+		    Dim linkname As New MemoryBlock(4096)
+		    buffSize = linkname.Size
+		    linkname = New MemoryBlock(buffSize)
+		    findHandle = FindFirstFileNameW(target.AbsolutePath, 0, buffSize, linkname)
+		    If findHandle <> INVALID_HANDLE_VALUE Then
+		      Do
+		        linkCount = linkCount + 1
+		        buffSize = linkname.Size
+		      Loop Until Not FindNextFileNameW(findHandle, buffSize, linkname)
+		    End If
+		    
+		    Return linkCount
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CreateHardLink(source As FolderItem, destination As FolderItem) As Boolean
 		  //Creates an NTFS Hard Link. Source is the existing file, destination is the new Hard Link
 		  //This function will fail if the source and destination are not on the same volume or if the source or destination are directories.
@@ -366,6 +390,32 @@ Protected Module File_Ops
 		  
 		  #If TargetWin32 Then
 		    Return GetFileAttributes(f.AbsolutePath)
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function GetHardLinks(target As FolderItem) As FolderItem()
+		  //Returns an array of folderitems which are actually NTFS hard links which point to the same file as the specified folderitem
+		  //Windows Vista and newer only.
+		  //Returns an empty array on error.
+		  
+		  #If TargetWin32 Then
+		    Dim findHandle, buffSize As Integer
+		    Dim linkname As New MemoryBlock(4096)
+		    Dim ret() As FolderItem
+		    buffSize = linkname.Size
+		    linkname = New MemoryBlock(buffSize)
+		    findHandle = FindFirstFileNameW(target.AbsolutePath, 0, buffSize, linkname)
+		    If findHandle <> INVALID_HANDLE_VALUE Then
+		      Do
+		        Dim f As FolderItem = GetFolderItem(Left(target.AbsolutePath, 2) + linkname.WString(0))
+		        If f <> Nil Then ret.Append(f)
+		        buffSize = linkname.Size
+		      Loop Until Not FindNextFileNameW(findHandle, buffSize, linkname)
+		    End If
+		    
+		    Return ret
 		  #endif
 		End Function
 	#tag EndMethod

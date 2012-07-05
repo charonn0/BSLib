@@ -245,6 +245,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = IDYES, Type = Double, Dynamic = False, Default = \"6", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = INVALID_HANDLE_VALUE, Type = Double, Dynamic = False, Default = \"&hffffffff", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = IOCTL_STORAGE_BASE, Type = Double, Dynamic = False, Default = \"&h0000002d", Scope = Public
 	#tag EndConstant
 
