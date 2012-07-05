@@ -420,7 +420,7 @@ Protected Module Platform
 		  #If TargetWin32 Then
 		    Dim cleanup As Boolean = EnablePrivilege(SE_DEBUG_PRIVILEGE)
 		    
-		    If KernelVersion = 5.0 Then
+		    If KernelVersion = 5.1 Then
 		      Dim Modules As New MemoryBlock(255)  // 255 = SIZE_MINIMUM * sizeof(HMODULE)
 		      Dim ModuleName As New MemoryBlock(255)
 		      Dim nSize As Integer
@@ -445,7 +445,7 @@ Protected Module Platform
 		        ret = GetFolderItem(Result)
 		      End If
 		      Return ret
-		    ElseIf KernelVersion > 5.0 Then
+		    ElseIf KernelVersion > 5.2 Then
 		      Dim pHandle As Integer
 		      Dim realsize As Integer
 		      Dim path As New MemoryBlock(255)
