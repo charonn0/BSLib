@@ -36,7 +36,7 @@ Protected Class ColorRef
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return Val("&h00" + IntToHex(Me.Blue) + IntToHex(Me.Green) + IntToHex(Me.Red))
+			  Return Val("&h00" + Hex(Me.Blue) + Hex(Me.Green) + Hex(Me.Red))
 			End Get
 		#tag EndGetter
 		Value As UInt32

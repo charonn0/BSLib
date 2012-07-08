@@ -395,32 +395,6 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function GetHardLinks(target As FolderItem) As FolderItem()
-		  //Returns an array of folderitems which are actually NTFS hard links which point to the same file as the specified folderitem
-		  //Windows Vista and newer only.
-		  //Returns an empty array on error.
-		  
-		  #If TargetWin32 Then
-		    Dim findHandle, buffSize As Integer
-		    Dim linkname As New MemoryBlock(4096)
-		    Dim ret() As FolderItem
-		    buffSize = linkname.Size
-		    linkname = New MemoryBlock(buffSize)
-		    findHandle = FindFirstFileNameW(target.AbsolutePath, 0, buffSize, linkname)
-		    If findHandle <> INVALID_HANDLE_VALUE Then
-		      Do
-		        Dim f As FolderItem = GetFolderItem(Left(target.AbsolutePath, 2) + linkname.WString(0))
-		        If f <> Nil Then ret.Append(f)
-		        buffSize = linkname.Size
-		      Loop Until Not FindNextFileNameW(findHandle, buffSize, linkname)
-		    End If
-		    Call FindClose(findHandle)
-		    Return ret
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		Function gzipCompress(Extends source As FolderItem, destination As FolderItem = Nil) As Boolean
 		  //This function requires the GZip plugin available at http://sourceforge.net/projects/realbasicgzip/
 		  //source is the file to be compressed, destination is where the compressed file will be saved
@@ -579,6 +553,32 @@ Protected Module File_Ops
 		    bs.Close
 		    Return False
 		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function HardLinks(Extends target As FolderItem) As FolderItem()
+		  //Returns an array of folderitems which are actually NTFS hard links which point to the same file as the specified folderitem
+		  //Windows Vista and newer only.
+		  //Returns an empty array on error.
+		  
+		  #If TargetWin32 Then
+		    Dim findHandle, buffSize As Integer
+		    Dim linkname As New MemoryBlock(4096)
+		    Dim ret() As FolderItem
+		    buffSize = linkname.Size
+		    linkname = New MemoryBlock(buffSize)
+		    findHandle = FindFirstFileNameW(target.AbsolutePath, 0, buffSize, linkname)
+		    If findHandle <> INVALID_HANDLE_VALUE Then
+		      Do
+		        Dim f As FolderItem = GetFolderItem(Left(target.AbsolutePath, 2) + linkname.WString(0))
+		        If f <> Nil Then ret.Append(f)
+		        buffSize = linkname.Size
+		      Loop Until Not FindNextFileNameW(findHandle, buffSize, linkname)
+		    End If
+		    Call FindClose(findHandle)
+		    Return ret
+		  #endif
 		End Function
 	#tag EndMethod
 
@@ -1118,13 +1118,15 @@ Protected Module File_Ops
 	#tag Method, Flags = &h0
 		Function TruncateAndOpen(Extends File As FolderItem) As TextOutputStream
 		  //Truncates the file to zero bytes. Returns a TextOutputStream to the file.
+		  //On error, Returns Nil
 		  
-		  Dim handle As Integer = CreateFile(File.Name, GENERIC_WRITE, 0, 0, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
-		  If handle > 0 Then
-		    Call CloseHandle(handle)
-		    Return TextOutputStream.Create(File)
-		    
-		  End If
+		  #If TargetWin32 Then
+		    Dim handle As Integer = CreateFile(File.Name, GENERIC_WRITE, 0, 0, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
+		    If handle > 0 Then
+		      Call CloseHandle(handle)
+		      Return TextOutputStream.Create(File)
+		    End If
+		  #endif
 		End Function
 	#tag EndMethod
 

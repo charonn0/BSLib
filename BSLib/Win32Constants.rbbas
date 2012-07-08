@@ -761,6 +761,12 @@ Protected Module Win32Constants
 	#tag Constant, Name = STD_OUTPUT_HANDLE, Type = Double, Dynamic = False, Default = \"-11", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = SW_HIDE, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SW_RESTORE, Type = Double, Dynamic = False, Default = \"9", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = SW_SHOW, Type = Double, Dynamic = False, Default = \"5", Scope = Public
 	#tag EndConstant
 

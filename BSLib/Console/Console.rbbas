@@ -11,7 +11,7 @@ Protected Module Console
 		    cord.Y = 0
 		    
 		    If FillConsoleOutputCharacter(StdOutHandle, 0, charCount, cord, charCount) Then
-		      Return SetCursorPosition(cord)
+		      Return SetConsoleCursorPosition(StdOutHandle, cord)
 		    Else
 		      Return False
 		    End If
@@ -239,7 +239,6 @@ Protected Module Console
 		      End If
 		    Next
 		    stdout.Write(EndOfLine)
-		    Return lineCount
 		  #Else
 		    #pragma Unused msg
 		    #pragma Unused LinePrefix
@@ -260,7 +259,6 @@ Protected Module Console
 			  
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
 			    Dim buffInfo As CONSOLE_SCREEN_BUFFER_INFO
-			    Dim stdOutHandle As Integer = StdOutHandle()
 			    If GetConsoleScreenBufferInfo(stdOutHandle, buffInfo) Then
 			      Return buffInfo
 			    End If
@@ -549,7 +547,9 @@ Protected Module Console
 			  //Gets the console buffer stdin handle.
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
 			    Static stdHandle As Integer
-			    If stdHandle <= 0 Then stdHandle = GetStdHandle(STD_ERROR_HANDLE)
+			    If stdHandle = INVALID_HANDLE_VALUE Then 
+			      stdHandle = GetStdHandle(STD_ERROR_HANDLE)
+			    End If
 			    Return stdHandle
 			  #endif
 			End Get
