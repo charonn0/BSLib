@@ -547,9 +547,9 @@ Protected Module Console
 			  //Gets the console buffer stdin handle.
 			  #If Not TargetHasGUI And TargetWin32 Then  //Windows Console Applications only
 			    Static stdHandle As Integer
-			    If stdHandle = INVALID_HANDLE_VALUE Then 
+			    If stdHandle = INVALID_HANDLE_VALUE Then
 			      stdHandle = GetStdHandle(STD_ERROR_HANDLE)
-			    End If 
+			    End If
 			    Return stdHandle
 			  #endif
 			End Get

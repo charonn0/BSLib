@@ -1,10 +1,6 @@
 #tag Module
 Protected Module Kernel32
 	#tag ExternalMethod, Flags = &h0
-		Soft Declare Function WinBeep Lib "Kernel32" Alias "Beep" (freq As Integer, duration As Integer) As Boolean
-	#tag EndExternalMethod
-
-	#tag ExternalMethod, Flags = &h0
 		Declare Function CloseHandle Lib "Kernel32" (handle As Integer) As Boolean
 	#tag EndExternalMethod
 
@@ -254,6 +250,10 @@ Protected Module Kernel32
 
 	#tag ExternalMethod, Flags = &h0
 		Declare Function UnregisterWait Lib "Kernel32" (WaitHandle As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function WinBeep Lib "Kernel32" Alias "Beep" (freq As Integer, duration As Integer) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
