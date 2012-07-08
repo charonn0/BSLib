@@ -549,7 +549,7 @@ Protected Module Console
 			    Static stdHandle As Integer
 			    If stdHandle = INVALID_HANDLE_VALUE Then 
 			      stdHandle = GetStdHandle(STD_ERROR_HANDLE)
-			    End If
+			    End If 
 			    Return stdHandle
 			  #endif
 			End Get
