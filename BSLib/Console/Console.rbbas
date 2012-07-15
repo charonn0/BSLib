@@ -12,8 +12,6 @@ Protected Module Console
 		    
 		    If FillConsoleOutputCharacter(StdOutHandle, 0, charCount, cord, charCount) Then
 		      Return SetConsoleCursorPosition(StdOutHandle, cord)
-		    Else
-		      Return False
 		    End If
 		  #endif
 		End Function

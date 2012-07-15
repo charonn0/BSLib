@@ -1,6 +1,77 @@
 #tag Module
 Protected Module Images
 	#tag Method, Flags = &h0
+		Sub ApplySepia(Byref pic as picture, depth as Integer)
+		  //From: https://alwaysbusycorner.wordpress.com/2012/05/29/realbasic-isolated-project-4-a-sepia-filter/
+		  
+		  Dim R As Integer
+		  Dim G As Integer
+		  Dim B As Integer
+		  Dim pixelColor As Color
+		  Dim picRGB as RGBSurface
+		  
+		  picRGB = pic.RGBSurface
+		  
+		  For y As Integer = 0 To pic.Height - 1
+		    For x As Integer = 0 To pic.Width - 1
+		      pixelColor = picRGB.Pixel(x, y)
+		      R = (0.299 * pixelColor.Red) + (0.587 * pixelColor.Green) + (0.114 * pixelColor.Blue)
+		      B = R
+		      G = B
+		      
+		      R = R + (depth * 2)
+		      If R > 255 Then
+		        R = 255
+		      End If
+		      G = G + depth
+		      If G > 255 Then
+		        G = 255
+		      End If
+		      
+		      picRGB.Pixel(x, y) = RGB(R,G,B)
+		    Next
+		  Next
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CharPic(Char As String, TextColor As Color, BackColor As Color, Font As String, FontSize As Single) As Picture
+		  //Similar to TextToPicture but meant for single characters
+		  Dim tmp As New Picture(50, 50, 32)
+		  tmp.Graphics.ForeColor = BackColor
+		  tmp.Graphics.FillRect(0, 0, tmp.Width, tmp.Height)
+		  tmp.Graphics.ForeColor = TextColor
+		  tmp.Graphics.TextFont = Font
+		  tmp.Graphics.TextSize = FontSize
+		  
+		  Dim reqWidth, reqHeight As Integer
+		  reqWidth = tmp.Graphics.StringWidth(Char)
+		  reqHeight = tmp.Graphics.StringHeight(Char, reqWidth)
+		  #pragma BreakOnExceptions Off
+		  Try
+		    tmp = New Picture(reqWidth, reqHeight, 32)
+		  Catch OutOfBoundsException
+		    reqWidth = tmp.Graphics.StringWidth(Chr(&h20))
+		    reqHeight = tmp.Graphics.StringHeight(Chr(&h20), reqWidth)
+		    tmp = New Picture(reqWidth, reqHeight, 32)
+		  End Try
+		  #pragma BreakOnExceptions On
+		  
+		  tmp.Graphics.ForeColor = BackColor
+		  tmp.Graphics.FillRect(0, 0, tmp.Width, tmp.Height)
+		  tmp.Graphics.ForeColor = TextColor
+		  tmp.Graphics.TextFont = Font
+		  tmp.Graphics.TextSize = FontSize
+		  tmp.Graphics.DrawString(Char, 0, reqHeight * 0.75)
+		  
+		  Return tmp
+		  
+		Exception OutOfBoundsException
+		  Return Nil
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function ColorToHex(c As Color) As String
 		  //Converts a Color to a hex string, with appropriate zeros as spaceholders
 		  

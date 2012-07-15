@@ -704,13 +704,19 @@ Protected Module File_Ops
 		  //A positive return value is returned on success, 0 if lockedFile is Nil, and a negative number on error (a negative return value
 		  //is actually the last Win32 error multiplied by -1. So, for example, -5 is ERROR_ACCESS_DENIED.)
 		  //
-		  //You cannot open a lockedFile with a TextInputStream, TextOutputStream, or BinaryStream. Attempting to do so will
-		  //raise an IOException. Likewise, you cannot lock a file currently open in a TextInputStream, TextOutputStream, or BinaryStream.
+		  //Once the file is locked you can pass the integer from this function to the constructor methods of the TextInputStream, TextOutputStream,
+		  //and BinaryStream classes:
+		  '
+		  '    Dim file As FolderItem = GetFolderItem("C:\boot.ini")
+		  '    Dim fhandle As Integer = f.LockFile
+		  '    Dim tis As TextInputStream = New TextInputStream(fhandle, TextInputStream.HandleTypeWin32Handle
+		  '
+		  //Just as handy, the Close methods of each Stream class will also release the lock.
 		  
 		  #If TargetWin32 Then
 		    If lockedFile = Nil Then Return 0
 		    
-		    Dim fHandle As Integer = CreateFile(lockedFile.AbsolutePath, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)
+		    Dim fHandle As Integer = CreateFile(lockedFile.AbsolutePath, GENERIC_READ Or GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)
 		    If fHandle > 0 Then
 		      If LockFile(fHandle, 0, 0, 1, 0) Then
 		        Return fHandle   //You MUST keep this return value if you want to unlock the file later!!!
