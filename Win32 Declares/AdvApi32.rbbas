@@ -25,6 +25,14 @@ Protected Module AdvApi32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function DecryptFile Lib "AdvApi32" Alias "DecryptFileW" (FilePath As WString, Reserved As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function EncryptFile Lib "AdvApi32" Alias "EncryptFileW" (FilePath As WString) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function GetUserName Lib "AdvApi32" Alias "GetUserNameW" (buffer As Ptr, ByRef buffSize As Integer) As Boolean
 	#tag EndExternalMethod
 

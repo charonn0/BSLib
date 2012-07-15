@@ -125,6 +125,10 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function GetFinalPathNameByHandle Lib "Kernel32" Alias "GetFinalPathNameByHandleW" (FileHandle As Integer, FilePath As Ptr, FilePathSize As Integer, Flags As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function GetLargestConsoleWindowSize Lib "Kernel32" (cHandle As Integer) As COORD
 	#tag EndExternalMethod
 
