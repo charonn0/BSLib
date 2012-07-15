@@ -611,6 +611,29 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function IsChildOf(Extends Child As FolderItem, Parent As FolderItem) As Boolean
+		  //A fairly naive method to determine whether the Child FolderItem is contained within the Parent
+		  //FolderItem or one of its sub-directories.
+		  //e.g.:
+		  'Dim parent As FolderItem = GetFolderItem("C:\")
+		  'Dim child As FolderItem = SpecialFolder.Windows
+		  'If child.IsChildOf(parent) Then
+		  'MsgBox("The Windows directory is a child of the C:\ drive")
+		  'Else
+		  'MsgBox("The Windows directory is NOT a child of the C:\ drive")
+		  'End If
+		  If Not Parent.Directory Then Return False
+		  Dim node As FolderItem = Child
+		  While node.Parent <> Nil
+		    If node.Parent.AbsolutePath = Parent.AbsolutePath Then
+		      Return True
+		    End If
+		    node = node.Parent
+		  Wend
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function IsDangerous(Extends target As FolderItem) As Boolean
 		  //Returns True if the target FolderItem has an extension (e.g. ".exe") which Windows deems dangerous.
 		  //See the remarks here: http://msdn.microsoft.com/en-us/library/windows/desktop/bb773465%28v=vs.85%29.aspx
