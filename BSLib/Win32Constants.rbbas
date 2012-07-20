@@ -653,6 +653,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = PROV_RSA_FULL, Type = Double, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = REPLACEFILE_WRITE_THROUGH, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = SE_ASSIGNPRIMARYTOKEN_NAME, Type = String, Dynamic = False, Default = \"SeAssignPrimaryTokenPrivilege", Scope = Public
 	#tag EndConstant
 

@@ -878,7 +878,7 @@ Protected Module File_Ops
 		  #If TargetWin32
 		    If source.Directory Or destination.Directory Then Return False
 		    Dim rpFlags As Integer
-		    If forceSync Then rpFlags = 1    //REPLACEFILE_WRITE_THROUGH = 1
+		    If forceSync Then rpFlags = REPLACEFILE_WRITE_THROUGH
 		    
 		    If backupFile = Nil Then
 		      Return ReplaceFile(source.AbsolutePath, destination.AbsolutePath, Nil, rpFlags, 0, 0)
@@ -946,12 +946,15 @@ Protected Module File_Ops
 		          If mb.UInt32Value(currentOffset) > 0 Then
 		            currentOffset = mb.UInt32Value(currentOffset)
 		            If i = StreamIndex Then
+		              Call CloseHandle(fHandle)
 		              Return mb.WString(24)
 		            End If
 		          Else
+		            Call CloseHandle(fHandle)
 		            Raise New OutOfBoundsException
 		          End If
 		        Next
+		        Call CloseHandle(fHandle)
 		      Else
 		        Raise New IOException
 		      End If
