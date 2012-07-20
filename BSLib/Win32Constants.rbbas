@@ -134,7 +134,55 @@ Protected Module Win32Constants
 	#tag Constant, Name = FILE_APPEND_DATA, Type = Double, Dynamic = False, Default = \"&h0004", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = FILE_ATTRIBUTE_ARCHIVE, Type = Double, Dynamic = False, Default = \"&h20", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_COMPRESSED, Type = Double, Dynamic = False, Default = \"&h800", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_DEVICE, Type = Double, Dynamic = False, Default = \"&h40", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_DIRECTORY, Type = Double, Dynamic = False, Default = \"&h10", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_ENCRYPTED, Type = Double, Dynamic = False, Default = \"&h4000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_HIDDEN, Type = Double, Dynamic = False, Default = \"2", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_INTEGRITY_STREAM, Type = Double, Dynamic = False, Default = \"&h8000", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = FILE_ATTRIBUTE_NORMAL, Type = Double, Dynamic = False, Default = \"&h00000080", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_NOT_CONTENT_INDEXED, Type = Double, Dynamic = False, Default = \"&h2000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_NO_SCRUB_DATA, Type = Double, Dynamic = False, Default = \"&h20000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_OFFLINE, Type = Double, Dynamic = False, Default = \"&h1000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_READONLY, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_REPARSE_POINT, Type = Double, Dynamic = False, Default = \"&h400", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_SPARSE_FILE, Type = Double, Dynamic = False, Default = \"&h200", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_SYSTEM, Type = Double, Dynamic = False, Default = \"4", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_TEMPORARY, Type = Double, Dynamic = False, Default = \"&h100", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_ATTRIBUTE_VIRTUAL, Type = Double, Dynamic = False, Default = \"&h10000", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_CASE_PRESERVED_NAMES, Type = Double, Dynamic = False, Default = \"&h00000002", Scope = Public
@@ -934,6 +982,16 @@ Protected Module Win32Constants
 
 
 	#tag ViewBehavior
+		#tag ViewProperty
+			Name="FILE_ALL_ACCESS"
+			Group="Behavior"
+			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="FILE_GENERIC_READ"
+			Group="Behavior"
+			Type="Integer"
+		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
 			Visible=true

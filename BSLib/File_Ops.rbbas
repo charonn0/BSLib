@@ -49,8 +49,8 @@ Protected Module File_Ops
 		Function Archive(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the archive attribute
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target)
-		    Return BitwiseAnd(attribs, &h20) = &h20
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_ARCHIVE) = FILE_ATTRIBUTE_ARCHIVE
 		  #endif
 		End Function
 	#tag EndMethod
@@ -59,17 +59,17 @@ Protected Module File_Ops
 		Sub Archive(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the archive attibute of the file
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
 		    
 		    If target.Archive = b Then Return
 		    If b Then
-		      cfattribs = cfattribs Or &h20
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_ARCHIVE
 		    Else
-		      cfattribs = cfattribs Or &h20
-		      cfattribs = cfattribs Xor &h20
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_ARCHIVE
+		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_ARCHIVE
 		    End If
 		    
-		    Call SetFileAttributes(target, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -78,8 +78,8 @@ Protected Module File_Ops
 		Function Compressed(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the compressed attribute
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target)
-		    Return BitwiseAnd(attribs, &h800) = &h800
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_COMPRESSED) = FILE_ATTRIBUTE_COMPRESSED
 		  #endif
 		End Function
 	#tag EndMethod
@@ -88,17 +88,17 @@ Protected Module File_Ops
 		Sub Compressed(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the Compressed attribute. Generally, this will cause Windows to compress the file but there's no guarentee
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
 		    
 		    If target.Compressed = b Then Return
 		    If b Then
-		      cfattribs = cfattribs Or &h800
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_COMPRESSED
 		    Else
-		      cfattribs = cfattribs Or &h800
-		      cfattribs = cfattribs Xor &h800
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_COMPRESSED
+		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_COMPRESSED
 		    End If
 		    
-		    Call SetFileAttributes(target, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -253,8 +253,8 @@ Protected Module File_Ops
 		Function Encrypted(Extends target As FolderItem) As Boolean
 		  //Returns True if the file has the Encrypted attribute
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target)
-		    Return BitwiseAnd(attribs, &h4000) = &h4000
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_ENCRYPTED) = FILE_ATTRIBUTE_ENCRYPTED
 		  #endif
 		End Function
 	#tag EndMethod
@@ -264,16 +264,16 @@ Protected Module File_Ops
 		  //Clears or sets the encrypted attribute
 		  
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
 		    If target.Encrypted = b Then Return
 		    If b Then
-		      cfattribs = cfattribs Or &h4000
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_ENCRYPTED
 		    Else
-		      cfattribs = cfattribs Or &h4000
-		      cfattribs = cfattribs Xor &h4000
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_ENCRYPTED
+		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_ENCRYPTED
 		    End If
 		    
-		    Call SetFileAttributes(target, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -380,16 +380,6 @@ Protected Module File_Ops
 		    Call GetDiskFreeSpaceEx(drvRoot, x, total, free)
 		    
 		    Return total
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function GetFileAttributes(f As FolderItem) As Integer
-		  //See: Archive, Encrypted, Hidden, IsNormal, ReadOnly, and SystemFile functions in this module.
-		  
-		  #If TargetWin32 Then
-		    Return GetFileAttributes(f.AbsolutePath)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -586,8 +576,8 @@ Protected Module File_Ops
 		Function Hidden(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the hidden attribute
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target)
-		    Return BitwiseAnd(attribs, &h2) = &h2
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_HIDDEN) = FILE_ATTRIBUTE_HIDDEN
 		  #endif
 		End Function
 	#tag EndMethod
@@ -596,16 +586,16 @@ Protected Module File_Ops
 		Sub Hidden(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the hidden attibute of the file
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
 		    If target.Hidden = b Then Return
 		    If b Then
-		      cfattribs = cfattribs Or &h2
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_HIDDEN
 		    Else
-		      cfattribs = cfattribs Or &h2
-		      cfattribs = cfattribs Xor &h2
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_HIDDEN
+		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_HIDDEN
 		    End If
 		    
-		    Call SetFileAttributes(target, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -697,8 +687,8 @@ Protected Module File_Ops
 		Function IsNormal(Extends target As FolderItem) As Boolean
 		  //Returns True if the target has no file attributes set
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target)
-		    Return BitwiseAnd(attribs, &h80) = &h80
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_NORMAL) = FILE_ATTRIBUTE_NORMAL
 		  #endif
 		End Function
 	#tag EndMethod
@@ -707,16 +697,16 @@ Protected Module File_Ops
 		Sub IsNormal(Extends target As FolderItem, Assigns b As Boolean)
 		  //Clears all file attributes
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
 		    If target.IsNormal = b Then Return
 		    If b Then
-		      cfattribs = &h80
+		      cfattribs = FILE_ATTRIBUTE_NORMAL
 		    Else
-		      cfattribs = cfattribs Or &h80
-		      cfattribs = cfattribs Xor &h80
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_NORMAL
+		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_NORMAL
 		    End If
 		    
-		    Call SetFileAttributes(target, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -807,24 +797,6 @@ Protected Module File_Ops
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h0
-		Function OpenWithPermissions(File As FolderItem, Perms As PermissionsMask) As TextOutputStream
-		  Dim handle As Integer = _
-		  CreateFile( _
-		  File.AbsolutePath, _
-		  Perms.Access, _
-		  Perms.ShareMode, _
-		  Perms.SecurityAttributes, _
-		  Perms.CreateDisposition, _
-		  Perms.Flags, _
-		  Perms.Template)
-		  If handle > 0 Then
-		    Return New TextOutputStream(handle, 1)
-		  End If
-		  
-		End Function
-	#tag EndMethod
-
 	#tag DelegateDeclaration, Flags = &h0
 		Delegate Sub ProgressCallback(PercentDone As Double)
 	#tag EndDelegateDeclaration
@@ -832,7 +804,7 @@ Protected Module File_Ops
 	#tag Method, Flags = &h0
 		Function ReadOnly(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the ReadOnly attribute
-		  #If TargetWin32 Then Return BitwiseAnd(GetFileAttributes(target), &h1) = &h1
+		  #If TargetWin32 Then Return BitwiseAnd(GetFileAttributes(target.AbsolutePath), FILE_ATTRIBUTE_READONLY) = FILE_ATTRIBUTE_READONLY
 		End Function
 	#tag EndMethod
 
@@ -840,17 +812,17 @@ Protected Module File_Ops
 		Sub ReadOnly(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the Read Only attibute of the file
 		  #If TargetWin32
-		    Dim cfattribs As Integer = GetFileAttributes(target)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
 		    
 		    If target.ReadOnly = b Then Return
 		    If b Then
-		      cfattribs = cfattribs Or &h1
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_READONLY
 		    Else
-		      cfattribs = cfattribs Or &h1
-		      cfattribs = cfattribs Xor &h1
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_READONLY
+		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_READONLY
 		    End If
 		    
-		    Call SetFileAttributes(target, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -915,17 +887,6 @@ Protected Module File_Ops
 		      backupPath.WString(0) = backupFile.AbsolutePath
 		      Return ReplaceFile(source.AbsolutePath, destination.AbsolutePath, backupPath, rpFlags, 0, 0)
 		    End If
-		  #endif
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function SetFileAttributes(f As FolderItem, attribs As Integer) As Boolean
-		  //See: Archive, Encrypted, Hidden, IsNormal, ReadOnly, and SystemFile functions in this module.
-		  
-		  #If TargetWin32 Then
-		    If attribs = 0 Then attribs = &h80
-		    Return SetFileAttributes(f.AbsolutePath, attribs)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -1107,8 +1068,8 @@ Protected Module File_Ops
 		Function SystemFile(Extends target As FolderItem) As Boolean
 		  //Returns True if the target has the System File attribute set
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target)
-		    Return BitwiseAnd(attribs, &h4) = &h4
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_SYSTEM) = FILE_ATTRIBUTE_SYSTEM
 		  #endif
 		End Function
 	#tag EndMethod
@@ -1117,17 +1078,17 @@ Protected Module File_Ops
 		Sub SystemFile(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the System File attribute of the file
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
 		    
 		    If target.SystemFile = b Then Return
 		    If b Then
-		      cfattribs = cfattribs Or &h4
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_SYSTEM
 		    Else
-		      cfattribs = cfattribs Or &h4
-		      cfattribs = cfattribs Xor &h4
+		      cfattribs = cfattribs Or FILE_ATTRIBUTE_SYSTEM
+		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_SYSTEM
 		    End If
 		    
-		    Call SetFileAttributes(target, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -1277,16 +1238,6 @@ Protected Module File_Ops
 		    End If
 		  End If
 	#tag EndNote
-
-
-	#tag Structure, Name = PermissionsMask, Flags = &h0
-		Access As Integer
-		  ShareMode As Integer
-		  SecurityAttributes As Integer
-		  CreateDisposition As Integer
-		  Flags As Integer
-		Template As Integer
-	#tag EndStructure
 
 
 	#tag ViewBehavior

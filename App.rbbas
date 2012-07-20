@@ -4,7 +4,6 @@ Inherits Application
 	#tag Event
 		Sub Open()
 		  Call MsgBox("Hello :-)", 64, "BSLib")
-		  Call ReallyAbsolutePath
 		End Sub
 	#tag EndEvent
 
