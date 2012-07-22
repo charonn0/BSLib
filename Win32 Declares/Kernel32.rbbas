@@ -1,6 +1,14 @@
 #tag Module
 Protected Module Kernel32
 	#tag ExternalMethod, Flags = &h0
+		Declare Function AreFileApisANSI Lib "Kernel32" () As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function CheckNameLegalDOS8Dot3 Lib "Kernel32" Alias "CheckNameLegalDOS8Dot3W" (FileName As WString, ByRef OEMName As WString, OEMNameSize As Integer, ByRef NameContainsSpaces As Boolean, ByRef NameLegal As Boolean) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function CloseHandle Lib "Kernel32" (handle As Integer) As Boolean
 	#tag EndExternalMethod
 
@@ -10,6 +18,10 @@ Protected Module Kernel32
 
 	#tag ExternalMethod, Flags = &h0
 		Soft Declare Function CreateHardLink Lib "Kernel32" Alias "CreateHardLinkW" (NewPath As WString, ExistingFile As WString, Reserved As Ptr) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function CreatePipe Lib "Kernel32" (ByRef ReadPipe As Integer, ByRef WritePipe As Integer, SecAttributes As Ptr, SuggestedBufferSize As Integer) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
@@ -205,6 +217,10 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function ReadFile Lib "Kernel32" (hFile As Integer, Buffer As Ptr, BytesToRead As Integer, ByRef BytesRead As Integer, Overlapped As Ptr) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function RegisterWaitForSingleObject Lib "Kernel32" (ByRef waitHandle As Integer, objectHandle As Integer, callback As Ptr, context As Ptr, waitMilliseconds As Integer, flags As Integer) As Boolean
 	#tag EndExternalMethod
 
@@ -262,6 +278,10 @@ Protected Module Kernel32
 
 	#tag ExternalMethod, Flags = &h0
 		Declare Function WriteConsoleOutputCharacter Lib "Kernel32" Alias "WriteConsoleOutputCharacterW" (cHandle As Integer, chars As Ptr, Length As Integer, buffCoords As COORD, charWritten As Ptr) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function WriteFile Lib "Kernel32" (hFile As Integer, Buffer As Ptr, BytesToWrite As Integer, ByRef BytesWritten As Integer, Overlapped As Ptr) As Boolean
 	#tag EndExternalMethod
 
 

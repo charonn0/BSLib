@@ -21,11 +21,17 @@ Protected Module Win32Constants
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  If Platform.KernelVersion >= Platform.WinVista Then
-			    Return &h1000  //PROCESS_QUERY_LIMITED_INFORMATION
-			  Else
-			    Return PROCESS_QUERY_INFORMATION  //On old Windows, use the old API
-			  End If
+			  #If TargetWin32 Then
+			    Dim info As OSVERSIONINFOEX
+			    info.StructSize = Info.Size
+			    
+			    Call GetVersionEx(info)
+			    If info.MajorVersion >= 6 Then
+			      Return &h1000  //PROCESS_QUERY_LIMITED_INFORMATION
+			    Else
+			      Return PROCESS_QUERY_INFORMATION  //On old Windows, use the old API
+			    End If
+			  #endif
 			End Get
 		#tag EndGetter
 		PROCESS_QUERY_LIMITED_INFORMATION As Integer
