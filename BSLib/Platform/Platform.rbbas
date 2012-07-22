@@ -500,10 +500,13 @@ Protected Module Platform
 		    If searchDir <> Nil Then
 		      bm = searchDir.AbsolutePath
 		      flags = flags Or PRF_FIRSTDIRDEF
+		      If PathResolve(mb, bm, flags) Then Return GetFolderItem(mb.WString(0) + "\" + fileName)
+		    Else
+		      If PathResolve(mb, Nil, flags) Then Return GetFolderItem(mb.WString(0) + "\" + fileName)
 		    End If
-		    
-		    If PathResolve(mb, Nil, flags) Then Return GetFolderItem(mb.WString(0) + "\" + fileName)
 		  #endif
+		  
+		  Return Nil
 		End Function
 	#tag EndMethod
 
@@ -642,7 +645,7 @@ Protected Module Platform
 	#tag Method, Flags = &h1
 		Protected Function IsShuttingDown() As Boolean
 		  //Returns True if Windows is shutting down or logging off.
-		  Return GetSystemMetrics(&h2000) <> 0
+		  Return GetSystemMetrics(SM_SHUTTINGDOWN) <> 0
 		End Function
 	#tag EndMethod
 
@@ -1134,7 +1137,9 @@ Protected Module Platform
 			  //1 = Safe Mode
 			  //2 = Safe Mode with networking.
 			  
-			  #If TargetWin32 Then Return GetSystemMetrics(SM_CLEANBOOT)
+			  #If TargetWin32 Then 
+			    Return GetSystemMetrics(SM_CLEANBOOT)
+			  #endif
 			End Get
 		#tag EndGetter
 		Protected BootMode As Integer
