@@ -87,6 +87,45 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function DataURI(f As FolderItem, MIME As String) As String
+		  //encodes a file as an inline data: URI entity
+		  Dim s As String = "data:" + MIME +";charset=US-ASCII;base64,"
+		  s = ConvertEncoding(s, Encodings.ASCII)
+		  Dim tis As TextInputStream
+		  Dim tmp As String
+		  tis = tis.Open(f)
+		  tmp = tis.ReadAll
+		  tis.Close
+		  tmp = EncodeBase64(tmp)
+		  Return s + tmp
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function DataURI(pic As Picture) As String
+		  //encodes a picture as an inline data: URI entity
+		  Dim s As String = "data:image/png;charset=US-ASCII;base64,"
+		  s = ConvertEncoding(s, Encodings.ASCII)
+		  Dim tmp As String = pic.GetData(Picture.FormatPNG)
+		  tmp = EncodeBase64(tmp)
+		  Return s + tmp
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function DataURI(data As String) As String
+		  //Decodes the data part of a data: URI
+		  Dim prefix As String = NthField(data, ",", 1)
+		  data = Replace(data, prefix + ",", "")
+		  prefix = Replace(prefix, "data:", "")
+		  data = DecodeBase64(data)
+		  Return data
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function ETA(d As Date, d2 As Date = Nil) As String
 		  //Given a date object, returns the time difference from now, as a long-form string.
 		  //e.g.: "12 minutes from now." or "6 weeks, 4 days, 13 hours, 1 minute, 12 seconds"
@@ -390,7 +429,6 @@ Protected Module Uncategorized
 	#tag Method, Flags = &h0
 		Function StringToHex(src as string) As string
 		  //Hexify a string of binary data, e.g. from RB's built-in MD5 function
-		  //Example StringToHex("Hello, world!") = "48656C6C6F2C20776F726C6421"
 		  
 		  Dim hexvalue As Integer
 		  Dim hexedInt As String

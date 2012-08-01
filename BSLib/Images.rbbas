@@ -178,11 +178,9 @@ Protected Module Images
 		  //Given a Picture, returns the base64-encoded HTML representation
 		  //e.g.
 		  //<img src='data:image/png;base64,iVBORw0KGgoAAAANS...' width=200 height=200 alt='A picture of a cat' />
-		  Dim HTML As String = MyPic.GetData(Picture.FormatPNG)
-		  HTML = "<img src='data:image/png;base64," + EncodeBase64(HTML) + "' width=" + Str(MyPic.Width) + " height=" + _
-		  Str(MyPic.Height) + " alt='" + AltText + "' />"
+		  Return "<img src='" + DataURI(MyPic) + "' width=" + Str(MyPic.Width) + " height=" + Str(MyPic.Height) + " alt='" + AltText + "' />"
 		  
-		  Return HTML
+		  
 		End Function
 	#tag EndMethod
 
