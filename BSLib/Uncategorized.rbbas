@@ -402,6 +402,46 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function RobotBlocked(robotstxt As String, UserAgent As String, Path As String = "/") As Boolean
+		  //Parses a website's robots.txt file and returns True if the passed UserAgent is Disallowed for the specified path
+		  //If not disallowed (i.e. allowed) then returns False.
+		  Const AllBots = "*"
+		  Const AllBots = "*"
+		  robotstxt = ReplaceLineEndings(robotstxt, EndOfLine.Windows)
+		  Dim records() As String = robotstxt.Split(EndOfLine.Windows + EndOfLine.Windows)
+		  
+		  For i As Integer = 0 To UBound(records)
+		    Dim UA(), paths(), lines() As String
+		    lines = Split(records(i), EndOfLine.Windows)
+		    For Each line As String In lines
+		      line = Left(line, line.Len - InStr(line, "#"))  //comments
+		      If line.Trim = "" Then Continue
+		      Dim field, value As String
+		      field = NthField(line, ":", 1).Trim
+		      value = NthField(line, ":", 2).Trim
+		      
+		      If field.Trim = "User-Agent" Then
+		        UA.Append(value)
+		      ElseIf field.Trim = "Disallow" Then
+		        paths.Append(value)
+		      End If
+		    Next
+		    
+		    For Each Agent As String In UA
+		      If Agent = UserAgent Or Agent.Trim = AllBots Then
+		        For Each URL As String In paths
+		          If InStr(URL, "*") > 1 Then URL = NthField(URL, "*", 1) //wildcard
+		          If Left(path, URL.Len) = URL Then
+		            Return True
+		          End If
+		        Next
+		      End If
+		    Next
+		  Next
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Shorten(Extends data As String, maxLength As Integer = 45) As String
 		  //Replaces characters from the middle of a string with a single ellipsis ("...") until data.Len is less than the specified length.
 		  //Useful for showing long paths by omitting the middle part of the data, though not limited to this use.
