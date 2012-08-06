@@ -406,7 +406,6 @@ Protected Module Uncategorized
 		  //Parses a website's robots.txt file and returns True if the passed UserAgent is Disallowed for the specified path
 		  //If not disallowed (i.e. allowed) then returns False.
 		  Const AllBots = "*"
-		  Const AllBots = "*"
 		  robotstxt = ReplaceLineEndings(robotstxt, EndOfLine.Windows)
 		  Dim records() As String = robotstxt.Split(EndOfLine.Windows + EndOfLine.Windows)
 		  
