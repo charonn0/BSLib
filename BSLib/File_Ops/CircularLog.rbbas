@@ -1,6 +1,6 @@
 #tag Class
 Protected Class CircularLog
-Implements Readable, Writeable
+Implements Readable,Writeable
 	#tag Method, Flags = &h1000
 		Sub Constructor(file As FolderItem, readwrite As Boolean = True)
 		  If file.Exists Then

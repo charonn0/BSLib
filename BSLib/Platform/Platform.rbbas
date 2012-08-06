@@ -1137,7 +1137,7 @@ Protected Module Platform
 			  //1 = Safe Mode
 			  //2 = Safe Mode with networking.
 			  
-			  #If TargetWin32 Then 
+			  #If TargetWin32 Then
 			    Return GetSystemMetrics(SM_CLEANBOOT)
 			  #endif
 			End Get
