@@ -601,24 +601,16 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function IsChildOf(Extends Child As FolderItem, Parent As FolderItem) As Boolean
-		  //A fairly naive method to determine whether the Child FolderItem is contained within the Parent
+		Function IsChildOf(Extends ByVal Child As FolderItem, Parent As FolderItem) As Boolean
+		  //A method to determine whether the Child FolderItem is contained within the Parent
 		  //FolderItem or one of its sub-directories.
-		  //e.g.:
-		  'Dim parent As FolderItem = GetFolderItem("C:\")
-		  'Dim child As FolderItem = SpecialFolder.Windows
-		  'If child.IsChildOf(parent) Then
-		  'MsgBox("The Windows directory is a child of the C:\ drive")
-		  'Else
-		  'MsgBox("The Windows directory is NOT a child of the C:\ drive")
-		  'End If
+		  
 		  If Not Parent.Directory Then Return False
-		  Dim node As FolderItem = Child
-		  While node.Parent <> Nil
-		    If node.Parent.AbsolutePath = Parent.AbsolutePath Then
+		  While Child.Parent <> Nil
+		    If Child.Parent.AbsolutePath = Parent.AbsolutePath Then
 		      Return True
 		    End If
-		    node = node.Parent
+		    Child = Child.Parent
 		  Wend
 		End Function
 	#tag EndMethod
@@ -709,6 +701,12 @@ Protected Module File_Ops
 		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
 		  #endif
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function IsParentOf(Extends Parent As FolderItem, Child As FolderItem) As Boolean
+		  Return Child.IsChildOf(Parent)
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0

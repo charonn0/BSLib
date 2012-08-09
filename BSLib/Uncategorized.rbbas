@@ -441,6 +441,18 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function SFSCount(Key As String, Value As String) As Integer
+		  //Queries the StopForumSpam API
+		  Dim h As New HTTPSocket
+		  Dim URL As String = "http://www.stopforumspam.com/api?" + key + "=" + Value
+		  Dim result As String = h.Get(URL, 5)
+		  result = NthField(result, "<frequency>", 2)
+		  result = NthField(result, "</frequency>", 1)
+		  Return Val(result.Trim)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Shorten(Extends data As String, maxLength As Integer = 45) As String
 		  //Replaces characters from the middle of a string with a single ellipsis ("...") until data.Len is less than the specified length.
 		  //Useful for showing long paths by omitting the middle part of the data, though not limited to this use.
