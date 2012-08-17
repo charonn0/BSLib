@@ -494,7 +494,7 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Tokenize(ByVal Input As String) As String()
+		Function Tokenize(Input As String) As String()
 		  //Returns a String array containing the space-delimited members of the Input string.
 		  //Like `String.Split(" ")` but honoring quotes; good for command line arguments and other parsing.
 		  //For example, this string:

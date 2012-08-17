@@ -42,6 +42,7 @@ Module=AdvApi32;Win32 Declares/AdvApi32.rbbas;&h51B3FFFF;&h20572FFF;false
 Module=Kernel32;Win32 Declares/Kernel32.rbbas;&h102157FF;&h20572FFF;false
 Class=ColorRef;BSLib/Console/ColorRef.rbbas;&h2AFCC7FF;&h1C002FFF;false
 Module=Win32Constants;Win32 Declares/Win32Constants.rbbas;&h6549DFFF;&h20572FFF;false
+Class=FileEnumerator;BSLib/File_Ops/FileEnumerator.rbbas;&h10EB17FF;&h48974FFF;false
 DefaultWindow=Window1
 AppMenuBar=MenuBar1
 MajorVersion=1
