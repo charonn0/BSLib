@@ -1,12 +1,5 @@
 #tag Module
 Protected Module Win32Structs
-	#tag Method, Flags = &h0
-		Sub Untitled()
-		  
-		End Sub
-	#tag EndMethod
-
-
 	#tag Structure, Name = AT_INFO, Flags = &h0
 		JobTime As Ptr
 		  DaysOfMonth As Integer

@@ -69,7 +69,7 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
-		Declare Function FindFirstFile Lib "Kernel32" (FileName As WString, ByRef FindData As WIN32_FIND_DATA) As Integer
+		Declare Function FindFirstFile Lib "Kernel32" Alias "FindFirstFileW" (FileName As WString, ByRef FindData As WIN32_FIND_DATA) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
@@ -81,7 +81,7 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
-		Declare Function FindNextFile Lib "Kernel32" (FindHandle As Integer, ByRef FindData As WIN32_FIND_DATA) As Boolean
+		Declare Function FindNextFile Lib "Kernel32" Alias "FindNextFileW" (FindHandle As Integer, ByRef FindData As WIN32_FIND_DATA) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0

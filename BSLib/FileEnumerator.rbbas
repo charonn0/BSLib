@@ -19,22 +19,20 @@ Protected Class FileEnumerator
 	#tag Method, Flags = &h0
 		Function NextItem() As WIN32_FIND_DATA
 		  //This function returns the WIN32_FIND_DATA structure of the next file (starting with the first) in the RootDirectory
-		  //If there are no more files, this function returns an empty string.
+		  //If there are no more files, this function sets LastError <> 0
 		  
 		  Dim data As WIN32_FIND_DATA
 		  
 		  If FindHandle <= 0 Then
 		    FindHandle = FindFirstFile(RootDirectory.AbsolutePath + SearchPattern, data)
 		    mLastError = GetLastError()
-		    Return data
-		  End If
-		  
-		  If FindNextFile(FindHandle, data) Then
+		  ElseIf FindNextFile(FindHandle, data) Then
 		    mLastError = 0
-		    Return data
 		  Else
 		    mLastError = GetLastError()
 		  End If
+		  
+		  Return data
 		End Function
 	#tag EndMethod
 
@@ -78,8 +76,8 @@ Protected Class FileEnumerator
 		Private mLastError As Integer
 	#tag EndProperty
 
-	#tag Property, Flags = &h0
-		RootDirectory As FolderItem
+	#tag Property, Flags = &h21
+		Private RootDirectory As FolderItem
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
