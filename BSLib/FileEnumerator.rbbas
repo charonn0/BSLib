@@ -2,6 +2,9 @@
 Protected Class FileEnumerator
 	#tag Method, Flags = &h0
 		Sub Constructor(Root As FolderItem, Pattern As String)
+		  //Root is the directory in which to search
+		  //Pattern is a full or partial filename, with support for wildcards (e.g. "*.exe" to enumerate all files ending in .exe)
+		  
 		  RootDirectory = Root
 		  SearchPattern = Pattern
 		End Sub
@@ -14,24 +17,48 @@ Protected Class FileEnumerator
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function NextItem() As String
+		Function NextItem() As WIN32_FIND_DATA
+		  //This function returns the WIN32_FIND_DATA structure of the next file (starting with the first) in the RootDirectory
+		  //If there are no more files, this function returns an empty string.
+		  
 		  Dim data As WIN32_FIND_DATA
 		  
 		  If FindHandle <= 0 Then
 		    FindHandle = FindFirstFile(RootDirectory.AbsolutePath + SearchPattern, data)
 		    mLastError = GetLastError()
-		    Return data.FileName
+		    Return data
 		  End If
 		  
 		  If FindNextFile(FindHandle, data) Then
 		    mLastError = 0
-		    Return DefineEncoding(data.FileName, Encodings.UTF16)
+		    Return data
 		  Else
 		    mLastError = GetLastError()
-		    Return ""
 		  End If
 		End Function
 	#tag EndMethod
+
+
+	#tag Note, Name = How to use
+		Create a new instance of the FileEnumerator class passing the top of the directory tree to be examined and a
+		search pattern to match file/folder names against. The search patterns allowed are the same as those accepted
+		by the cmd.exe 'dir' command, e.g. "*.*" matches all names; "*.EXE" matches all .exe files; etc.
+		
+		Call NextItem to receive the next file's or folder's WIN32_FIND_DATA structure.
+		
+		Example, finding all EXE files in a user selected folder:
+		
+		  Dim fe As New FileEnumerator(SelectFolder, "*.exe")
+		  Dim files() As String
+		  Do
+		    Dim file As WIN32_FIND_DATA = fe.NextItem()
+		    If fe.LastError = 0 Then
+		      files.Append(DefineEncoding(file.FileName, Encodings.UTF16))
+		    Else
+		      Exit Do
+		    End If
+		  Loop
+	#tag EndNote
 
 
 	#tag Property, Flags = &h21
