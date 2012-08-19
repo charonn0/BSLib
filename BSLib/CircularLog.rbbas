@@ -12,23 +12,20 @@ Implements Readable,Writeable
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function EOF() As Boolean
-		  // Part of the Readable interface.
+		Function EOF() As Boolean Implements Readable.EOF
 		  Return False
 		  
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Flush()
-		  // Part of the Writeable interface.
+		Sub Flush() Implements Writeable.Flush
 		  IOStream.Flush()
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Read(Count As Integer, encoding As TextEncoding = Nil) As String
-		  // Part of the Readable interface.
+		Function Read(Count As Integer, encoding As TextEncoding = Nil) As String Implements Readable.Read
 		  Dim tmp As String
 		  If IOStream.Position + Count <= IOStream.Length Then
 		    tmp = IOStream.Read(Count, encoding)
@@ -46,15 +43,13 @@ Implements Readable,Writeable
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function ReadError() As Boolean
-		  // Part of the Readable interface.
+		Function ReadError() As Boolean Implements Readable.ReadError
 		  Return IOStream.ReadError()
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Write(text As String)
-		  // Part of the Writeable interface.
+		Sub Write(text As String) Implements Writeable.Write
 		  If IOStream.Position + text.LenB <= MaxLength Then
 		    IOStream.Write(text)
 		  Else
@@ -69,8 +64,7 @@ Implements Readable,Writeable
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function WriteError() As Boolean
-		  // Part of the Writeable interface.
+		Function WriteError() As Boolean Implements Writeable.WriteError
 		  Return IOStream.WriteError()
 		End Function
 	#tag EndMethod
