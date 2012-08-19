@@ -2,7 +2,7 @@
 Protected Module Networking
 	#tag Method, Flags = &h0
 		Function CombineURL(BaseURL As String, relativeURL As String, ByRef outputURL As String) As Integer
-		  //Safely combines a given base URL with a given relative URL. 
+		  //Safely combines a given base URL with a given relative URL.
 		  
 		  
 		  Dim mb As New MemoryBlock((BaseURL.LenB + relativeURL.LenB) * 4)

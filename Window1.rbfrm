@@ -1,13 +1,13 @@
 #tag Window
 Begin Window Window1
-   BackColor       =   &hFFFFFF
+   BackColor       =   16777215
    Backdrop        =   ""
    CloseButton     =   True
    Composite       =   False
    Frame           =   0
    FullScreen      =   False
    HasBackColor    =   False
-   Height          =   2.19e+2
+   Height          =   219
    ImplicitInstance=   True
    LiveResize      =   True
    MacProcID       =   0
@@ -23,7 +23,7 @@ Begin Window Window1
    Resizeable      =   True
    Title           =   "BSLib"
    Visible         =   True
-   Width           =   5.26e+2
+   Width           =   526
    Begin Label Label1
       AutoDeactivate  =   True
       Bold            =   ""
@@ -46,6 +46,7 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   0
       TabPanelIndex   =   0
+      TabStop         =   True
       Text            =   "http://www.boredomsoft.org/bslib.bs"
       TextAlign       =   1
       TextColor       =   &h000000FF
