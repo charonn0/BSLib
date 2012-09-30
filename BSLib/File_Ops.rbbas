@@ -710,6 +710,25 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function ListDirectory(Root As FolderItem, SearchPattern As String = "*", PrependPath As Boolean = True) As String()
+		  Dim rootdir As String
+		  If PrependPath Then rootdir = Root.AbsolutePath
+		  Dim Result As WIN32_FIND_DATA
+		  Dim FindHandle As Integer = FindFirstFile("//?/" + ReplaceAll(Root.AbsolutePath, "/", "//") + SearchPattern + Chr(0), Result)
+		  Dim list() As String
+		  
+		  If FindHandle > 0 Then
+		    Do
+		      If Result.FileName <> "." And Result.FileName <> ".." THen list.Append(rootdir + Result.FileName)
+		    Loop Until Not FindNextFile(FindHandle, Result)
+		    Call FindClose(FindHandle)
+		  End If
+		  
+		  Return list
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function LockFile(Extends lockedFile As FolderItem) As Integer
 		  //Locks the file for exclusive use. You must call UnlockFile with the integer returned from this function to unlock the file.
 		  //A positive return value is returned on success, 0 if lockedFile is Nil, and a negative number on error (a negative return value

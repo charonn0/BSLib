@@ -394,7 +394,7 @@ Protected Module Win32Structs
 		  sizeLow As Integer
 		  Reserved1 As Integer
 		  Reserved2 As Integer
-		  FileName As String*260
+		  FileName As WString*260
 		AlternateName As String*14
 	#tag EndStructure
 
