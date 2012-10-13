@@ -33,6 +33,14 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function GetThreadDesktop Lib "User32" (ThreadID As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function GetUserObjectInformation Lib "User32" (Handle As Integer, Index As Integer, Info As Ptr, InfoLen As Integer, ByRef LenNeeded As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Sub GetWindowRect Lib "User32" (HWND As Integer, ByRef sm As RECT)
 	#tag EndExternalMethod
 

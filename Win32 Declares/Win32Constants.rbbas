@@ -113,6 +113,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = CREATE_NEW, Type = Double, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = CREATE_NO_WINDOW, Type = Double, Dynamic = False, Default = \"&h08000000", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = CRYPT_NEWKEYSET, Type = Double, Dynamic = False, Default = \"&h00000008\r", Scope = Public
 	#tag EndConstant
 
@@ -333,6 +336,12 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = GENERIC_WRITE, Type = Double, Dynamic = False, Default = \"&h40000000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = HANDLE_FLAG_INHERIT, Type = Double, Dynamic = False, Default = \"&h00000001", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = HANDLE_FLAG_PROTECT_FROM_CLOSE, Type = Double, Dynamic = False, Default = \"&h00000002", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = ICU_BROWSER_MODE, Type = Double, Dynamic = False, Default = \"&h2000000", Scope = Public
@@ -896,6 +905,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = STANDARD_RIGHTS_WRITE, Type = Double, Dynamic = False, Default = \"&h00020000", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = STARTF_USESTDHANDLES, Type = Double, Dynamic = False, Default = \"&h00000100", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = STD_ERROR_HANDLE, Type = Double, Dynamic = False, Default = \"-12\r", Scope = Public
 	#tag EndConstant
 
@@ -927,6 +939,24 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = TRUNCATE_EXISTING, Type = Double, Dynamic = False, Default = \"5", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = UOI_FLAGS, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = UOI_HEAPSIZE, Type = Double, Dynamic = False, Default = \"5", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = UOI_IO, Type = Double, Dynamic = False, Default = \"6", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = UOI_NAME, Type = Double, Dynamic = False, Default = \"2", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = UOI_TYPE, Type = Double, Dynamic = False, Default = \"3", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = UOI_USER_SID, Type = Double, Dynamic = False, Default = \"4", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = VOLUME_NAME_DOS, Type = Double, Dynamic = False, Default = \"0", Scope = Public
