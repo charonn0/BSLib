@@ -21,6 +21,10 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function CreateNamedPipe Lib "Kernel32" Alias "CreateNamedPipeW" (PipeName As WString, OpenMode As Integer, PipeMode As Integer, MaxInstances As Integer, OutBufferSize As Integer, InBufferSize As Integer, DefaultTimeOut As Integer, SecurityAttribute As Ptr) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function CreatePipe Lib "Kernel32" (ByRef ReadPipe As Integer, ByRef WritePipe As Integer, SecAttributes As Ptr, SuggestedBufferSize As Integer) As Boolean
 	#tag EndExternalMethod
 
@@ -90,6 +94,10 @@ Protected Module Kernel32
 
 	#tag ExternalMethod, Flags = &h0
 		Soft Declare Function FindNextStream Lib "Kernel32" Alias "FindNextStreamW" (FindHandle As Integer, ByRef buffer As WIN32_FIND_STREAM_DATA) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function FlushFileBuffers Lib "Kernel32" (FindHandle As Integer) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
@@ -214,6 +222,10 @@ Protected Module Kernel32
 
 	#tag ExternalMethod, Flags = &h0
 		Soft Declare Function OpenProcess Lib "Kernel32" (dwDesiredAccessAs As Integer, bInheritHandle As Integer, dwProcId As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function PeekNamedPipe Lib "Kernel32" (PipeHandle As Integer, Buffer As Ptr, BufferSize As Integer, ByRef BytesRead As Integer, ByRef TotalBytesAvailable As Integer, ByRef BytesLeftThisMessage As Integer) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0

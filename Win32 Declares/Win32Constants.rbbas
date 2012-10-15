@@ -125,6 +125,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = DSTINVERT, Type = Double, Dynamic = False, Default = \"&h00550009", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = ERROR_HANDLE_EOF, Type = Double, Dynamic = False, Default = \"&h26", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = EWX_LOGOFF, Type = Double, Dynamic = False, Default = \"0", Scope = Public
 	#tag EndConstant
 
@@ -213,6 +216,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_FILE_COMPRESSION, Type = Double, Dynamic = False, Default = \"&h00000010", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FLAG_FIRST_PIPE_INSTANCE, Type = Double, Dynamic = False, Default = \"&h00080000", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_FLAG_WRITE_THROUGH, Type = Double, Dynamic = False, Default = \"&h80000000", Scope = Public
@@ -627,6 +633,12 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = PATPAINT, Type = Double, Dynamic = False, Default = \"&h00FB0A09", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PIPE_TYPE_MESSAGE, Type = Double, Dynamic = False, Default = \"&h00000004", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PIPE_UNLIMITED_INSTANCES, Type = Double, Dynamic = False, Default = \"&hFF", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = PRF_DONTFINDLNK, Type = Double, Dynamic = False, Default = \"&h0008", Scope = Public
