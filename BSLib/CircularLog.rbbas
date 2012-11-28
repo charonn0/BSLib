@@ -89,8 +89,23 @@ Implements Readable,Writeable
 		Length As UInt64
 	#tag EndComputedProperty
 
-	#tag Property, Flags = &h0
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  If mMaxLength = 0 Then mMaxLength = Me.Length
+			  return mMaxLength
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  mMaxLength = value
+			End Set
+		#tag EndSetter
 		MaxLength As UInt64
+	#tag EndComputedProperty
+
+	#tag Property, Flags = &h21
+		Private mMaxLength As UInt64 = 0
 	#tag EndProperty
 
 

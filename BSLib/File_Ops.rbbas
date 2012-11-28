@@ -719,7 +719,13 @@ Protected Module File_Ops
 		  
 		  If FindHandle > 0 Then
 		    Do
-		      If Result.FileName <> "." And Result.FileName <> ".." THen list.Append(rootdir + Result.FileName)
+		      If Result.FileName <> "." And Result.FileName <> ".." Then 
+		        If PrependPath Then
+		          list.Append(rootdir + Result.FileName)
+		        Else
+		          list.Append(Result.FileName)
+		        End If
+		      End If
 		    Loop Until Not FindNextFile(FindHandle, Result)
 		    Call FindClose(FindHandle)
 		  End If
