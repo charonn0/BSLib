@@ -211,6 +211,11 @@ Protected Module Win32Structs
 		Reserved As Byte
 	#tag EndStructure
 
+	#tag Structure, Name = POINT, Flags = &h0
+		X As Integer
+		Y As Integer
+	#tag EndStructure
+
 	#tag Structure, Name = PROCESSOR_POWER_INFORMATION, Flags = &h0
 		ProcessorNumber As UInt32
 		  MaxMhz As UInt32

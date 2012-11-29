@@ -403,35 +403,52 @@ Protected Module Uncategorized
 
 	#tag Method, Flags = &h0
 		Function RobotBlocked(robotstxt As String, UserAgent As String, Path As String = "/") As Boolean
-		  //Parses a website's robots.txt file and returns True if the passed UserAgent is Disallowed for the specified path
-		  //If not disallowed (i.e. allowed) then returns False.
+		  'Parses a website's robots.txt file and returns True if the passed UserAgent is Disallowed for the specified path
+		  'If not disallowed (i.e. allowed) then returns False.
+		  
 		  Const AllBots = "*"
 		  robotstxt = ReplaceLineEndings(robotstxt, EndOfLine.Windows)
-		  Dim records() As String = robotstxt.Split(EndOfLine.Windows + EndOfLine.Windows)
+		  Dim records() As String = robotstxt.Split(EndOfLine.Windows + EndOfLine.Windows) 'Robots.txt is broken into records by CRLF+CRLF
 		  
+		  'First parse the raw robots.txt
 		  For i As Integer = 0 To UBound(records)
 		    Dim UA(), paths(), lines() As String
-		    lines = Split(records(i), EndOfLine.Windows)
+		    lines = Split(records(i), EndOfLine.Windows) 'Each record is broken into members by CRLF
 		    For Each line As String In lines
-		      line = Left(line, line.Len - InStr(line, "#"))  //comments
-		      If line.Trim = "" Then Continue
+		      
+		      line = Left(line, line.Len - InStr(line, "#"))
+		      If line.Trim = "" Then Continue 'comment lines are ignored
+		      
 		      Dim field, value As String
+		      'Each member is broken into halves by a colon (:)
 		      field = NthField(line, ":", 1).Trim
 		      value = NthField(line, ":", 2).Trim
 		      
 		      If field.Trim = "User-Agent" Then
 		        UA.Append(value)
+		        
 		      ElseIf field.Trim = "Disallow" Then
 		        paths.Append(value)
+		        
+		      ElseIf field.Trim = "Sitemap"  Then
+		        Continue 'Sometimes used (not an error), but not interesting to us
+		        
+		      Else
+		        #If DebugBuild Then
+		          Break 'invalid robots.txt data!
+		        #endif
+		        Return False
+		        
 		      End If
 		    Next
 		    
+		    'Then check to see if we're blocked
 		    For Each Agent As String In UA
 		      If Agent = UserAgent Or Agent.Trim = AllBots Then
 		        For Each URL As String In paths
-		          If InStr(URL, "*") > 1 Then URL = NthField(URL, "*", 1) //wildcard
+		          If InStr(URL, "*") > 1 Then URL = NthField(URL, "*", 1) 'wildcard. we don't support complex patterns, just the *
 		          If Left(path, URL.Len) = URL Then
-		            Return True
+		            Return True 'We're blocked!
 		          End If
 		        Next
 		      End If
@@ -564,7 +581,7 @@ Protected Module Uncategorized
 		    // though I have no evidence to support such a claim. it seems pretty standard.
 		    
 		    Soft Declare Sub uuid_generate Lib "libuuid" (out As ptr)
-		    Soft Declare Sub uuid_unparse_upper(mb As Ptr, uu As Ptr)
+		    Soft Declare Sub uuid_unparse_upper Lib "libuuid"(mb As Ptr, uu As Ptr)
 		    
 		    If System.IsFunctionAvailable("uuid_generate", "libuuid") Then
 		      Static mb As New MemoryBlock( 16 )
@@ -575,7 +592,12 @@ Protected Module Uncategorized
 		      
 		      strUUID = uu.StringValue(0, 36)
 		    Else
-		      System.DebugLog(App.ExecutableFile.Name + ": expected libuuid!")
+		      Dim error As String = App.ExecutableFile.Name + ": expected libuuid!"
+		      #If TargetHasGUI Then
+		        System.DebugLog(error)
+		      #Else
+		        StdErr.Write(error)
+		      #endif
 		    End If
 		  #EndIf
 		  
