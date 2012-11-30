@@ -1,7 +1,19 @@
 #tag Module
 Protected Module User32
 	#tag ExternalMethod, Flags = &h0
+		Declare Function AllowSetForegroundWindow Lib "User32" (ProcessID As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function AnimateWindow Lib "User32" (HWND As Integer, duration As Integer, animation As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function BringWindowToTop Lib "User32" (HWND As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function ChildWindowFromPoint Lib "User32" (ParentHWND As Integer, Coordinates As POINT) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
@@ -17,7 +29,19 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function FindWindow Lib "User32" Alias "FindWindowW" (ClassName As WString, WindowName As WString) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function FindWindowEx Lib "User32" Alias "FindWindowExW" (ParentHWND As Integer, ChildHWND As Integer, ClassName As WString, WindowName As WString) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function FlashWindow Lib "User32" (HWND As Integer, invert As Boolean) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function GetClientRect Lib "User32" (HWND As Integer, ByRef Dimensions As RECT) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
@@ -61,11 +85,19 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function SetForegroundWindow Lib "User32" (HWND As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function ShowWindow Lib "User32" (HWND As Integer, Command As Integer) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
 		Declare Function SystemParametersInfo Lib "User32" Alias "SystemParametersInfoW" (action as UInt32, param1 as UInt32, param2 as Ptr, change as UInt32) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function WindowFromPoint Lib "User32" (Coordinates As POINT) As Integer
 	#tag EndExternalMethod
 
 
