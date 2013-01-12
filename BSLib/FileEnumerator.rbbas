@@ -24,7 +24,7 @@ Protected Class FileEnumerator
 		  Dim data As WIN32_FIND_DATA
 		  
 		  If FindHandle <= 0 Then
-		    FindHandle = FindFirstFile(RootDirectory.AbsolutePath + SearchPattern, data)
+		    FindHandle = FindFirstFile("//?/" + ReplaceAll(RootDirectory.AbsolutePath, "/", "//") + SearchPattern + Chr(0), data)
 		    mLastError = GetLastError()
 		  ElseIf FindNextFile(FindHandle, data) Then
 		    mLastError = 0

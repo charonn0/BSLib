@@ -711,6 +711,7 @@ Protected Module File_Ops
 
 	#tag Method, Flags = &h0
 		Function ListDirectory(Root As FolderItem, SearchPattern As String = "*", PrependPath As Boolean = True) As String()
+		  'See also the FileEnumerator class.
 		  Dim rootdir As String
 		  If PrependPath Then rootdir = Root.AbsolutePath
 		  Dim Result As WIN32_FIND_DATA
@@ -719,7 +720,7 @@ Protected Module File_Ops
 		  
 		  If FindHandle > 0 Then
 		    Do
-		      If Result.FileName <> "." And Result.FileName <> ".." Then 
+		      If Result.FileName <> "." And Result.FileName <> ".." Then
 		        If PrependPath Then
 		          list.Append(rootdir + Result.FileName)
 		        Else
