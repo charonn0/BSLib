@@ -1,10 +1,17 @@
 #tag Class
 Protected Class CircularLog
 Implements Readable,Writeable
+	#tag Method, Flags = &h0
+		Sub Close()
+		  If IOStream <> Nil Then IOStream.Close
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h1000
 		Sub Constructor(file As FolderItem, readwrite As Boolean = True)
 		  If file.Exists Then
 		    IOStream = BinaryStream.Open(file, readwrite)
+		    IOStream.Position = IOStream.Length
 		  Else
 		    IOStream = BinaryStream.Create(file, False)
 		  End If
