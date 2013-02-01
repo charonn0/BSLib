@@ -105,7 +105,7 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
-		Declare Function GenerateConsoleCtrlEvent Lib "Kernel32" (cHandle As Integer, character As Integer, length As Integer, startCoord As COORD, ByRef charsWritten As Integer) As Boolean
+		Declare Function GenerateConsoleCtrlEvent Lib "Kernel32" (CtrlEvent As Integer, ProcessGroupID As Integer) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
@@ -130,6 +130,14 @@ Protected Module Kernel32
 
 	#tag ExternalMethod, Flags = &h0
 		Soft Declare Function GetConsoleScreenBufferInfo Lib "Kernel32" (hConsole As Integer, ByRef buffinfo As CONSOLE_SCREEN_BUFFER_INFO) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function GetConsoleTitle Lib "Kernel32" Alias "GetConsoleTitleW" (Contitle As Ptr, mbsize As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function GetConsoleWindow Lib "Kernel32" () As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
@@ -258,6 +266,10 @@ Protected Module Kernel32
 
 	#tag ExternalMethod, Flags = &h0
 		Declare Function SetConsoleCursorPosition Lib "Kernel32" (cHandle As Integer, NewCoords As COORD) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function SetConsoleDisplayMode Lib "Kernel32" (cHandle As Integer, Flags As Integer, ByRef NewDimensions As COORD) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0

@@ -503,11 +503,11 @@ Protected Module Console
 			    If System.IsFunctionAvailable("SetConsoleDisplayMode", "Kernel32") Then
 			      Dim stdOutHandle As Integer = StdOutHandle()
 			      If stdOutHandle <= 0 Then Return
-			      
+			      Dim newdims As COORD
 			      If value Then
-			        Call SetConsoleDisplayMode(stdOutHandle, 1, Nil)
+			        Call SetConsoleDisplayMode(stdOutHandle, 1, newdims)
 			      Else
-			        Call SetConsoleDisplayMode(stdOutHandle, 2, Nil)
+			        Call SetConsoleDisplayMode(stdOutHandle, 2, newdims)
 			      End If
 			      
 			    End If
