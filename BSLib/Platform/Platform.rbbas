@@ -1169,6 +1169,29 @@ Protected Module Platform
 	#tag ComputedProperty, Flags = &h1
 		#tag Getter
 			Get
+			  Dim mb As New MemoryBlock(1024)
+			  Dim i As Integer
+			  Do
+			    i = GetCurrentDirectory(mb.Size, mb)
+			  Loop Until i <= mb.Size And i > 0
+			  
+			  Return GetFolderItem(mb.WString(0), FolderItem.PathTypeAbsolute)
+			  
+			  
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Dim path As String = value.AbsolutePath
+			  Call SetCurrentDirectory(path)
+			End Set
+		#tag EndSetter
+		Protected CurrentDirectory As FolderItem
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h1
+		#tag Getter
+			Get
 			  //Returns True if the computer is a tablet PC.
 			  
 			  #If TargetWin32 Then

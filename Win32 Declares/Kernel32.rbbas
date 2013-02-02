@@ -141,6 +141,10 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function GetCurrentDirectory Lib "Kernel32" Alias "GetCurrentDirectoryW" (BufferSize As Integer, Buffer As Ptr) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function GetCurrentProcess Lib "Kernel32" () As Integer
 	#tag EndExternalMethod
 
@@ -290,6 +294,10 @@ Protected Module Kernel32
 
 	#tag ExternalMethod, Flags = &h0
 		Declare Function SetConsoleWindowInfo Lib "Kernel32" (cHandle As Integer, Absolute As Boolean, ByRef coords As SMALL_RECT) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function SetCurrentDirectory Lib "Kernel32" Alias "SetCurrentDirectoryW" (Buffer As WString) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
