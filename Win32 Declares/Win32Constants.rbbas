@@ -27,9 +27,9 @@ Protected Module Win32Constants
 			    
 			    Call GetVersionEx(info)
 			    If info.MajorVersion >= 6 Then
-			      Return &h1000  //PROCESS_QUERY_LIMITED_INFORMATION
+			      Return &h1000  'PROCESS_QUERY_LIMITED_INFORMATION
 			    Else
-			      Return PROCESS_QUERY_INFORMATION  //On old Windows, use the old API
+			      Return PROCESS_QUERY_INFORMATION  'On old Windows, use the old API
 			    End If
 			  #endif
 			End Get
@@ -37,6 +37,9 @@ Protected Module Win32Constants
 		PROCESS_QUERY_LIMITED_INFORMATION As Integer
 	#tag EndComputedProperty
 
+
+	#tag Constant, Name = ACCESS_SYSTEM_SECURITY, Type = Double, Dynamic = False, Default = \"&h01000000", Scope = Public
+	#tag EndConstant
 
 	#tag Constant, Name = AW_ACTIVATE, Type = Double, Dynamic = False, Default = \"&h00020000", Scope = Public
 	#tag EndConstant
@@ -110,6 +113,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = CAPTUREBLT, Type = Double, Dynamic = False, Default = \"&h40000000", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = CREATE_ALWAYS, Type = Double, Dynamic = False, Default = \"2", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = CREATE_NEW, Type = Double, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 
@@ -117,6 +123,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = CRYPT_NEWKEYSET, Type = Double, Dynamic = False, Default = \"&h00000008\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = DELETE, Type = Double, Dynamic = False, Default = \"&h00010000", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = DNS_TYPE_A, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Public
@@ -218,7 +227,37 @@ Protected Module Win32Constants
 	#tag Constant, Name = FILE_FILE_COMPRESSION, Type = Double, Dynamic = False, Default = \"&h00000010", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = FILE_FLAG_BACKUP_SEMANTICS, Type = Double, Dynamic = False, Default = \"&h02000000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FLAG_DELETE_ON_CLOSE, Type = Double, Dynamic = False, Default = \"&h04000000", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = FILE_FLAG_FIRST_PIPE_INSTANCE, Type = Double, Dynamic = False, Default = \"&h00080000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FLAG_NO_BUFFERING, Type = Double, Dynamic = False, Default = \"&h20000000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FLAG_OPEN_NO_RECALL, Type = Double, Dynamic = False, Default = \"&h00100000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FLAG_OPEN_REPARSE_POINT, Type = Double, Dynamic = False, Default = \"&h00200000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FLAG_OVERLAPPED, Type = Double, Dynamic = False, Default = \"&h40000000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FLAG_POSIX_SEMANTICS, Type = Double, Dynamic = False, Default = \"&h0100000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FLAG_RANDOM_ACCESS, Type = Double, Dynamic = False, Default = \"&h10000000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FLAG_SEQUENTIAL_SCAN, Type = Double, Dynamic = False, Default = \"&h08000000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_FLAG_SESSION_AWARE, Type = Double, Dynamic = False, Default = \"&h00800000", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_FLAG_WRITE_THROUGH, Type = Double, Dynamic = False, Default = \"&h80000000", Scope = Public
@@ -338,6 +377,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = GENERIC_ALL, Type = Double, Dynamic = False, Default = \"&h10000000", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = GENERIC_EXECUTE, Type = Double, Dynamic = False, Default = \"&h20000000", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = GENERIC_READ, Type = Double, Dynamic = False, Default = \"&h80000000", Scope = Public
 	#tag EndConstant
 
@@ -384,6 +426,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = IOCTL_STORAGE_BASE, Type = Double, Dynamic = False, Default = \"&h0000002d", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MAXIMUM_ALLOWED, Type = Double, Dynamic = False, Default = \"&h02000000", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = MAX_PATH, Type = Double, Dynamic = False, Default = \"260", Scope = Public
@@ -683,6 +728,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = PROV_RSA_FULL, Type = Double, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = READ_CONTROL, Type = Double, Dynamic = False, Default = \"&h00020000", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = REPLACEFILE_WRITE_THROUGH, Type = Double, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 
@@ -905,16 +953,16 @@ Protected Module Win32Constants
 	#tag Constant, Name = STANDARD_RIGHTS_ALL, Type = Double, Dynamic = False, Default = \"&h001F0000", Scope = Public
 	#tag EndConstant
 
-	#tag Constant, Name = STANDARD_RIGHTS_EXECUTE, Type = Double, Dynamic = False, Default = \"&h00020000", Scope = Public
+	#tag Constant, Name = STANDARD_RIGHTS_EXECUTE, Type = Double, Dynamic = False, Default = \"READ_CONTROL", Scope = Public
 	#tag EndConstant
 
-	#tag Constant, Name = STANDARD_RIGHTS_READ, Type = Double, Dynamic = False, Default = \"&h00020000", Scope = Public
+	#tag Constant, Name = STANDARD_RIGHTS_READ, Type = Double, Dynamic = False, Default = \"READ_CONTROL", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = STANDARD_RIGHTS_REQUIRED, Type = Double, Dynamic = False, Default = \"&h000F0000", Scope = Public
 	#tag EndConstant
 
-	#tag Constant, Name = STANDARD_RIGHTS_WRITE, Type = Double, Dynamic = False, Default = \"&h00020000", Scope = Public
+	#tag Constant, Name = STANDARD_RIGHTS_WRITE, Type = Double, Dynamic = False, Default = \"READ_CONTROL", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = STARTF_USESTDHANDLES, Type = Double, Dynamic = False, Default = \"&h00000100", Scope = Public
@@ -984,6 +1032,12 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = WHITENESS, Type = Double, Dynamic = False, Default = \"&h00FF0062", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WRITE_DAC, Type = Double, Dynamic = False, Default = \"&h00040000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WRITE_OWNER, Type = Double, Dynamic = False, Default = \"&h00080000", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = WT_EXECUTEONLYONCE, Type = Double, Dynamic = False, Default = \"&h00000008\r", Scope = Public
