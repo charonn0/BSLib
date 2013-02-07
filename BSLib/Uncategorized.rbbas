@@ -377,11 +377,11 @@ Protected Module Uncategorized
 		  '
 		  'Example usage:
 		  'Try
-		  '  //Blah blah
+		  ' //Blah blah
 		  'Catch Error As SomeException
-		  '  //Cleanup the db, maybe logging and user notification, etc.
-		  '  //all done, ReRaise it.
-		  '   ReRaise Error
+		  ' //Cleanup the db, maybe logging and user notification, etc.
+		  ' //all done, ReRaise it.
+		  '  ReRaise Error
 		  'End Try
 		  
 		  Raise New CaughtException(Error)
