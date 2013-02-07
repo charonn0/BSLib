@@ -370,6 +370,26 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub ReRaise(Error As RuntimeException)
+		  'Used in conjunction with the CaughtException class, this method re-raises the passed RuntimeException
+		  'without overwriting the original exception's Stack property. Further discussion and code from:
+		  'http://www.realsoftwareblog.com/2012/07/preserving-stack-trace-when-catching.html
+		  '
+		  'Example usage:
+		  'Try
+		  '  //Blah blah
+		  'Catch Error As SomeException
+		  '  //Cleanup the db, maybe logging and user notification, etc.
+		  '  //all done, ReRaise it.
+		  '   ReRaise Error
+		  'End Try
+		  
+		  Raise New CaughtException(Error)
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function ResolveRelativePath(RelativePath As String, CurrentDir As FolderItem = Nil) As String
 		  //Takes a Relative Path and an optional root directory. Returns a string representing the absolute path
 		  //represented by the RelativePath relative to the CurrentDir.

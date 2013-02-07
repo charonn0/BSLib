@@ -17,6 +17,10 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function CreateFile Lib "Kernel32" (name As WString, access As Integer, sharemode As Integer, SecAtrribs As SECURITY_ATTRIBUTES, CreateDisp As Integer, flags As Integer, template As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Soft Declare Function CreateHardLink Lib "Kernel32" Alias "CreateHardLinkW" (NewPath As WString, ExistingFile As WString, Reserved As Ptr) As Boolean
 	#tag EndExternalMethod
 
