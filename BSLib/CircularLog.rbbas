@@ -56,6 +56,38 @@ Implements Readable,Writeable
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function ReadLine(Encoding As TextEncoding = Nil) As String
+		  Dim line As String
+		  If IOStream.EOF Then IOStream.Position = 0
+		  
+		  While Not IOStream.EOF
+		    Dim char, EOL As String
+		    #If TargetWin32 Then
+		      char = IOStream.Read(2, Encoding)
+		      EOL = EndOfLine.Windows
+		      
+		    #ElseIf TargetLinux
+		      char = IOStream.Read(1, Encoding)
+		      EOL = EndOfLine.UNIX
+		      
+		    #ElseIf TargetMacOS
+		      char = IOStream.Read(1, Encoding)
+		      EOL = EndOfLine.Macintosh
+		      
+		    #endif
+		    
+		    If char <> EndOfLine.Windows Then
+		      line = line + char
+		    Else
+		      Exit While
+		    End If
+		  Wend
+		  
+		  Return line
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Write(text As String) Implements Writeable.Write
 		  If IOStream.Position + text.LenB <= MaxLength Then
 		    IOStream.Write(text)
@@ -74,6 +106,19 @@ Implements Readable,Writeable
 		Function WriteError() As Boolean Implements Writeable.WriteError
 		  Return IOStream.WriteError()
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub WriteLine(Text As String)
+		  If IOStream.Position + text.LenB <= MaxLength Then
+		    IOStream.Write(text + EndOfLine)
+		  Else
+		    //Recycle
+		    IOStream.Position = 0
+		    IOStream.Write(Text + EndOfLine)
+		  End If
+		  
+		End Sub
 	#tag EndMethod
 
 
