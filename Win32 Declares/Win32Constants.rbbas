@@ -860,6 +860,15 @@ Protected Module Win32Constants
 	#tag Constant, Name = SM_CLEANBOOT, Type = Double, Dynamic = False, Default = \"67", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = SM_CXSIZEFRAME, Type = Double, Dynamic = False, Default = \"32", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SM_CYSIZE, Type = Double, Dynamic = False, Default = \"31", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SM_CYSIZEFRAME, Type = Double, Dynamic = False, Default = \"33", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = SM_SHUTTINGDOWN, Type = Double, Dynamic = False, Default = \"&h2000", Scope = Public
 	#tag EndConstant
 

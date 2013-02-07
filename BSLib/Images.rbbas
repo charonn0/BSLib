@@ -35,6 +35,55 @@ Protected Module Images
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function CaptureControl(Extends Control As RectControl) As Picture
+		  'Calls CaptureRect on the specified RectControl
+		  
+		  Return CaptureRect(Control.Left + Control.TrueWindow.Left, Control.Top + Control.TrueWindow.Top, Control.Width, Control.Height)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CaptureRect(X As Integer, Y As Integer, Width As Integer, Height As Integer) As Picture
+		  'Performs a screen capture on the specified on-screen rectangle. All screen contents in that
+		  'rectangle will be captured as they appear to the user on screen.
+		  
+		  Dim screenCap As Picture
+		  
+		  #If TargetWin32 Then
+		    screenCap = New Picture(Width, Height, 24)
+		    Dim deskHWND As Integer = GetDesktopWindow()
+		    Dim deskHDC As Integer = GetDC(deskHWND)
+		    Call BitBlt(screenCap.Graphics.Handle(Graphics.HandleTypeHDC), 0, 0, Width, Height, DeskHDC, X, Y, SRCCOPY Or CAPTUREBLT)
+		    Call ReleaseDC(DeskHWND, deskHDC)
+		  #Endif
+		  
+		  Return screenCap
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CaptureWindow(Extends Win As Window, IncludeBorder As Boolean = True) As Picture
+		  'Calls CaptureRect on the specified Window. 
+		  'If the optional IncludeBorder parameter is False, then only the client area of the window 
+		  'is captured; if True then the client area, borders, and titlebar are included in the capture.
+		  
+		  If Not IncludeBorder Then
+		    Return CaptureRect(Win.Left, Win.Top, Win.Width, Win.Height)
+		    
+		  Else
+		    #If TargetWin32 Then
+		      Dim borderx, bordery, titleheight As Integer
+		      borderx = GetSystemMetrics(SM_CXSIZEFRAME)
+		      bordery = GetSystemMetrics(SM_CYSIZEFRAME)
+		      titleheight = GetSystemMetrics(SM_CYSIZE)
+		      Return CaptureRect(Win.Left - borderx, Win.Top - bordery - titleheight, Win.Width + borderx*2, Win.Height + titleheight + bordery*2)
+		    #Endif
+		    
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function CharPic(Char As String, TextColor As Color, BackColor As Color, Font As String, FontSize As Single) As Picture
 		  //Similar to TextToPicture but meant for single characters
 		  Dim tmp As New Picture(50, 50, 32)

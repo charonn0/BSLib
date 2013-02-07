@@ -46,7 +46,6 @@ Begin Window Window1
       Selectable      =   False
       TabIndex        =   0
       TabPanelIndex   =   0
-      TabStop         =   True
       Text            =   "http://www.boredomsoft.org/bslib.bs"
       TextAlign       =   1
       TextColor       =   &h000000FF
