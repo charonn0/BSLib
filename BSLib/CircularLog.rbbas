@@ -75,20 +75,44 @@ Implements Readable,Writeable
 		    
 		  ElseIf Platform.KernelVersion > 5.0 Then
 		    'Under construction
-		    'Dim path As New MemoryBlock(MAX_PATH + 1)
-		    'Dim FShi, FSlo, hFilemap, hMap As Integer
-		    'FSlo = IOStream.Length
-		    '
-		    'hFilemap = CreateFileMapping(Me.Handle, Nil, PAGE_READONLY, 0, 1, path)
-		    '
-		    'If hFilemap <> INVALID_HANDLE_VALUE Then
-		    'hMap = MapViewOfFile(hFilemap, FILE_MAP_READ, 0, 0, 1)
-		    'If hMap <> INVALID_HANDLE_VALUE Then
-		    'path = New MemoryBlock(MAX_PATH + 1)
-		    'If PSAPI.GetMappedFileName(GetCurrentProcess(), hMap, path, MAX_PATH)
-		    '
-		    'End If
-		    '
+		    Dim path As New MemoryBlock(MAX_PATH + 1)
+		    Dim hFilemap, hMap As Integer
+		    
+		    hFilemap = CreateFileMapping(Me.Handle, Nil, PAGE_READONLY, 0, 1, path)
+		    
+		    If hFilemap <> INVALID_HANDLE_VALUE Then
+		      hMap = MapViewOfFile(hFilemap, FILE_MAP_READ, 0, 0, 1)
+		      If hMap <> INVALID_HANDLE_VALUE Then
+		        path = New MemoryBlock(MAX_PATH + 1)
+		        If PSAPI.GetMappedFileName(GetCurrentProcess(), hMap, path, MAX_PATH) > 0 Then
+		          Dim driveStrings As New MemoryBlock(512)
+		          Dim size As Integer = GetLogicalDriveStrings(driveStrings.Size, driveStrings) 
+		          If size > driveStrings.Size Then
+		            driveStrings = New MemoryBlock(size)
+		            Call GetLogicalDriveStrings(driveStrings.Size, driveStrings) 
+		          End If
+		          For i As Integer = 0 To driveStrings.LenB - 8 Step 8
+		            If driveStrings.WString(i).Trim = "" Then Continue For i
+		            Dim drive As String = driveStrings.WString(i)
+		            drive = ReplaceAll(drive, "\", "")
+		            Dim outpath As New MemoryBlock(MAX_PATH)
+		            Size = QueryDosDevice(drive, outpath, outpath.Size)
+		            If Size > outpath.Size Then
+		              outpath = New MemoryBlock(Size)
+		              Call QueryDosDevice(drive, outpath, outpath.Size)
+		            End If
+		            If InStr(path, outpath.WString(0)) > 0 Then
+		              path = Replace(path, outpath.WString(0), drive)
+		              Return GetFolderItem(ConvertEncoding(path, Encodings.UTF16), FolderItem.PathTypeAbsolute)
+		            End If
+		            
+		          Next
+		          
+		        End If
+		        
+		      End If
+		      
+		    End If
 		    
 		  End If
 		  
@@ -273,6 +297,11 @@ Implements Readable,Writeable
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Position"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"

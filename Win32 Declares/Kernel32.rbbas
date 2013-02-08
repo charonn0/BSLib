@@ -196,6 +196,10 @@ Protected Module Kernel32
 		Declare Function GetLastError Lib "Kernel32" () As Integer
 	#tag EndExternalMethod
 
+	#tag ExternalMethod, Flags = &h0
+		Declare Function GetLogicalDriveStrings Lib "Kernel32" Alias "GetLogicalDriveStringsW" (BufferLength As Integer, Buffer As Ptr) As Integer
+	#tag EndExternalMethod
+
 	#tag ExternalMethod, Flags = &h1
 		Protected Soft Declare Function GetMappedFileName Lib "Kernel32" Alias "GetMappedFileNameW" (hProcess As Integer, lvp As Integer, Filename As Ptr, Size As Integer) As Integer
 	#tag EndExternalMethod
