@@ -128,6 +128,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = DELETE, Type = Double, Dynamic = False, Default = \"&h00010000", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = DESKTOP_SWITCHDESKTOP, Type = Double, Dynamic = False, Default = \"&h100", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = DNS_TYPE_A, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Public
 	#tag EndConstant
 

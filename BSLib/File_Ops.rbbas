@@ -710,6 +710,39 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function LaunchAndWait(Extends EXE As FolderItem, Arguments As String = "", deskName as String = "") As Boolean
+		  #If TargetWin32
+		    Dim StartInfo As New MemoryBlock(STARTUPINFO.Size)
+		    Dim procInfo As New MemoryBlock(PROCESS_INFORMATION.Size)
+		    StartInfo.Long(0) = StartInfo.Size
+		    StartInfo.Ptr(8) = deskName
+		    Dim path, args As MemoryBlock
+		    path = EXE.AbsolutePath
+		    args = Arguments
+		    If CreateProcess(EXE.AbsolutePath, args, 0, 0, False, 0, Nil, Nil, StartInfo, procInfo) Then
+		      Const INFINITE = -1
+		      Const WAIT_TIMEOUT = &h00000102
+		      Const WAIT_OBJECT_0 = &h0
+		      While WaitForSingleObject(procInfo.Long(0), 1) = WAIT_TIMEOUT
+		        #If TargetHasGUI Then
+		          App.SleepCurrentThread(10)
+		        #Else
+		          App.DoEvents(10)
+		        #endif
+		      Wend
+		      Call CloseHandle(procInfo.Long(0))
+		      Call CloseHandle(procInfo.Long(4))
+		      Return true
+		      
+		    Else
+		      Return False
+		      
+		    End If
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function ListDirectory(Root As FolderItem, SearchPattern As String = "*", PrependPath As Boolean = True) As String()
 		  'See also the FileEnumerator class.
 		  Dim rootdir As String

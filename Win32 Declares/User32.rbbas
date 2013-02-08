@@ -17,6 +17,14 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function CloseDesktop Lib "User32" (hDesktop As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function CreateDesktop Lib "User32" Alias "CreateDesktopW" (Name As WString, Device As Integer, DevMode As Integer, Flags As Integer, Access As Integer, Security As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function DestroyIcon Lib "User32" (hIcon As Integer) As Integer
 	#tag EndExternalMethod
 
@@ -81,6 +89,10 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function OpenInputDesktop Lib "User32" (flags As Integer, inherit As Boolean, access As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function ReleaseDC Lib "User32" (HWND As Integer, DC As Integer) As Integer
 	#tag EndExternalMethod
 
@@ -89,7 +101,15 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function SetThreadDesktop Lib "User32" (hDesktop As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function ShowWindow Lib "User32" (HWND As Integer, Command As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function SwitchDesktop Lib "User32" (hDesktop As Integer) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
