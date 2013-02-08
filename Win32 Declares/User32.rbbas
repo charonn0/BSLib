@@ -1,6 +1,14 @@
 #tag Module
 Protected Module User32
 	#tag ExternalMethod, Flags = &h0
+		Declare Function AdjustWindowRect Lib "User32" (ByRef WindowRect As RECT, Style As Integer, bMenu As Boolean) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function AdjustWindowRectEx Lib "User32" (ByRef WindowRect As RECT, Style As Integer, bMenu As Boolean, ExStyle As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function AllowSetForegroundWindow Lib "User32" (ProcessID As Integer) As Boolean
 	#tag EndExternalMethod
 

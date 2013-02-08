@@ -211,6 +211,13 @@ Protected Module Win32Structs
 		Reserved As Byte
 	#tag EndStructure
 
+	#tag Structure, Name = OVERLAPPED, Flags = &h0
+		Internal As Integer
+		  InternalHigh As Integer
+		  Offset As UInt64
+		hEvent As Integer
+	#tag EndStructure
+
 	#tag Structure, Name = POINT, Flags = &h0
 		X As Integer
 		Y As Integer
