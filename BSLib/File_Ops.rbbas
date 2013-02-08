@@ -1154,14 +1154,36 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Truncate(Extends File As FolderItem) As Boolean
-		  //Truncates the file to zero bytes. Returns False on error (e.g. the file was in use, not found, etc.)
+		Function Truncate(Extends Stream As BinaryStream, NewLength As Integer = 0) As Boolean
+		  //Truncates the stream to the specified length in bytes. Returns False on error (e.g. the file was in use, not found, etc.)
 		  
-		  Dim handle As Integer = CreateFile(File.Name, GENERIC_WRITE, 0, 0, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
-		  If handle > 0 Then
-		    Call CloseHandle(handle)
-		    Return True
+		  #If TargetWin32 Then
+		    stream.Position = NewLength
+		    Return SetEndOfFile(stream.Handle(BinaryStream.HandleTypeWin32Handle))
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Truncate(Extends File As FolderItem, NewLength As Integer = 0) As Boolean
+		  //Truncates the file to the specified length in bytes. Returns False on error (e.g. the file was in use, not found, etc.)
+		  
+		  Dim success As Boolean
+		  If NewLength = 0 Then
+		    Dim handle As Integer = CreateFile(File.Name, GENERIC_WRITE, 0, 0, TRUNCATE_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
+		    If handle > 0 Then
+		      Call CloseHandle(handle)
+		      success = True
+		    End If
+		  Else
+		    Dim stream As BinaryStream = BinaryStream.Open(File, True)
+		    stream.Position = NewLength
+		    success = SetEndOfFile(stream.Handle(BinaryStream.HandleTypeWin32Handle))
+		    stream.Close
 		  End If
+		  
+		  Return success
+		  
 		End Function
 	#tag EndMethod
 

@@ -3,7 +3,10 @@ Protected Class CircularLog
 Implements Readable,Writeable
 	#tag Method, Flags = &h0
 		Sub Close()
-		  If IOStream <> Nil Then IOStream.Close
+		  If IOStream <> Nil Then
+		    IOStream.Flush
+		    IOStream.Close
+		  End If
 		End Sub
 	#tag EndMethod
 
@@ -14,7 +17,24 @@ Implements Readable,Writeable
 		    IOStream.Position = IOStream.Length
 		  Else
 		    IOStream = BinaryStream.Create(file, False)
+		    If MaxLength = 0 Then MaxLength = 4096
 		  End If
+		  
+		  Call IOStream.Truncate(MaxLength)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1000
+		Sub Constructor(FileHandle As Integer, HandleType As Integer = BinaryStream.HandleTypeWin32Handle)
+		  IOStream = New BinaryStream(FileHandle, HandleType)
+		  IOStream.Position = IOStream.Length
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Destructor()
+		  Me.Close()
 		End Sub
 	#tag EndMethod
 
@@ -29,6 +49,51 @@ Implements Readable,Writeable
 		Sub Flush() Implements Writeable.Flush
 		  IOStream.Flush()
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Handle(HandleType As Integer = BinaryStream.HandleTypeWin32Handle) As Integer
+		  Return IOStream.Handle(HandleType)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function LogFile() As FolderItem
+		  If Platform.KernelVersion >= 6.0 Then
+		    Dim path As New MemoryBlock(2048)
+		    Dim size As Integer = GetFinalPathNameByHandle(Me.Handle, path, path.Size, 0)
+		    If size > path.Size Then
+		      path = New MemoryBlock(size)
+		      Call GetFinalPathNameByHandle(Me.Handle, path, path.Size, 0)
+		      
+		    ElseIf size = 0 Then
+		      Return Nil
+		      
+		    End If
+		    
+		    Return GetFolderItem(path.WString(0), FolderItem.PathTypeAbsolute)
+		    
+		  ElseIf Platform.KernelVersion > 5.0 Then
+		    'Under construction
+		    'Dim path As New MemoryBlock(MAX_PATH + 1)
+		    'Dim FShi, FSlo, hFilemap, hMap As Integer
+		    'FSlo = IOStream.Length
+		    '
+		    'hFilemap = CreateFileMapping(Me.Handle, Nil, PAGE_READONLY, 0, 1, path)
+		    '
+		    'If hFilemap <> INVALID_HANDLE_VALUE Then
+		    'hMap = MapViewOfFile(hFilemap, FILE_MAP_READ, 0, 0, 1)
+		    'If hMap <> INVALID_HANDLE_VALUE Then
+		    'path = New MemoryBlock(MAX_PATH + 1)
+		    'If PSAPI.GetMappedFileName(GetCurrentProcess(), hMap, path, MAX_PATH)
+		    '
+		    'End If
+		    '
+		    
+		  End If
+		  
+		  
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -110,12 +175,21 @@ Implements Readable,Writeable
 
 	#tag Method, Flags = &h0
 		Sub WriteLine(Text As String)
-		  If IOStream.Position + text.LenB <= MaxLength Then
-		    IOStream.Write(text + EndOfLine)
+		  Dim EoL As String
+		  #If TargetWin32 Then
+		    EoL = EndOfLine.Windows
+		  #ElseIf TargetLinux
+		    EoL = EndOfLine.UNIX
+		  #ElseIf TargetMacOS
+		    EoL = EndOfLine.Macintosh
+		  #endif
+		  
+		  If IOStream.Position + text.LenB + EoL.LenB <= MaxLength Then
+		    IOStream.Write(text + EoL)
 		  Else
 		    //Recycle
 		    IOStream.Position = 0
-		    IOStream.Write(Text + EndOfLine)
+		    IOStream.Write(Text + EoL)
 		  End If
 		  
 		End Sub
@@ -151,6 +225,10 @@ Implements Readable,Writeable
 		#tag Setter
 			Set
 			  mMaxLength = value
+			  
+			  If mMaxLength < Me.Length Then
+			    Call IOStream.Truncate(mMaxLength)
+			  End If
 			End Set
 		#tag EndSetter
 		MaxLength As UInt64
@@ -159,6 +237,20 @@ Implements Readable,Writeable
 	#tag Property, Flags = &h21
 		Private mMaxLength As UInt64 = 0
 	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return IOStream.Position
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  IOStream.Position = value
+			End Set
+		#tag EndSetter
+		Position As Integer
+	#tag EndComputedProperty
 
 
 	#tag ViewBehavior

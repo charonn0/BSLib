@@ -269,6 +269,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = FILE_LIST_DIRECTORY, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = FILE_MAP_READ, Type = Double, Dynamic = False, Default = \"&h0004", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = FILE_NAMED_STREAMS, Type = Double, Dynamic = False, Default = \"&h00040000", Scope = Public
 	#tag EndConstant
 
@@ -672,6 +675,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = OS_XPORGREATER, Type = Double, Dynamic = False, Default = \"18", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PAGE_READONLY, Type = Double, Dynamic = False, Default = \"&h02", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = PATCOPY, Type = Double, Dynamic = False, Default = \"&h00F00021", Scope = Public

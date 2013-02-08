@@ -13,11 +13,23 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function ConnectNamedPipe Lib "Kernel32" (hPipe As Integer, Overlapped As Ptr) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function CopyFileEx Lib "Kernel32" Alias "CopyFileExW" (sourceFile As WString, destinationFile As WString, FailIfExists As Boolean) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function CreateFile Lib "Kernel32" Alias "CreateFileW" (name As WString, access As Integer, sharemode As Integer, SecAtrribs As Integer, CreateDisp As Integer, flags As Integer, template As Integer) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
 		Declare Function CreateFile Lib "Kernel32" (name As WString, access As Integer, sharemode As Integer, SecAtrribs As SECURITY_ATTRIBUTES, CreateDisp As Integer, flags As Integer, template As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function CreateFileMapping Lib "Kernel32" Alias "CreateFileMappingW" (hFile As Integer, SecurityAttribs As Ptr, PageProtection As Integer, MaxSizeHi As Integer, MaxSizeLo As Integer, Name As WString) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
@@ -184,6 +196,10 @@ Protected Module Kernel32
 		Declare Function GetLastError Lib "Kernel32" () As Integer
 	#tag EndExternalMethod
 
+	#tag ExternalMethod, Flags = &h1
+		Protected Soft Declare Function GetMappedFileName Lib "Kernel32" Alias "GetMappedFileNameW" (hProcess As Integer, lvp As Integer, Filename As Ptr, Size As Integer) As Integer
+	#tag EndExternalMethod
+
 	#tag ExternalMethod, Flags = &h0
 		Soft Declare Sub GetNativeSystemInfo Lib "Kernel32" (ByRef info As SYSTEM_INFO)
 	#tag EndExternalMethod
@@ -234,6 +250,10 @@ Protected Module Kernel32
 
 	#tag ExternalMethod, Flags = &h0
 		Declare Function LockFile Lib "Kernel32" (FileHandle As Integer, dwFileOffsetLow As Integer, dwFileOffsetHigh As Integer, nNumberOfBytesToLockLow As Integer, nNumberOfBytesToLockHigh As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function MapViewOfFile Lib "Kernel32" (hFilemap As Integer, DesiredAccess As Integer, OffsetHi As Integer, Offsetlo As Integer, ByteCount As UInt32) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
@@ -309,7 +329,15 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function SetEndOfFile Lib "Kernel32" (hFile As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function SetFileAttributes Lib "Kernel32" Alias "SetFileAttributesW" (path As WString, fattribs As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function SetFilePointer Lib "Kernel32" (hFile As Integer, DistanceToMove As Integer, DistanceToMoveHigh As Ptr, MoveMethod As Integer) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0

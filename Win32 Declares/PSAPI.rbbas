@@ -1,6 +1,10 @@
 #tag Module
 Protected Module PSAPI
 	#tag ExternalMethod, Flags = &h1
+		Protected Soft Declare Function GetMappedFileName Lib "PSAPI" Alias "GetMappedFileName" (hProcess As Integer, lvp As Integer, Filename As Ptr, Size As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h1
 		Protected Soft Declare Function GetModuleFileNameEx Lib "PSAPI" Alias "GetModuleFileNameExW" (hProcess As Integer, hModule As Integer, ModuleName As Ptr, nSize As Integer) As Integer
 	#tag EndExternalMethod
 
