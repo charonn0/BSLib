@@ -745,25 +745,20 @@ Protected Module File_Ops
 	#tag Method, Flags = &h0
 		Function ListDirectory(Root As FolderItem, SearchPattern As String = "*", PrependPath As Boolean = True) As String()
 		  'See also the FileEnumerator class.
-		  Dim rootdir As String
+		  Dim list(), rootdir As String
 		  If PrependPath Then rootdir = Root.AbsolutePath
 		  Dim Result As WIN32_FIND_DATA
-		  Dim FindHandle As Integer = FindFirstFile("//?/" + ReplaceAll(Root.AbsolutePath, "/", "//") + SearchPattern + Chr(0), Result)
-		  Dim list() As String
-		  
-		  If FindHandle > 0 Then
-		    Do
-		      If Result.FileName <> "." And Result.FileName <> ".." Then
-		        If PrependPath Then
-		          list.Append(rootdir + Result.FileName)
-		        Else
-		          list.Append(Result.FileName)
-		        End If
+		  Dim lister As New FileEnumerator(Root, SearchPattern)
+		  While lister.LastError = 0
+		    If Result.FileName <> "." And Result.FileName <> ".." Then
+		      If PrependPath Then
+		        list.Append(rootdir + Result.FileName)
+		      Else
+		        list.Append(Result.FileName)
 		      End If
-		    Loop Until Not FindNextFile(FindHandle, Result)
-		    Call FindClose(FindHandle)
-		  End If
-		  
+		    End If
+		    Result = lister.NextItem
+		  Wend
 		  Return list
 		End Function
 	#tag EndMethod
