@@ -25,6 +25,25 @@ Implements Readable,Writeable
 	#tag EndMethod
 
 	#tag Method, Flags = &h1000
+		Sub Constructor(file As FolderItem, InitialSize As UInt64 = - 1, MaxSize As UInt64 = - 1)
+		  If file.Exists Then
+		    IOStream = BinaryStream.Open(file, True)
+		  Else
+		    IOStream = BinaryStream.Create(file, True)
+		  End If
+		  
+		  If IOStream.Length < InitialSize And Not (InitialSize < 0) Then
+		    Call IOStream.Truncate(InitialSize)
+		  End If
+		  
+		  If IOStream.Length > MaxSize And Not (MaxSize < 0) Then
+		    Call IOStream.Truncate(MaxSize)
+		  End If
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1000
 		Sub Constructor(FileHandle As Integer, HandleType As Integer = BinaryStream.HandleTypeWin32Handle)
 		  IOStream = New BinaryStream(FileHandle, HandleType)
 		  IOStream.Position = IOStream.Length
@@ -59,62 +78,54 @@ Implements Readable,Writeable
 
 	#tag Method, Flags = &h0
 		Function LogFile() As FolderItem
-		  If Platform.KernelVersion >= 6.0 Then
-		    Dim path As New MemoryBlock(2048)
-		    Dim size As Integer = GetFinalPathNameByHandle(Me.Handle, path, path.Size, 0)
-		    If size > path.Size Then
-		      path = New MemoryBlock(size)
-		      Call GetFinalPathNameByHandle(Me.Handle, path, path.Size, 0)
+		  'If Platform.KernelVersion >= 6.0 Then
+		  'Dim path As New MemoryBlock(2048)
+		  'Dim size As Integer = GetFinalPathNameByHandle(Me.Handle, path, path.Size, 0)
+		  'If size > path.Size Then
+		  'path = New MemoryBlock(size)
+		  'Call GetFinalPathNameByHandle(Me.Handle, path, path.Size, 0)
+		  '
+		  'ElseIf size = 0 Then
+		  'Return Nil
+		  '
+		  'End If
+		  '
+		  'Return GetFolderItem(path.WString(0), FolderItem.PathTypeAbsolute)
+		  '
+		  'ElseIf Platform.KernelVersion > 5.0 Then
+		  'Under construction
+		  Dim path As New MemoryBlock(MAX_PATH + 1)
+		  Dim hFilemap, hMap As Integer
+		  
+		  hFilemap = CreateFileMapping(Me.Handle, Nil, PAGE_READONLY, 0, 1, path)
+		  If hFilemap <> INVALID_HANDLE_VALUE Then
+		    hMap = MapViewOfFile(hFilemap, FILE_MAP_READ, 0, 0, 1)
+		    
+		    If hMap <> INVALID_HANDLE_VALUE Then
 		      
-		    ElseIf size = 0 Then
-		      Return Nil
+		      path = New MemoryBlock(MAX_PATH + 1)
 		      
-		    End If
-		    
-		    Return GetFolderItem(path.WString(0), FolderItem.PathTypeAbsolute)
-		    
-		  ElseIf Platform.KernelVersion > 5.0 Then
-		    'Under construction
-		    Dim path As New MemoryBlock(MAX_PATH + 1)
-		    Dim hFilemap, hMap As Integer
-		    
-		    hFilemap = CreateFileMapping(Me.Handle, Nil, PAGE_READONLY, 0, 1, path)
-		    
-		    If hFilemap <> INVALID_HANDLE_VALUE Then
-		      hMap = MapViewOfFile(hFilemap, FILE_MAP_READ, 0, 0, 1)
-		      If hMap <> INVALID_HANDLE_VALUE Then
-		        path = New MemoryBlock(MAX_PATH + 1)
-		        If PSAPI.GetMappedFileName(GetCurrentProcess(), hMap, path, MAX_PATH) > 0 Then
-		          Dim driveStrings As New MemoryBlock(512)
-		          Dim size As Integer = GetLogicalDriveStrings(driveStrings.Size, driveStrings) 
-		          If size > driveStrings.Size Then
-		            driveStrings = New MemoryBlock(size)
-		            Call GetLogicalDriveStrings(driveStrings.Size, driveStrings) 
+		      If PSAPI.GetMappedFileName(GetCurrentProcess(), hMap, path, MAX_PATH) > 0 Then
+		        
+		        For v As Integer = 0 To VolumeCount - 1
+		          Dim outpath As New MemoryBlock(2048)
+		          Dim Size As Integer = QueryDosDevice(Volume(v).AbsolutePath, outpath, outpath.Size)
+		          If Size > outpath.Size Then
+		            outpath = New MemoryBlock(Size)
+		            Call QueryDosDevice(Volume(v).AbsolutePath, outpath, outpath.Size)
 		          End If
-		          For i As Integer = 0 To driveStrings.LenB - 8 Step 8
-		            If driveStrings.WString(i).Trim = "" Then Continue For i
-		            Dim drive As String = driveStrings.WString(i)
-		            drive = ReplaceAll(drive, "\", "")
-		            Dim outpath As New MemoryBlock(MAX_PATH)
-		            Size = QueryDosDevice(drive, outpath, outpath.Size)
-		            If Size > outpath.Size Then
-		              outpath = New MemoryBlock(Size)
-		              Call QueryDosDevice(drive, outpath, outpath.Size)
-		            End If
-		            If InStr(path, outpath.WString(0)) > 0 Then
-		              path = Replace(path, outpath.WString(0), drive)
-		              Return GetFolderItem(ConvertEncoding(path, Encodings.UTF16), FolderItem.PathTypeAbsolute)
-		            End If
-		            
-		          Next
-		          
-		        End If
+		          If Left(path.WString(0), outpath.WString(0).Len) = outpath.WString(0) Then
+		            Return GetFolderItem(Replace(outpath.WString(0), path.WString(0), Volume(v).AbsolutePath))
+		          End If
+		        Next
 		        
 		      End If
 		      
 		    End If
 		    
 		  End If
+		  
+		  'End If
 		  
 		  
 		End Function
@@ -165,7 +176,7 @@ Implements Readable,Writeable
 		      
 		    #endif
 		    
-		    If char <> EndOfLine.Windows Then
+		    If char <> EOL Then
 		      line = line + char
 		    Else
 		      Exit While
