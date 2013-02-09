@@ -4,6 +4,18 @@ Inherits Application
 	#tag Event
 		Sub Open()
 		  Call MsgBox("Hello :-)", 64, "BSLib")
+		  
+		  Dim f As FolderItem = GetSaveFolderItem("", "test.log")
+		  Dim log As New CircularLog(f, 1024, 4096)
+		  For i As Integer = 0 To 500
+		    log.WriteLine("Hello.")
+		  Next
+		  log.Close
+		  f.Launch
+		  Break
+		  f.Delete
+		  Quit
+		  
 		End Sub
 	#tag EndEvent
 

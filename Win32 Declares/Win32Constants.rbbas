@@ -209,6 +209,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = FILE_ATTRIBUTE_VIRTUAL, Type = Double, Dynamic = False, Default = \"&h10000", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = FILE_BEGIN, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = FILE_CASE_PRESERVED_NAMES, Type = Double, Dynamic = False, Default = \"&h00000002", Scope = Public
 	#tag EndConstant
 
@@ -218,10 +221,16 @@ Protected Module Win32Constants
 	#tag Constant, Name = FILE_CREATE_PIPE_INSTANCE, Type = Double, Dynamic = False, Default = \"&h0004", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = FILE_CURRENT, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = FILE_DELETE_CHILD, Type = Double, Dynamic = False, Default = \"&h0040", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_DEVICE_MASS_STORAGE, Type = Double, Dynamic = False, Default = \"&h0000002d", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FILE_END, Type = Double, Dynamic = False, Default = \"2", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = FILE_EXECUTE, Type = Double, Dynamic = False, Default = \"&h0020", Scope = Public
@@ -429,6 +438,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = INVALID_HANDLE_VALUE, Type = Double, Dynamic = False, Default = \"&hffffffff", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = INVALID_SET_FILE_POINTER, Type = Double, Dynamic = False, Default = \"-1", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = IOCTL_STORAGE_BASE, Type = Double, Dynamic = False, Default = \"&h0000002d", Scope = Public

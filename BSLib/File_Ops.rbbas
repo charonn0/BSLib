@@ -1158,8 +1158,10 @@ Protected Module File_Ops
 		  //Truncates the stream to the specified length in bytes. Returns False on error (e.g. the file was in use, not found, etc.)
 		  
 		  #If TargetWin32 Then
-		    stream.Position = NewLength
-		    Return SetEndOfFile(stream.Handle(BinaryStream.HandleTypeWin32Handle))
+		    Dim i As Integer = SetFilePointer(Stream.Handle(Stream.HandleTypeWin32Handle), NewLength, Nil, FILE_BEGIN)
+		    If i <> INVALID_SET_FILE_POINTER Then
+		      Return SetEndOfFile(stream.Handle(BinaryStream.HandleTypeWin32Handle))
+		    End If
 		  #endif
 		End Function
 	#tag EndMethod
@@ -1177,12 +1179,11 @@ Protected Module File_Ops
 		    End If
 		  Else
 		    Dim stream As BinaryStream = BinaryStream.Open(File, True)
-		    stream.Position = NewLength
-		    success = SetEndOfFile(stream.Handle(BinaryStream.HandleTypeWin32Handle))
-		    stream.Close
+		    If stream.Truncate(NewLength) Then
+		      stream.Close
+		      Return True
+		    End If
 		  End If
-		  
-		  Return success
 		  
 		End Function
 	#tag EndMethod
