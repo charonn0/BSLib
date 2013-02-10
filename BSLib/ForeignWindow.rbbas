@@ -339,10 +339,6 @@ Protected Class ForeignWindow
 	#tag EndComputedProperty
 
 
-	#tag Constant, Name = FLASHW_ALL, Type = Double, Dynamic = False, Default = \"&h00000003", Scope = Public
-	#tag EndConstant
-
-
 	#tag ViewBehavior
 		#tag ViewProperty
 			Name="Alpha"
