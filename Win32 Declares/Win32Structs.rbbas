@@ -64,6 +64,14 @@ Protected Module Win32Structs
 		streamName As string*255
 	#tag EndStructure
 
+	#tag Structure, Name = FLASHWINFO, Flags = &h0
+		cbSize As UInt32
+		  HWND As Integer
+		  Flags As Integer
+		  Count As UInt32
+		Timeout As Integer
+	#tag EndStructure
+
 	#tag Structure, Name = GUID, Flags = &h0
 		data1 As UInt32
 		  data2 As Short
@@ -413,6 +421,19 @@ Protected Module Win32Structs
 	#tag Structure, Name = WIN32_FIND_STREAM_DATA, Flags = &h0
 		StreamSize As Int64
 		StreamName As String*1024
+	#tag EndStructure
+
+	#tag Structure, Name = WINDOWINFO, Flags = &h0
+		cbSize As Integer
+		  WindowArea As RECT
+		  ClientArea As RECT
+		  Style As Integer
+		  ExStyle As Integer
+		  WindowStatus As Integer
+		  cxWindowBorders As Integer
+		  cyWindowBorders As Integer
+		  Atom As UInt16
+		CreatorVersion As UInt16
 	#tag EndStructure
 
 	#tag Structure, Name = WINTRUST_DATA, Flags = &h0

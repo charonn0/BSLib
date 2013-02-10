@@ -44,6 +44,7 @@ Module=User32;Win32 Declares/User32.rbbas;&h7039C7FF;&h20572FFF;false
 Module=AdvApi32;Win32 Declares/AdvApi32.rbbas;&h51B3FFFF;&h20572FFF;false
 Module=Kernel32;Win32 Declares/Kernel32.rbbas;&h102157FF;&h20572FFF;false
 Class=ColorRef;BSLib/Console/ColorRef.rbbas;&h2AFCC7FF;&h1C002FFF;false
+Class=ForeignWindow;ForeignWindow.rbbas;&h404C77FF;&h0;false
 DefaultWindow=Window1
 AppMenuBar=MenuBar1
 MajorVersion=1

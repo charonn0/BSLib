@@ -386,7 +386,34 @@ Protected Module Win32Constants
 	#tag Constant, Name = FILE_WRITE_EA, Type = Double, Dynamic = False, Default = \"&h0010", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = FLASHW_ALL, Type = Double, Dynamic = False, Default = \"&h00000003", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FLASHW_CAPTION, Type = Double, Dynamic = False, Default = \"&h00000001", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FLASHW_STOP, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FLASHW_TIMER, Type = Double, Dynamic = False, Default = \"&h00000004", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FLASHW_TIMERNOFG, Type = Double, Dynamic = False, Default = \"&h0000000C", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = FLASHW_TRAY, Type = Double, Dynamic = False, Default = \"&h00000002", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = FORMAT_MESSAGE_FROM_SYSTEM, Type = Double, Dynamic = False, Default = \"&H1000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = GA_PARENT, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = GA_ROOT, Type = Double, Dynamic = False, Default = \"2", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = GA_ROOTOWNER, Type = Double, Dynamic = False, Default = \"3", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = GENERIC_ALL, Type = Double, Dynamic = False, Default = \"&h10000000", Scope = Public
@@ -399,6 +426,15 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = GENERIC_WRITE, Type = Double, Dynamic = False, Default = \"&h40000000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = GWL_EXSTYLE, Type = Double, Dynamic = False, Default = \"-20", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = GW_HWNDNEXT, Type = Double, Dynamic = False, Default = \"2", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = GW_OWNER, Type = Double, Dynamic = False, Default = \"4", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = HANDLE_FLAG_INHERIT, Type = Double, Dynamic = False, Default = \"&h00000001", Scope = Public
@@ -444,6 +480,12 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = IOCTL_STORAGE_BASE, Type = Double, Dynamic = False, Default = \"&h0000002d", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = LR_LOADFROMFILE, Type = Double, Dynamic = False, Default = \"&h00000010", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = LWA_ALPHA, Type = Double, Dynamic = False, Default = \"2", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = MAXIMUM_ALLOWED, Type = Double, Dynamic = False, Default = \"&h02000000", Scope = Public
@@ -707,10 +749,16 @@ Protected Module Win32Constants
 	#tag Constant, Name = PIPE_UNLIMITED_INSTANCES, Type = Double, Dynamic = False, Default = \"&hFF", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = PRF_CLIENT, Type = Double, Dynamic = False, Default = \"&h00000004", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = PRF_DONTFINDLNK, Type = Double, Dynamic = False, Default = \"&h0008", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = PRF_FIRSTDIRDEF, Type = Double, Dynamic = False, Default = \"&h0004\r", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PRF_NONCLIENT, Type = Double, Dynamic = False, Default = \"&h00000002", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = PRF_REQUIREABSOLUTE, Type = Double, Dynamic = False, Default = \"&h0010\r", Scope = Public
@@ -1007,7 +1055,25 @@ Protected Module Win32Constants
 	#tag Constant, Name = STD_OUTPUT_HANDLE, Type = Double, Dynamic = False, Default = \"-11", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = SWP_FRAMECHANGED, Type = Double, Dynamic = False, Default = \"&h20", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SWP_NOMOVE, Type = Double, Dynamic = False, Default = \"&h2", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SWP_NOSIZE, Type = Double, Dynamic = False, Default = \"&h1", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SWP_NOZORDER, Type = Double, Dynamic = False, Default = \"&h4", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SW_FORCEMINIMIZE, Type = Double, Dynamic = False, Default = \"11", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = SW_HIDE, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SW_MAXIMIZE, Type = Double, Dynamic = False, Default = \"3", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = SW_RESTORE, Type = Double, Dynamic = False, Default = \"9", Scope = Public
@@ -1017,6 +1083,12 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = SW_SHOWDEFAULT, Type = Double, Dynamic = False, Default = \"10", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SW_SHOWMINIMIZED, Type = Double, Dynamic = False, Default = \"2", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = SW_SHOWNORMAL, Type = Double, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = SYNCHRONIZE, Type = Double, Dynamic = False, Default = \"&h00100000", Scope = Public
@@ -1064,10 +1136,22 @@ Protected Module Win32Constants
 	#tag Constant, Name = WHITENESS, Type = Double, Dynamic = False, Default = \"&h00FF0062", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = WM_GETTEXT, Type = Double, Dynamic = False, Default = \"&h000D", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WM_PRINT, Type = Double, Dynamic = False, Default = \"&h0317", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WM_SETICON, Type = Double, Dynamic = False, Default = \"&h0080", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = WRITE_DAC, Type = Double, Dynamic = False, Default = \"&h00040000", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = WRITE_OWNER, Type = Double, Dynamic = False, Default = \"&h00080000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WS_EX_LAYERED, Type = Double, Dynamic = False, Default = \"&h80000", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = WT_EXECUTEONLYONCE, Type = Double, Dynamic = False, Default = \"&h00000008\r", Scope = Public
