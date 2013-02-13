@@ -6,7 +6,7 @@ Inherits RuntimeException
 		  'This method was written by SirG3 <TheSirG3@gmail.com>; http://fireyesoftware.com/developer/stackcleaner/
 		  #If rbVersion >= 2005.5
 		    
-		    Static blacklist() As String 
+		    Static blacklist() As String
 		    If UBound(blacklist) <= -1 Then
 		      blacklist = Array(_
 		      "REALbasic._RuntimeRegisterAppObject%%o<Application>", _
@@ -115,12 +115,13 @@ Inherits RuntimeException
 
 	#tag Method, Flags = &h0
 		Sub Constructor(Error as RuntimeException)
-		  If Error IsA CaughtException Then 
+		  If Error IsA CaughtException Then
 		    'Cast the Error as a CaughtException then copy the original exception
 		    Error = CaughtException(Error).OriginalException
 		  End If
 		  Self.OriginalException = Error
-		  
+		  Me.ErrorNumber = Error.ErrorNumber
+		  Me.Message = Error.Message
 		End Sub
 	#tag EndMethod
 
@@ -256,8 +257,6 @@ Inherits RuntimeException
 		
 		This class also incorporates code from Fireeye Software's StackCleaner project: 
 		http://web.archive.org/web/20090528003537/http://fireyesoftware.com/developer/stackcleaner/
-		
-		
 	#tag EndNote
 
 	#tag Note, Name = Useage
