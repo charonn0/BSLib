@@ -58,6 +58,37 @@ Begin Window Window1
       Visible         =   True
       Width           =   288
    End
+   Begin PushButton PushButton1
+      AutoDeactivate  =   True
+      Bold            =   ""
+      ButtonStyle     =   0
+      Cancel          =   ""
+      Caption         =   "QNDHTTPd Demo"
+      Default         =   ""
+      Enabled         =   True
+      Height          =   22
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   404
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   1
+      TabPanelIndex   =   0
+      TabStop         =   True
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   196
+      Underline       =   ""
+      Visible         =   True
+      Width           =   119
+   End
 End
 #tag EndWindow
 
@@ -90,5 +121,12 @@ End
 		  Me.TextColor = &cFF000000
 		  Return True
 		End Function
+	#tag EndEvent
+#tag EndEvents
+#tag Events PushButton1
+	#tag Event
+		Sub Action()
+		  QnDHTTPdDemo.Show
+		End Sub
 	#tag EndEvent
 #tag EndEvents
