@@ -1,6 +1,6 @@
 #tag Class
 Protected Class Win32Stream
-Implements Readable, Writeable
+Implements Readable,Writeable
 	#tag Method, Flags = &h0
 		Sub Close()
 		  Call CloseHandle(Me.Handle)
@@ -24,21 +24,22 @@ Implements Readable, Writeable
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		 Shared Function Create(File As FolderItem, CreateDisposition As Integer = 0, Access As Integer = 0, Sharemode As Integer = 0, Flags As Integer = 0) As Win32Stream
-		  Dim tmp As Win32Stream = New Win32Stream(INVALID_HANDLE_VALUE)
-		  Dim hFile As Integer
-		  
-		  If Access = 0 Then Access = GENERIC_ALL
-		  If CreateDisposition = 0 Then CreateDisposition = CREATE_NEW
-		  If sharemode = 0 Then sharemode = FILE_SHARE_READ 'exclusive write access
-		  
-		  hFile = CreateFile("//?/" + ReplaceAll(File.AbsolutePath, "/", "//"), Access, sharemode, 0, CreateDisposition, Flags, 0)
-		  
-		  If hFile <> INVALID_HANDLE_VALUE Then
-		    tmp = New Win32Stream(hFile, GetLastError)
+		 Shared Function Create(File As FolderItem, Overwrite As Boolean = False) As Win32Stream
+		  Dim CreateDisposition As Integer
+		  If Overwrite Then
+		    CreateDisposition = CREATE_ALWAYS
+		  Else
+		    CreateDisposition = CREATE_NEW
 		  End If
 		  
-		  Return tmp
+		  Return Win32Stream.Open(File, 0, 0, CreateDisposition)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		 Shared Function Create(File As FolderItem, Access As Integer = 0, Sharemode As Integer = 0, CreateDisposition As Integer = 0, Flags As Integer = 0) As Win32Stream
+		  If CreateDisposition = 0 Then CreateDisposition = CREATE_NEW
+		  Return Win32Stream.Open(File, Access, Sharemode, CreateDisposition, Flags)
 		End Function
 	#tag EndMethod
 
@@ -68,7 +69,20 @@ Implements Readable, Writeable
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		 Shared Function Open(File As FolderItem, CreateDisposition As Integer = 0, Access As Integer = 0, Sharemode As Integer = 0, Flags As Integer = 0) As Win32Stream
+		 Shared Function Open(File As FolderItem, ReadWrite As Boolean = True) As Win32Stream
+		  Dim desiredaccess As Integer
+		  If ReadWrite Then
+		    desiredaccess = GENERIC_READ Or GENERIC_WRITE
+		  Else
+		    desiredaccess = GENERIC_READ
+		  End If
+		  
+		  Return Win32Stream.Open(File, desiredaccess)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		 Shared Function Open(File As FolderItem, Access As Integer = 0, Sharemode As Integer = 0, CreateDisposition As Integer = 0, Flags As Integer = 0) As Win32Stream
 		  Dim tmp As Win32Stream = New Win32Stream(INVALID_HANDLE_VALUE)
 		  Dim hFile As Integer
 		  
@@ -162,7 +176,11 @@ Implements Readable, Writeable
 		
 		
 		
-		The Shared methods' optional parameters correspond to those used by the CreateFile Win32 function.
+		The Shared methods' optional parameters (FolderItem, Integer, Integer, Integer, Integer) correspond to those used by the CreateFile Win32 function.
+		
+		Win32Template files are not supported by the shared methods, however the class itself doesn't need to know from where the Win32 handle it's operating 
+		on comes. This class doesn't even need to know that the handle refers to a file, only that the handle is valid for file-stream functions like ReadFile
+		and SetFilePointer.
 	#tag EndNote
 
 
