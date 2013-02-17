@@ -63,8 +63,8 @@ Protected Module Images
 
 	#tag Method, Flags = &h0
 		Function CaptureWindow(Extends Win As Window, IncludeBorder As Boolean = True) As Picture
-		  'Calls CaptureRect on the specified Window. 
-		  'If the optional IncludeBorder parameter is False, then only the client area of the window 
+		  'Calls CaptureRect on the specified Window.
+		  'If the optional IncludeBorder parameter is False, then only the client area of the window
 		  'is captured; if True then the client area, borders, and titlebar are included in the capture.
 		  
 		  If Not IncludeBorder Then

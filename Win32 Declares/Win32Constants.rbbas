@@ -110,6 +110,60 @@ Protected Module Win32Constants
 	#tag Constant, Name = BusVirtual, Type = Double, Dynamic = False, Default = \"&hE", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = CALG_3DES, Type = Double, Dynamic = False, Default = \"&h00006603", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_3DES_112, Type = Double, Dynamic = False, Default = \"&h00006609", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_AES, Type = Double, Dynamic = False, Default = \"&h00006611", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_AES128, Type = Double, Dynamic = False, Default = \"&h0000660e", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_AES192, Type = Double, Dynamic = False, Default = \"&h0000660f", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_AES256, Type = Double, Dynamic = False, Default = \"&h00006610", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_DES, Type = Double, Dynamic = False, Default = \"&h00006601", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_HMAC, Type = Double, Dynamic = False, Default = \"&h00008009", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_MAC, Type = Double, Dynamic = False, Default = \"&h00008005", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_MD2, Type = Double, Dynamic = False, Default = \"&h00008001", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_MD4, Type = Double, Dynamic = False, Default = \"&h00008002", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_MD5, Type = Double, Dynamic = False, Default = \"&h00008003", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_RC4, Type = Double, Dynamic = False, Default = \"&h00006801", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_RC5, Type = Double, Dynamic = False, Default = \"&h0000660d", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_SHA1, Type = Double, Dynamic = False, Default = \"&h00008004", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_SHA256, Type = Double, Dynamic = False, Default = \"&h0000800c", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_SHA384, Type = Double, Dynamic = False, Default = \"&h0000800d", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = CALG_SHA512, Type = Double, Dynamic = False, Default = \"&h0000800e", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = CAPTUREBLT, Type = Double, Dynamic = False, Default = \"&h40000000", Scope = Public
 	#tag EndConstant
 
