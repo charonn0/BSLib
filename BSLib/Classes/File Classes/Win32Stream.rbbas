@@ -3,13 +3,23 @@ Protected Class Win32Stream
 Implements Readable,Writeable
 	#tag Method, Flags = &h0
 		Sub Close()
-		  Call CloseHandle(Me.Handle)
+		  #If TargetWin32 Then Call CloseHandle(Me.Handle)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub Constructor()
+		  #If Not TargetWin32 Then
+		    #pragma Warning "This class supports only Win32 applications."
+		  #endif
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Sub Constructor(FileHandle As Integer)
-		  #If Not TargetWin32 Then #pragma Error "This class is for Windows only."
+		  #If Not TargetWin32 Then
+		    #pragma Warning "This class supports only Win32 applications."
+		  #endif
 		  Me.mHandle = FileHandle
 		  
 		End Sub
@@ -17,7 +27,9 @@ Implements Readable,Writeable
 
 	#tag Method, Flags = &h21
 		Private Sub Constructor(FileHandle As Integer, Error As Integer)
-		  #If Not TargetWin32 Then #pragma Error "This class is for Windows only."
+		  #If Not TargetWin32 Then
+		    #pragma Warning "This class supports only Win32 applications."
+		  #endif
 		  Me.mHandle = FileHandle
 		  mLastError = Error
 		End Sub
@@ -58,13 +70,16 @@ Implements Readable,Writeable
 
 	#tag Method, Flags = &h0
 		Sub Flush() Implements Writeable.Flush
-		  If FlushFileBuffers(Me.Handle) Then
-		    mLastError = 0
-		  Else
-		    mLastError = GetLastError()
-		  End If
-		  
-		  
+		  #If Not TargetWin32 Then
+		    #pragma Warning "This class supports only Win32 applications."
+		    
+		  #Else
+		    If FlushFileBuffers(Me.Handle) Then
+		      mLastError = 0
+		    Else
+		      mLastError = GetLastError()
+		    End If
+		  #endif
 		End Sub
 	#tag EndMethod
 
@@ -83,42 +98,49 @@ Implements Readable,Writeable
 
 	#tag Method, Flags = &h0
 		 Shared Function Open(File As FolderItem, Access As Integer = 0, Sharemode As Integer = 0, CreateDisposition As Integer = 0, Flags As Integer = 0) As Win32Stream
-		  Dim tmp As Win32Stream = New Win32Stream(INVALID_HANDLE_VALUE)
-		  Dim hFile As Integer
-		  
-		  If Access = 0 Then Access = GENERIC_ALL
-		  If CreateDisposition = 0 Then CreateDisposition = OPEN_EXISTING
-		  If sharemode = 0 Then sharemode = FILE_SHARE_READ 'exclusive write access
-		  
-		  hFile = CreateFile("//?/" + ReplaceAll(File.AbsolutePath, "/", "//"), Access, sharemode, 0, CreateDisposition, Flags, 0)
-		  
-		  If hFile <> INVALID_HANDLE_VALUE Then
-		    tmp = New Win32Stream(hFile, GetLastError)
-		  End If
-		  
-		  Return tmp
+		  #If Not TargetWin32 Then
+		    #pragma Warning "This class supports only Win32 applications."
+		  #Else
+		    Dim tmp As Win32Stream = New Win32Stream(INVALID_HANDLE_VALUE)
+		    Dim hFile As Integer
+		    
+		    If Access = 0 Then Access = GENERIC_ALL
+		    If CreateDisposition = 0 Then CreateDisposition = OPEN_EXISTING
+		    If sharemode = 0 Then sharemode = FILE_SHARE_READ 'exclusive write access
+		    
+		    hFile = CreateFile("//?/" + ReplaceAll(File.AbsolutePath, "/", "//"), Access, sharemode, 0, CreateDisposition, Flags, 0)
+		    
+		    If hFile <> INVALID_HANDLE_VALUE Then
+		      tmp = New Win32Stream(hFile, GetLastError)
+		    End If
+		    
+		    Return tmp
+		  #endif
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function Read(Count As Integer, encoding As TextEncoding = Nil) As String Implements Readable.Read
 		  #pragma BoundsChecking Off
-		  
-		  Dim mb As New MemoryBlock(Count)
-		  Dim read As Integer
-		  If ReadFile(Me.Handle, mb, mb.Size, read, Nil) Then
-		    If read = mb.Size Then
-		      mLastError = 0
+		  #If Not TargetWin32 Then
+		    #pragma Warning "This class supports only Win32 applications."
+		  #Else
+		    Dim mb As New MemoryBlock(Count)
+		    Dim read As Integer
+		    If ReadFile(Me.Handle, mb, mb.Size, read, Nil) Then
+		      If read = mb.Size Then
+		        mLastError = 0
+		      Else
+		        mLastError = ERROR_HANDLE_EOF
+		      End If
 		    Else
-		      mLastError = ERROR_HANDLE_EOF
+		      mLastError = GetLastError()
 		    End If
-		  Else
-		    mLastError = GetLastError()
-		  End If
-		  
-		  If encoding = Nil Then encoding = Encodings.UTF8
-		  Dim data As String = DefineEncoding(mb.StringValue(0, mb.Size), encoding)
-		  Return data
+		    
+		    If encoding = Nil Then encoding = Encodings.UTF8
+		    Dim data As String = DefineEncoding(mb.StringValue(0, mb.Size), encoding)
+		    Return data
+		  #endif
 		End Function
 	#tag EndMethod
 
@@ -132,14 +154,17 @@ Implements Readable,Writeable
 
 	#tag Method, Flags = &h0
 		Sub Write(text As String) Implements Writeable.Write
-		  Dim mb As MemoryBlock = text
-		  Dim written As Integer
-		  If WriteFile(Me.Handle, mb, mb.Size, written, Nil) Then
-		    mLastError = 0
-		  Else
-		    mLastError = GetLastError()
-		  End If
-		  
+		  #If Not TargetWin32 Then
+		    #pragma Warning "This class supports only Win32 applications."
+		  #Else
+		    Dim mb As MemoryBlock = text
+		    Dim written As Integer
+		    If WriteFile(Me.Handle, mb, mb.Size, written, Nil) Then
+		      mLastError = 0
+		    Else
+		      mLastError = GetLastError()
+		    End If
+		  #endif
 		End Sub
 	#tag EndMethod
 
@@ -205,12 +230,19 @@ Implements Readable,Writeable
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim value, oldvalue As Integer
-			  oldvalue = Me.Position
-			  value = SetFilePointer(Me.Handle, 0, Nil, FILE_END)
-			  Me.Position = oldvalue
-			  mLastError = GetLastError()
-			  Return value
+			  #If Not TargetWin32 Then
+			    Dim err As New RuntimeException
+			    err.Message = "This class supports only Win32 applications."
+			    Raise err
+			    #pragma Warning "This class supports only Win32 applications."
+			  #Else
+			    Dim value, oldvalue As Integer
+			    oldvalue = Me.Position
+			    value = SetFilePointer(Me.Handle, 0, Nil, FILE_END)
+			    Me.Position = oldvalue
+			    mLastError = GetLastError()
+			    Return value
+			  #endif
 			End Get
 		#tag EndGetter
 		#tag Setter
@@ -219,14 +251,21 @@ Implements Readable,Writeable
 			  'If the current Position of the file pointer is outside the new length, then then Position is moved to
 			  'the new EOF. Otherwise thefile pointer position relative to the beginning of the file remains the same.
 			  
-			  Dim oldvalue As Integer = Me.Position
-			  Me.Position = value
-			  If Not SetEndOfFile(Me.Handle) Then
-			    mLastError = GetLastError()
-			  Else
-			    mLastError = 0
-			  End If
-			  If oldvalue <= Me.Position Then Me.Position = oldvalue
+			  #If Not TargetWin32 Then
+			    Dim err As New RuntimeException
+			    err.Message = "This class supports only Win32 applications."
+			    Raise err
+			    #pragma Warning "This class supports only Win32 applications."
+			  #Else
+			    Dim oldvalue As Integer = Me.Position
+			    Me.Position = value
+			    If Not SetEndOfFile(Me.Handle) Then
+			      mLastError = GetLastError()
+			    Else
+			      mLastError = 0
+			    End If
+			    If oldvalue <= Me.Position Then Me.Position = oldvalue
+			  #endif
 			End Set
 		#tag EndSetter
 		Length As Integer
@@ -243,18 +282,29 @@ Implements Readable,Writeable
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim value As Integer = SetFilePointer(Me.Handle, 0, Nil, FILE_CURRENT)
-			  mLastError = GetLastError()
-			  Return value
+			  #If Not TargetWin32 Then
+			    Dim err As New RuntimeException
+			    err.Message = "This class supports only Win32 applications."
+			    Raise err
+			    #pragma Warning "This class supports only Win32 applications."
+			  #Else
+			    Dim value As Integer = SetFilePointer(Me.Handle, 0, Nil, FILE_CURRENT)
+			    mLastError = GetLastError()
+			    Return value
+			  #endif
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
-			  Call SetFilePointer(Me.Handle, value, Nil, FILE_BEGIN)
-			  mLastError = GetLastError()
-			  
-			  
-			  
+			  #If Not TargetWin32 Then
+			    Dim err As New RuntimeException
+			    err.Message = "This class supports only Win32 applications."
+			    Raise err
+			    #pragma Warning "This class supports only Win32 applications."
+			  #Else
+			    Call SetFilePointer(Me.Handle, value, Nil, FILE_BEGIN)
+			    mLastError = GetLastError()
+			  #endif
 			End Set
 		#tag EndSetter
 		Position As Integer
