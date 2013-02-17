@@ -3303,8 +3303,8 @@ Inherits TCPSocket
 	#tag Note, Name = About this class
 		This class implements a very basic single-connection, single-request HTTP server. If you set the Page Property of the socket to a directory, 
 		then any file or subdirectory will be requestable by a path relative to the socket's page. Requests against directories will return a directory
-		index. If KeepListening is True, this class can pass as a single-user file server by re-Listening at the end of each transaction. This class ought
-		to work with the ServerSocket without modification.
+		index if AllowDirectoryIndexPages is True. If KeepListening is True, this class can pass as a single-user file server by re-Listening at the end 
+		of each transaction. This class ought to work with the ServerSocket without modification.
 		
 		Usage:
 		
@@ -3335,8 +3335,8 @@ Inherits TCPSocket
 		just before they are written to the socket. Headers are passed ByRef, if you alter them you must return true from the tamper event or your changes
 		will be discarded.
 		
-		If the GZip plugin is installed and QnDHTTPd.GZIPAvailable is True, then this class will use gzip compression
-		whenever a client requests it.
+		If the GZip plugin is installed and QnDHTTPd.GZIPAvailable is True, then this class will use gzip compression whenever a client requests it. Otherwise,
+		the default handler will use Identity encoding (i.e. no encoding.)
 		
 		The GZip plugin is available from here: http://sourceforge.net/projects/realbasicgzip/
 		
@@ -3365,7 +3365,6 @@ Inherits TCPSocket
 		--
 		The MIMEtype and other Icons provided in this class were obtained from the Open Icon Library at http://openiconlibrary.sourceforge.net/
 		The MIMEstring and MIMEIcon shared methods were adapted from https://github.com/bskrtich/RBHTTPServer
-		
 	#tag EndNote
 
 
