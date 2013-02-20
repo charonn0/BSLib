@@ -125,6 +125,18 @@ Inherits RuntimeException
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function ErrorNumber() As Integer
+		  Return Self.OriginalException.ErrorNumber
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function Message() As String
+		  Return Self.OriginalException.Message
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Shared Function ParseParams(input as string) As string()
 		  'This method was written by SirG3 <TheSirG3@gmail.com>; http://fireyesoftware.com/developer/stackcleaner/
