@@ -1,5 +1,6 @@
 #tag Class
 Protected Class ForeignWindow
+Inherits Window
 	#tag Method, Flags = &h0
 		Sub BringToFront()
 		  Call ShowWindow(Me.Handle, SW_SHOWNORMAL)
@@ -7,8 +8,17 @@ Protected Class ForeignWindow
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Capture() As Picture
-		  Return CaptureRect(Me.Left, Me.Top, Me.Width, Me.height)
+		Function Capture(IncludeBorder As Boolean = True) As Picture
+		  'Calls CaptureRect on the specified Window.
+		  'If the optional IncludeBorder parameter is False, then only the client area of the window
+		  'is captured; if True then the client area, borders, and titlebar are included in the capture.
+		  
+		  If Not IncludeBorder Then
+		    Return CaptureRect(Me.Left, Me.Top, Me.Width, Me.Height)
+		    
+		  Else
+		    Return CaptureRect(Me.ClientLeft, Me.ClientTop, Me.ClientWidth, Me.ClientHeight)
+		  End If
 		End Function
 	#tag EndMethod
 
@@ -46,6 +56,25 @@ Protected Class ForeignWindow
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		 Shared Function ListWindows(PartialTitle As String = "") As ForeignWindow()
+		  Dim wins() As ForeignWindow
+		  Dim ret as integer
+		  ret = FindWindow(Nil, Nil)
+		  Dim hidden() As String = Split("MSCTFIME UI,Default IME,Jump List,Start Menu,Start,Program Manager", ",")
+		  while ret > 0
+		    Dim pw As New ForeignWindow(ret)
+		    If pw.Caption.Trim <> "" And hidden.IndexOf(pw.Caption.Trim) <= -1 And pw.Visible Then
+		      If PartialTitle.Trim = "" Or InStr(pw.Caption, PartialTitle) > 0 Then
+		        wins.Append(pw)
+		      End If
+		    End If
+		    ret = GetWindow(ret, GW_HWNDNEXT)
+		  wend
+		  Return wins
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Maximized()
 		  Call ShowWindow(Me.Handle, SW_MAXIMIZE)
 		End Sub
@@ -56,6 +85,36 @@ Protected Class ForeignWindow
 		  Call ShowWindow(Me.Handle, SW_MAXIMIZE)
 		End Sub
 	#tag EndMethod
+
+
+	#tag Note, Name = About this class
+		This class allows you to control and interrogate (to an extent) windows belonging to other applications which
+		are running on the same machine as your app. The Class Constructor expects a valid Win32 window handle (HWND),
+		any valid window handle (including for windows belonging to your app) will suffice.
+		 
+		Use the shared method FromXY to get a reference to the topmost window over a specific screen coordinate.
+		
+		Use the shared methof ListWindows to get an array of ForeignWindow objects corresponding to all the top-level
+		windows on the current desktop matching the optional partial title string. Note that the ListWindows method
+		searches all top-level windows which is a computationally expensive and occasionally buggy thing to do.
+		
+		
+		Examples:
+		
+		  'Minimize all Firefox windows
+		  Dim wins() As ForeignWindow = ForeignWindow.ListWindows("Firefox")
+		  For Each win As ForeignWindow In wins
+		    win.Minimize()
+		  Next
+		
+		
+		  'Captures a picture of the topmost window under the mouse cursor
+		  Dim cap As Picture
+		  Dim win As ForeignWindow = ForeignWindow.FromXY(System.MouseX, System.MouseY)
+		  cap = win.Capture
+		
+		
+	#tag EndNote
 
 
 	#tag ComputedProperty, Flags = &h0
@@ -116,17 +175,14 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  If mCaption.Trim = "" Then
-			    Dim buffer As New MemoryBlock(2048)
-			    Dim sz As New MemoryBlock(4)
-			    sz.Int32Value(0) = buffer.Size
-			    If SendMessage(Me.Handle, WM_GETTEXT, sz, buffer) <= 0 Then 'We ask nicely
-			      Call GetWindowText(Me.Handle, buffer, buffer.Size)  'otherwise we try to peek (sometimes crashy!)
-			    End If
-			    
-			    mCaption = buffer.WString(0).Trim
+			  Dim buffer As New MemoryBlock(2048)
+			  Dim sz As New MemoryBlock(4)
+			  sz.Int32Value(0) = buffer.Size
+			  If SendMessage(Me.Handle, WM_GETTEXT, sz, buffer) <= 0 Then 'We ask nicely
+			    Call GetWindowText(Me.Handle, buffer, buffer.Size)  'otherwise we try to peek (sometimes crashy!)
 			  End If
-			  Return mCaption
+			  
+			  Return buffer.WString(0).Trim
 			  
 			End Get
 		#tag EndGetter
@@ -134,7 +190,6 @@ Protected Class ForeignWindow
 			Set
 			  Dim mb As MemoryBlock = value
 			  Call SetWindowText(Me.Handle, mb)
-			  mCaption = ""
 			End Set
 		#tag EndSetter
 		Caption As String
@@ -147,7 +202,7 @@ Protected Class ForeignWindow
 			  info.cbSize = info.Size
 			  If GetWindowInfo(Me.Handle, info) Then
 			    Dim size As RECT = info.ClientArea
-			    Return size.bottom - size.top + (2 * BorderSizeY)
+			    Return size.bottom - size.top
 			  End If
 			End Get
 		#tag EndGetter
@@ -161,7 +216,7 @@ Protected Class ForeignWindow
 			  info.cbSize = info.Size
 			  If GetWindowInfo(Me.Handle, info) Then
 			    Dim size As RECT = info.ClientArea
-			    Return size.Left - info.cxWindowBorders
+			    Return size.Left
 			  End If
 			End Get
 		#tag EndGetter
@@ -175,7 +230,7 @@ Protected Class ForeignWindow
 			  info.cbSize = info.Size
 			  If GetWindowInfo(Me.Handle, info) Then
 			    Dim size As RECT = info.ClientArea
-			    Return size.right + info.cxWindowBorders
+			    Return size.right
 			  End If
 			End Get
 		#tag EndGetter
@@ -189,7 +244,7 @@ Protected Class ForeignWindow
 			  info.cbSize = info.Size
 			  If GetWindowInfo(Me.Handle, info) Then
 			    Dim size As RECT = info.ClientArea
-			    Return size.top - BorderSizeY
+			    Return size.top
 			  End If
 			End Get
 		#tag EndGetter
@@ -203,7 +258,7 @@ Protected Class ForeignWindow
 			  info.cbSize = info.Size
 			  If GetWindowInfo(Me.Handle, info) Then
 			    Dim size As RECT = info.ClientArea
-			    Return size.Right - size.Left + (2 * BorderSizeX)
+			    Return size.Right - size.Left
 			  End If
 			End Get
 		#tag EndGetter
@@ -246,10 +301,6 @@ Protected Class ForeignWindow
 		#tag EndGetter
 		Left As Integer
 	#tag EndComputedProperty
-
-	#tag Property, Flags = &h21
-		Private mCaption As String
-	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private mHandle As Integer
