@@ -89,6 +89,10 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function GetParent Lib "User32" (HWND As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function GetSystemMetrics Lib "User32" (nIndex As Integer) As Integer
 	#tag EndExternalMethod
 

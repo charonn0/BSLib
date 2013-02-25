@@ -387,9 +387,10 @@ End
 #tag Events PushButton2
 	#tag Event
 		Sub Action()
-		  ContPic = Me.CaptureControl
-		  ParentPic = Self.CaptureWindow(False)
-		  BorderedParentPic = Self.CaptureWindow(True)
+		  Dim fw As New ForeignWindow(Me.Handle)
+		  ContPic = fw.Capture
+		  ParentPic = fw.TrueParent.Capture(False)
+		  BorderedParentPic = fw.TrueParent.Capture
 		  
 		  ParentPicture.Refresh
 		  BorderedParentPicture.Refresh
