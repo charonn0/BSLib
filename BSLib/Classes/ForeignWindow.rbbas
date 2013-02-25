@@ -239,10 +239,11 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return GetWindow(Me.Handle, GW_OWNER)
+			  Dim h As Integer = GetWindow(Me.Handle, GW_OWNER)
+			  Return New ForeignWindow(h)
 			End Get
 		#tag EndGetter
-		Owner As Integer
+		Owner As ForeignWindow
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
