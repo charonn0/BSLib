@@ -37,8 +37,8 @@ Protected Module Images
 	#tag Method, Flags = &h0
 		Function CaptureControl(Extends Control As RectControl) As Picture
 		  'Calls CaptureRect on the specified RectControl
-		  
-		  Return CaptureRect(Control.Left + Control.TrueWindow.Left, Control.Top + Control.TrueWindow.Top, Control.Width, Control.Height)
+		  Dim fw As New ForeignWindow(Control.Handle)
+		  Return fw.Capture
 		End Function
 	#tag EndMethod
 
@@ -46,7 +46,7 @@ Protected Module Images
 		Function CaptureRect(X As Integer, Y As Integer, Width As Integer, Height As Integer) As Picture
 		  'Performs a screen capture on the specified on-screen rectangle. All screen contents in that
 		  'rectangle will be captured as they appear to the user on screen.
-		  
+		  If Width = 0 Or Height = 0 Then Return Nil
 		  Dim screenCap As Picture
 		  
 		  #If TargetWin32 Then
@@ -63,23 +63,14 @@ Protected Module Images
 
 	#tag Method, Flags = &h0
 		Function CaptureWindow(Extends Win As Window, IncludeBorder As Boolean = True) As Picture
-		  'Calls CaptureRect on the specified Window.
+		  'Captures the passed window
 		  'If the optional IncludeBorder parameter is False, then only the client area of the window
 		  'is captured; if True then the client area, borders, and titlebar are included in the capture.
+		  'If the window is a ContainerControl or similar construct (AKA child windows), only the contents of the container
+		  'are captured. 
 		  
-		  If Not IncludeBorder Then
-		    Return CaptureRect(Win.Left, Win.Top, Win.Width, Win.Height)
-		    
-		  Else
-		    #If TargetWin32 Then
-		      Dim borderx, bordery, titleheight As Integer
-		      borderx = GetSystemMetrics(SM_CXSIZEFRAME)
-		      bordery = GetSystemMetrics(SM_CYSIZEFRAME)
-		      titleheight = GetSystemMetrics(SM_CYSIZE)
-		      Return CaptureRect(Win.Left - borderx, Win.Top - bordery - titleheight, Win.Width + borderx*2, Win.Height + titleheight + bordery*2)
-		    #Endif
-		    
-		  End If
+		  Dim fw As New ForeignWindow(Win.Handle)
+		  Return fw.Capture(IncludeBorder)
 		End Function
 	#tag EndMethod
 

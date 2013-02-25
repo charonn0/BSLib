@@ -29,7 +29,7 @@ Protected Module Shell32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
-		Declare Function ShellExecute Lib "Shell32" Alias "ShellExecuteW" (HWND As Integer, op As WString, file As WString, params As WString, directory As Integer, cmd As Integer) As Integer
+		Declare Function ShellExecute Lib "Shell32" Alias "ShellExecuteW" (HWND As Integer, op As WString, file As WString, params As WString, directory As WString, cmd As Integer) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0

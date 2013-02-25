@@ -1,6 +1,5 @@
 #tag Class
 Protected Class ForeignWindow
-Inherits Window
 	#tag Method, Flags = &h0
 		Sub BringToFront()
 		  Call ShowWindow(Me.Handle, SW_SHOWNORMAL)
@@ -12,13 +11,26 @@ Inherits Window
 		  'Calls CaptureRect on the specified Window.
 		  'If the optional IncludeBorder parameter is False, then only the client area of the window
 		  'is captured; if True then the client area, borders, and titlebar are included in the capture.
+		  'If the window is a ContainerControl or similar construct (AKA child windows), only the contents of the container
+		  'are captured. To always capture the topmost containing window, use ForeignWindow.TrueParent.Capture
+		  'If all or part of the Window is overlapped by other windows, then the capture will include the overlapping
+		  'parts of the other windows.
 		  
+		  Dim l, t, w, h As Integer
 		  If Not IncludeBorder Then
-		    Return CaptureRect(Me.Left, Me.Top, Me.Width, Me.Height)
+		    l = Me.Left
+		    t = Me.Top
+		    w = Me.Width
+		    h = Me.Height
 		    
 		  Else
-		    Return CaptureRect(Me.ClientLeft, Me.ClientTop, Me.ClientWidth, Me.ClientHeight)
+		    l = Me.TrueLeft
+		    t = Me.TrueTop
+		    w = Me.TrueWidth
+		    h = Me.TrueHeight
 		  End If
+		  
+		  Return CaptureRect(l, t, w, h)
 		End Function
 	#tag EndMethod
 
@@ -35,6 +47,15 @@ Inherits Window
 		  p.Y = Y
 		  Dim hwnd As Integer = WindowFromPoint(p)
 		  Return New ForeignWindow(hwnd)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
+		Protected Function GetWindowInfo() As WINDOWINFO
+		  Dim info As WINDOWINFO
+		  If GetWindowInfo(Me.Handle, info) Then
+		    Return info
+		  End If
 		End Function
 	#tag EndMethod
 
@@ -112,8 +133,6 @@ Inherits Window
 		  Dim cap As Picture
 		  Dim win As ForeignWindow = ForeignWindow.FromXY(System.MouseX, System.MouseY)
 		  cap = win.Capture
-		
-		
 	#tag EndNote
 
 
@@ -130,17 +149,9 @@ Inherits Window
 		#tag EndGetter
 		#tag Setter
 			Set
-			  Dim oldFlags As Integer = GetWindowLong(Me.Handle, GWL_EXSTYLE)
-			  
-			  If BitAnd(oldFlags, WS_EX_LAYERED) <> WS_EX_LAYERED Then
-			    // The window isn't layered, so make it so
-			    Dim newflags As Integer = oldFlags Or WS_EX_LAYERED
-			    Call SetWindowLong(Me.Handle, GWL_EXSTYLE, newFlags)
-			    Call SetWindowPos(Me.Handle, 0, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE + SWP_NOZORDER + SWP_FRAMECHANGED)
-			  end
-			  
-			  // Now we want to set the transparency of the window.  The values range from 0 (totally
-			  // transparent) to 255 (totally opaque).
+			  If Not TestWindowStyleEx(Me.Handle, WS_EX_LAYERED) Then
+			    SetWindowStyleEx(Me.Handle, WS_EX_LAYERED, True)
+			  End If
 			  Call SetLayeredWindowAttributes(Handle, 0 , value * 255, LWA_ALPHA)
 			  
 			End Set
@@ -151,10 +162,8 @@ Inherits Window
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO
-			  If GetWindowInfo(Me.Handle, info) Then
-			    Return info.cxWindowBorders
-			  End If
+			  Return GetWindowInfo.cxWindowBorders
+			  
 			End Get
 		#tag EndGetter
 		BorderSizeX As Integer
@@ -163,10 +172,7 @@ Inherits Window
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO
-			  If GetWindowInfo(Me.Handle, info) Then
-			    Return info.cyWindowBorders
-			  End If
+			  Return GetWindowInfo.cyWindowBorders
 			End Get
 		#tag EndGetter
 		BorderSizeY As Integer
@@ -198,76 +204,6 @@ Inherits Window
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO
-			  info.cbSize = info.Size
-			  If GetWindowInfo(Me.Handle, info) Then
-			    Dim size As RECT = info.ClientArea
-			    Return size.bottom - size.top
-			  End If
-			End Get
-		#tag EndGetter
-		ClientHeight As Integer
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  Dim info As WINDOWINFO
-			  info.cbSize = info.Size
-			  If GetWindowInfo(Me.Handle, info) Then
-			    Dim size As RECT = info.ClientArea
-			    Return size.Left
-			  End If
-			End Get
-		#tag EndGetter
-		ClientLeft As Integer
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  Dim info As WINDOWINFO
-			  info.cbSize = info.Size
-			  If GetWindowInfo(Me.Handle, info) Then
-			    Dim size As RECT = info.ClientArea
-			    Return size.right
-			  End If
-			End Get
-		#tag EndGetter
-		ClientRight As Integer
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  Dim info As WINDOWINFO
-			  info.cbSize = info.Size
-			  If GetWindowInfo(Me.Handle, info) Then
-			    Dim size As RECT = info.ClientArea
-			    Return size.top
-			  End If
-			End Get
-		#tag EndGetter
-		ClientTop As Integer
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  Dim info As WINDOWINFO
-			  info.cbSize = info.Size
-			  If GetWindowInfo(Me.Handle, info) Then
-			    Dim size As RECT = info.ClientArea
-			    Return size.Right - size.Left
-			  End If
-			End Get
-		#tag EndGetter
-		ClientWidth As Integer
-	#tag EndComputedProperty
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
 			  return mHandle
 			End Get
 		#tag EndGetter
@@ -277,12 +213,9 @@ Inherits Window
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO
-			  info.cbSize = info.Size
-			  If GetWindowInfo(Me.Handle, info) Then
-			    Dim size As RECT = info.WindowArea
-			    Return size.bottom - size.top
-			  End If
+			  Dim info As WINDOWINFO = GetWindowInfo
+			  Dim size As RECT = info.ClientArea
+			  Return size.bottom - size.top
 			End Get
 		#tag EndGetter
 		Height As Integer
@@ -291,12 +224,9 @@ Inherits Window
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO
-			  info.cbSize = info.Size
-			  If GetWindowInfo(Me.Handle, info) Then
-			    Dim size As RECT = info.WindowArea
-			    Return size.left
-			  End If
+			  Dim info As WINDOWINFO = GetWindowInfo
+			  Dim size As RECT = info.ClientArea
+			  Return size.left
 			End Get
 		#tag EndGetter
 		Left As Integer
@@ -318,21 +248,19 @@ Inherits Window
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return GetAncestor(Me.Handle, GA_PARENT)
+			  Dim h As Integer = GetAncestor(Me.Handle, GA_PARENT)
+			  Return New ForeignWindow(h)
 			End Get
 		#tag EndGetter
-		Parent As Integer
+		Parent As ForeignWindow
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO
-			  info.cbSize = info.Size
-			  If GetWindowInfo(Me.Handle, info) Then
-			    Dim size As RECT = info.WindowArea
-			    Return size.top
-			  End If
+			  Dim info As WINDOWINFO = GetWindowInfo
+			  Dim size As RECT = info.ClientArea
+			  Return size.top
 			End Get
 		#tag EndGetter
 		Top As Integer
@@ -341,19 +269,76 @@ Inherits Window
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return GetAncestor(Me.Handle, GA_ROOTOWNER)
+			  Dim info As WINDOWINFO = GetWindowInfo
+			  Dim size As RECT = info.WindowArea
+			  Return size.bottom - size.top
 			End Get
 		#tag EndGetter
-		TrueOwner As Integer
+		TrueHeight As Integer
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return GetAncestor(Me.Handle, GA_ROOT)
+			  Dim info As WINDOWINFO = GetWindowInfo
+			  Dim size As RECT = info.WindowArea
+			  Return size.Left
 			End Get
 		#tag EndGetter
-		TrueParent As Integer
+		TrueLeft As Integer
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Dim h As Integer = GetAncestor(Me.Handle, GA_ROOTOWNER)
+			  Return New ForeignWindow(h)
+			End Get
+		#tag EndGetter
+		TrueOwner As ForeignWindow
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Dim h As Integer = GetAncestor(Me.Handle, GA_ROOT)
+			  Return New ForeignWindow(h)
+			End Get
+		#tag EndGetter
+		TrueParent As ForeignWindow
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Dim info As WINDOWINFO = GetWindowInfo
+			  Dim size As RECT = info.WindowArea
+			  Return size.right
+			End Get
+		#tag EndGetter
+		TrueRight As Integer
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Dim info As WINDOWINFO = GetWindowInfo
+			  Dim size As RECT = info.WindowArea
+			  Return size.top
+			End Get
+		#tag EndGetter
+		TrueTop As Integer
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Dim info As WINDOWINFO = GetWindowInfo
+			  Dim size As RECT = info.WindowArea
+			  Return size.Right - size.Left
+			End Get
+		#tag EndGetter
+		TrueWidth As Integer
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h0
@@ -378,12 +363,9 @@ Inherits Window
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO
-			  info.cbSize = info.Size
-			  If GetWindowInfo(Me.Handle, info) Then
-			    Dim size As RECT = info.WindowArea
-			    Return size.right - size.left
-			  End If
+			  Dim info As WINDOWINFO = GetWindowInfo
+			  Dim size As RECT = info.ClientArea
+			  Return size.right - size.left
 			End Get
 		#tag EndGetter
 		Width As Integer
@@ -395,6 +377,22 @@ Inherits Window
 			Name="Alpha"
 			Group="Behavior"
 			Type="Single"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="BackColor"
+			Visible=true
+			Group="Appearance"
+			InitialValue="&hFFFFFF"
+			Type="Color"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Backdrop"
+			Visible=true
+			Group="Appearance"
+			Type="Picture"
+			EditorType="Picture"
+			InheritedFrom="Window"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="BorderSizeX"
@@ -438,9 +436,64 @@ Inherits Window
 			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="CloseButton"
+			Visible=true
+			Group="Appearance"
+			InitialValue="True"
+			Type="Boolean"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Composite"
+			Visible=true
+			Group="Appearance"
+			InitialValue="False"
+			Type="Boolean"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Frame"
+			Visible=true
+			Group="Appearance"
+			InitialValue="0"
+			Type="Integer"
+			EditorType="Enum"
+			InheritedFrom="Window"
+			#tag EnumValues
+				"0 - Document"
+				"1 - Movable Modal"
+				"2 - Modal Dialog"
+				"3 - Floating Window"
+				"4 - Plain Box"
+				"5 - Shadowed Box"
+				"6 - Rounded Window"
+				"7 - Global Floating Window"
+				"8 - Sheet Window"
+				"9 - Metal Window"
+				"10 - Drawer Window"
+				"11 - Modeless Dialog"
+			#tag EndEnumValues
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="FullScreen"
+			Visible=true
+			Group="Appearance"
+			InitialValue="False"
+			Type="Boolean"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Handle"
 			Group="Behavior"
 			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="HasBackColor"
+			Visible=true
+			Group="Appearance"
+			InitialValue="False"
+			Type="Boolean"
+			InheritedFrom="Window"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Height"
@@ -448,18 +501,103 @@ Inherits Window
 			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
-			Name="Index"
+			Name="ImplicitInstance"
+			Visible=true
+			Group="Appearance"
+			InitialValue="True"
+			EditorType="Boolean"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Interfaces"
 			Visible=true
 			Group="ID"
-			InitialValue="-2147483648"
-			InheritedFrom="Object"
+			InheritedFrom="Window"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Left"
+			Group="Behavior"
+			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="LiveResize"
+			Visible=true
+			Group="Appearance"
+			InitialValue="True"
+			Type="Boolean"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MacProcID"
+			Visible=true
+			Group="Appearance"
+			InitialValue="0"
+			Type="Integer"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MaxHeight"
 			Visible=true
 			Group="Position"
-			InitialValue="0"
-			InheritedFrom="Object"
+			InitialValue="32000"
+			Type="Integer"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MaximizeButton"
+			Visible=true
+			Group="Appearance"
+			InitialValue="False"
+			Type="Boolean"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MaxWidth"
+			Visible=true
+			Group="Position"
+			InitialValue="32000"
+			Type="Integer"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MenuBar"
+			Visible=true
+			Group="Appearance"
+			Type="MenuBar"
+			EditorType="MenuBar"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MenuBarVisible"
+			Visible=true
+			Group="Appearance"
+			InitialValue="True"
+			Type="Boolean"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MinHeight"
+			Visible=true
+			Group="Position"
+			InitialValue="64"
+			Type="Integer"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MinimizeButton"
+			Visible=true
+			Group="Appearance"
+			InitialValue="True"
+			Type="Boolean"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="MinWidth"
+			Visible=true
+			Group="Position"
+			InitialValue="64"
+			Type="Integer"
+			InheritedFrom="Window"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
@@ -478,17 +616,47 @@ Inherits Window
 			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="Placement"
+			Visible=true
+			Group="Position"
+			InitialValue="0"
+			Type="Integer"
+			EditorType="Enum"
+			InheritedFrom="Window"
+			#tag EnumValues
+				"0 - Default"
+				"1 - Parent Window"
+				"2 - Main Screen"
+				"3 - Parent Window Screen"
+				"4 - Stagger"
+			#tag EndEnumValues
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Resizeable"
+			Visible=true
+			Group="Appearance"
+			InitialValue="True"
+			Type="Boolean"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
-			Name="Top"
+			Name="Title"
 			Visible=true
-			Group="Position"
-			InitialValue="0"
-			InheritedFrom="Object"
+			Group="Appearance"
+			InitialValue="Untitled"
+			Type="String"
+			InheritedFrom="Window"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Top"
+			Group="Behavior"
+			Type="Integer"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="TrueOwner"

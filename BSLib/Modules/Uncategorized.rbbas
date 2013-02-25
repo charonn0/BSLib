@@ -515,8 +515,9 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function StringToHex(src as string) As string
-		  //Hexify a string of binary data, e.g. from RB's built-in MD5 function
+		Attributes( deprecated = "realbasic.encodehex" )  Function StringToHex(src as string) As string
+		  'Deprecated; REALbasic.EncodeHex has been included with RS since 2010r3
+		  'Hexify a string of binary data, e.g. from RB's built-in MD5 function
 		  
 		  Dim hexvalue As Integer
 		  Dim hexedInt As String

@@ -89,7 +89,7 @@ Protected Module CryptoTools
 		    Dim hashHandle As Integer
 		    Dim hashPtr As MemoryBlock = HashData(baseCryptoProvider, data, hashHandle, algorithm)
 		    If hashPtr = Nil Then Return ""
-		    Dim ret As String = StringToHex(hashPtr.StringValue(0, hashPtr.Size))
+		    Dim ret As String = EncodeHex(hashPtr.StringValue(0, hashPtr.Size))
 		    CryptDestroyHash(hashHandle)
 		    Return ret
 		  #endif

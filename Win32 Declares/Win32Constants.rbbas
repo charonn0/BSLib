@@ -185,6 +185,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = DESKTOP_SWITCHDESKTOP, Type = Double, Dynamic = False, Default = \"&h100", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = DI_MASK, Type = Double, Dynamic = False, Default = \"&h1", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = DNS_TYPE_A, Type = Double, Dynamic = False, Default = \"&h0001", Scope = Public
 	#tag EndConstant
 
@@ -483,6 +486,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = GWL_EXSTYLE, Type = Double, Dynamic = False, Default = \"-20", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = GWL_STYLE, Type = Double, Dynamic = False, Default = \"-16", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = GW_HWNDNEXT, Type = Double, Dynamic = False, Default = \"2", Scope = Public

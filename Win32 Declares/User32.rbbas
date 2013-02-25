@@ -37,6 +37,10 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function DrawIcon Lib "User32" (hDC As Integer, xLeft As Integer, yTop As Integer, hIcon As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function DrawIconEx Lib "User32" (hDC As Integer, xLeft As Integer, yTop As Integer, hIcon As Integer, cxWidth As Integer, cyWidth As Integer, istepIfAniCur As Integer, hbrFlickerFreeDraw As Integer, diFlags As Integer) As Integer
 	#tag EndExternalMethod
 
@@ -66,6 +70,10 @@ Protected Module User32
 
 	#tag ExternalMethod, Flags = &h0
 		Declare Function GetClientRect Lib "User32" (HWND As Integer, ByRef Dimensions As RECT) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function GetCursorInfo Lib "User32" (ByRef Info As CURSORINFO) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
@@ -105,7 +113,7 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
-		Declare Sub GetWindowRect Lib "User32" (HWND As Integer, ByRef sm As RECT)
+		Declare Function GetWindowRect Lib "User32" (HWND As Integer, ByRef sm As RECT) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0

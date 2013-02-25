@@ -43,6 +43,13 @@ Protected Module Win32Structs
 		Y As UInt16
 	#tag EndStructure
 
+	#tag Structure, Name = CURSORINFO, Flags = &h0
+		cbSize As Integer
+		  Flags As Integer
+		  hIcon As Integer
+		Hotspot As POINT
+	#tag EndStructure
+
 	#tag Structure, Name = DRAWTEXTPARAMS, Flags = &h0
 		sSize As UInt32
 		  TabLen As Int32

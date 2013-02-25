@@ -743,6 +743,16 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub LaunchAsAdministrator(extends f as FolderItem, ParamArray args as String)
+		  #If TargetWin32
+		    Dim params as String
+		    params = Join(args, " ")
+		    Call ShellExecute(0, "runas", f.AbsolutePath, params, App.ExecutableFile.Parent.AbsolutePath, 1)
+		  #Endif
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function ListDirectory(Root As FolderItem, SearchPattern As String = "*", PrependPath As Boolean = True) As String()
 		  'See also the FileEnumerator class.
 		  Dim list(), rootdir As String
@@ -797,17 +807,16 @@ Protected Module File_Ops
 
 	#tag Method, Flags = &h0
 		Function MD5Hash(target As FolderItem, sizeCutoff As UInt64 = 52428800, ProgressFunction As ProgressCallback = Nil) As String
-		  //If the target file is less than sizeCutoff in bytes (default is 50MB) this function uses the MD5() function to hash the file.
-		  //If greater than sizeCutoff this function processes the file through the MD5Digest function. MD5Digest is preferable when
-		  //hashing large files since the entire file will not be loaded into memory at once.
-		  //
-		  //If using MD5Digest, the sizeCutoff parameter also dictates how much of the file to read at a time. Default is 50MB.
-		  //Returns the Hex representation of the hash
-		  //
-		  //If a ProgressCallback delegate is passed, the delegate will be invoked for each iteration of the MD5Digest loop (or once only
-		  //if MD5Digest is not used.)
-		  //
-		  //This function should be cross-platform safe.
+		  'If the target file is less than sizeCutoff in bytes (default is 50MB) this function uses the MD5() function to hash the file.
+		  'If greater than sizeCutoff this function processes the file through the MD5Digest function. MD5Digest is preferable when
+		  'hashing large files since the entire file will not be loaded into memory at once.
+		  '
+		  'If using MD5Digest, the sizeCutoff parameter also dictates how much of the file to read at a time. Default is 50MB.
+		  'Returns the Hex representation of the hash
+		  '
+		  'If a ProgressCallback delegate is passed, the delegate will be invoked for each iteration of the MD5Digest loop (or once only
+		  'if MD5Digest is not used.)
+		  
 		  
 		  Dim s As String
 		  If target.Length < sizeCutoff Then
@@ -815,7 +824,7 @@ Protected Module File_Ops
 		    tis = tis.Open(target)
 		    s = tis.ReadAll
 		    tis.Close
-		    s = StringToHex(MD5(s))
+		    s = EncodeHex(MD5(s))
 		    If ProgressFunction <> Nil Then ProgressFunction.Invoke(100.00)
 		  Else
 		    Dim bs As BinaryStream
@@ -827,7 +836,7 @@ Protected Module File_Ops
 		      If ProgressFunction <> Nil Then ProgressFunction.Invoke(bs.Position * 100 / bs.Length)
 		    Wend
 		    bs.Close
-		    s = StringToHex(m5.Value)
+		    s = EncodeHex(m5.Value)
 		  End If
 		  
 		  Return s
@@ -949,7 +958,7 @@ Protected Module File_Ops
 		  
 		  #If TargetWin32 Then
 		    Dim param As String = "/select, """ + f.AbsolutePath + """"
-		    Call ShellExecute(0, "open", "explorer", param, 0, SW_SHOW)
+		    Call ShellExecute(0, "open", "explorer", param, "", SW_SHOW)
 		  #endif
 		End Sub
 	#tag EndMethod
