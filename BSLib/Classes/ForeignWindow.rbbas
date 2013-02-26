@@ -35,6 +35,12 @@ Protected Class ForeignWindow
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub ClearHilight()
+		  
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Constructor(HWND As Integer)
 		  Me.mHandle = HWND
 		End Sub
@@ -46,6 +52,11 @@ Protected Class ForeignWindow
 		  p.X = X
 		  p.Y = Y
 		  Dim hwnd As Integer = WindowFromPoint(p)
+		  If hwnd > 0 Then
+		    If ChildWindowFromPoint(hwnd, p) > 0 Then
+		      hwnd = ChildWindowFromPoint(hwnd, p)
+		    End If
+		  End If
 		  Return New ForeignWindow(hwnd)
 		End Function
 	#tag EndMethod
@@ -57,6 +68,23 @@ Protected Class ForeignWindow
 		    Return info
 		  End If
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Hilight()
+		  'Broken, do not use
+		  Dim p As New Picture(Me.Width, Me.Height, 32)
+		  p.Graphics.ForeColor = &cFFFFFF00
+		  p.Transparent = 1
+		  p.Graphics.FillRect(0, 0, p.Width, p.Height)
+		  p.Graphics.ForeColor = &c00000000
+		  p.Graphics.PenHeight = 3
+		  p.Graphics.PenWidth = 3
+		  p.Graphics.DrawRect(0, 0, p.Width, p.Height)
+		  Dim HDC As Integer = GetDC(Me.Handle)
+		  Call BitBlt(HDC, 0, 0, Me.Width, Height, p.Graphics.Handle(Graphics.HandleTypeHDC), 0, 0, SRCCOPY Or CAPTUREBLT)
+		  Call ReleaseDC(Me.Handle, HDC)
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0

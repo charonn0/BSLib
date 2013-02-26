@@ -7,7 +7,7 @@ Begin Window Window1
    Frame           =   0
    FullScreen      =   False
    HasBackColor    =   False
-   Height          =   4.18e+2
+   Height          =   5.2e+2
    ImplicitInstance=   True
    LiveResize      =   True
    MacProcID       =   0
@@ -23,7 +23,7 @@ Begin Window Window1
    Resizeable      =   True
    Title           =   "BSLib"
    Visible         =   True
-   Width           =   7.36e+2
+   Width           =   9.86e+2
    Begin Label Label1
       AutoDeactivate  =   True
       Bold            =   ""
@@ -35,7 +35,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   0
+      Left            =   349
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -52,7 +52,7 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   15
       TextUnit        =   0
-      Top             =   396
+      Top             =   491
       Transparent     =   False
       Underline       =   True
       Visible         =   True
@@ -71,7 +71,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   12
+      Left            =   434
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -84,7 +84,7 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   327
+      Top             =   457
       Underline       =   ""
       Visible         =   True
       Width           =   119
@@ -94,7 +94,7 @@ Begin Window Window1
       Bold            =   ""
       Caption         =   "Window and Control Capture Demo"
       Enabled         =   True
-      Height          =   304
+      Height          =   401
       HelpTag         =   ""
       Index           =   -2147483648
       InitialParent   =   ""
@@ -114,38 +114,7 @@ Begin Window Window1
       Top             =   11
       Underline       =   ""
       Visible         =   True
-      Width           =   712
-      Begin PushButton PushButton2
-         AutoDeactivate  =   True
-         Bold            =   ""
-         ButtonStyle     =   0
-         Cancel          =   ""
-         Caption         =   "Capture this button"
-         Default         =   ""
-         Enabled         =   True
-         Height          =   22
-         HelpTag         =   ""
-         Index           =   -2147483648
-         InitialParent   =   "GroupBox1"
-         Italic          =   ""
-         Left            =   56
-         LockBottom      =   ""
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   ""
-         LockTop         =   True
-         Scope           =   0
-         TabIndex        =   0
-         TabPanelIndex   =   0
-         TabStop         =   True
-         TextFont        =   "System"
-         TextSize        =   0
-         TextUnit        =   0
-         Top             =   34
-         Underline       =   ""
-         Visible         =   True
-         Width           =   181
-      End
+      Width           =   962
       Begin Canvas ControlPicture
          AcceptFocus     =   ""
          AcceptTabs      =   ""
@@ -154,11 +123,11 @@ Begin Window Window1
          DoubleBuffer    =   False
          Enabled         =   True
          EraseBackground =   True
-         Height          =   200
+         Height          =   300
          HelpTag         =   ""
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
-         Left            =   56
+         Left            =   20
          LockBottom      =   ""
          LockedInPosition=   False
          LockLeft        =   True
@@ -168,10 +137,10 @@ Begin Window Window1
          TabIndex        =   1
          TabPanelIndex   =   0
          TabStop         =   True
-         Top             =   68
+         Top             =   79
          UseFocusRing    =   True
          Visible         =   True
-         Width           =   200
+         Width           =   300
       End
       Begin Canvas ParentPicture
          AcceptFocus     =   ""
@@ -181,11 +150,11 @@ Begin Window Window1
          DoubleBuffer    =   False
          Enabled         =   True
          EraseBackground =   True
-         Height          =   200
+         Height          =   300
          HelpTag         =   ""
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
-         Left            =   268
+         Left            =   343
          LockBottom      =   ""
          LockedInPosition=   False
          LockLeft        =   True
@@ -195,37 +164,10 @@ Begin Window Window1
          TabIndex        =   2
          TabPanelIndex   =   0
          TabStop         =   True
-         Top             =   68
+         Top             =   79
          UseFocusRing    =   True
          Visible         =   True
-         Width           =   200
-      End
-      Begin Canvas BorderedParentPicture
-         AcceptFocus     =   ""
-         AcceptTabs      =   ""
-         AutoDeactivate  =   True
-         Backdrop        =   ""
-         DoubleBuffer    =   False
-         Enabled         =   True
-         EraseBackground =   True
-         Height          =   200
-         HelpTag         =   ""
-         Index           =   -2147483648
-         InitialParent   =   "GroupBox1"
-         Left            =   480
-         LockBottom      =   ""
-         LockedInPosition=   False
-         LockLeft        =   True
-         LockRight       =   ""
-         LockTop         =   True
-         Scope           =   0
-         TabIndex        =   3
-         TabPanelIndex   =   0
-         TabStop         =   True
-         Top             =   68
-         UseFocusRing    =   True
-         Visible         =   True
-         Width           =   200
+         Width           =   300
       End
       Begin Label Label2
          AutoDeactivate  =   True
@@ -238,7 +180,7 @@ Begin Window Window1
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   ""
-         Left            =   94
+         Left            =   99
          LockBottom      =   ""
          LockedInPosition=   False
          LockLeft        =   True
@@ -249,17 +191,17 @@ Begin Window Window1
          Selectable      =   False
          TabIndex        =   4
          TabPanelIndex   =   0
-         Text            =   "Control"
+         Text            =   "Control/Window"
          TextAlign       =   1
          TextColor       =   &h000000
          TextFont        =   "System"
          TextSize        =   0
          TextUnit        =   0
-         Top             =   272
+         Top             =   384
          Transparent     =   False
          Underline       =   ""
          Visible         =   True
-         Width           =   100
+         Width           =   142
       End
       Begin Label Label3
          AutoDeactivate  =   True
@@ -272,7 +214,7 @@ Begin Window Window1
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   ""
-         Left            =   318
+         Left            =   380
          LockBottom      =   ""
          LockedInPosition=   False
          LockLeft        =   True
@@ -289,11 +231,11 @@ Begin Window Window1
          TextFont        =   "System"
          TextSize        =   0
          TextUnit        =   0
-         Top             =   272
+         Top             =   384
          Transparent     =   False
          Underline       =   ""
          Visible         =   True
-         Width           =   100
+         Width           =   227
       End
       Begin Label Label4
          AutoDeactivate  =   True
@@ -306,7 +248,7 @@ Begin Window Window1
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Italic          =   ""
-         Left            =   530
+         Left            =   763
          LockBottom      =   ""
          LockedInPosition=   False
          LockLeft        =   True
@@ -323,17 +265,113 @@ Begin Window Window1
          TextFont        =   "System"
          TextSize        =   0
          TextUnit        =   0
-         Top             =   272
+         Top             =   384
          Transparent     =   False
          Underline       =   ""
          Visible         =   True
          Width           =   100
+      End
+      Begin Canvas Canvas1
+         AcceptFocus     =   ""
+         AcceptTabs      =   ""
+         AutoDeactivate  =   True
+         Backdrop        =   459339775
+         DoubleBuffer    =   False
+         Enabled         =   True
+         EraseBackground =   True
+         Height          =   50
+         HelpTag         =   ""
+         Index           =   -2147483648
+         InitialParent   =   "GroupBox1"
+         Left            =   20
+         LockBottom      =   ""
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   ""
+         LockTop         =   True
+         Scope           =   0
+         TabIndex        =   7
+         TabPanelIndex   =   0
+         TabStop         =   True
+         Top             =   24
+         UseFocusRing    =   True
+         Visible         =   True
+         Width           =   50
+      End
+      Begin Label Label5
+         AutoDeactivate  =   True
+         Bold            =   ""
+         DataField       =   ""
+         DataSource      =   ""
+         Enabled         =   True
+         Height          =   20
+         HelpTag         =   ""
+         Index           =   -2147483648
+         InitialParent   =   "GroupBox1"
+         Italic          =   ""
+         Left            =   106
+         LockBottom      =   ""
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   ""
+         LockTop         =   True
+         Multiline       =   ""
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   8
+         TabPanelIndex   =   0
+         Text            =   "<-- Drag over any window or control (system-wide)"
+         TextAlign       =   0
+         TextColor       =   &h000000
+         TextFont        =   "System"
+         TextSize        =   0
+         TextUnit        =   0
+         Top             =   39
+         Transparent     =   False
+         Underline       =   ""
+         Visible         =   True
+         Width           =   574
+      End
+      Begin Canvas BorderedParentPicture
+         AcceptFocus     =   ""
+         AcceptTabs      =   ""
+         AutoDeactivate  =   True
+         Backdrop        =   ""
+         DoubleBuffer    =   False
+         Enabled         =   True
+         EraseBackground =   True
+         Height          =   300
+         HelpTag         =   ""
+         Index           =   -2147483648
+         InitialParent   =   "GroupBox1"
+         Left            =   663
+         LockBottom      =   ""
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   ""
+         LockTop         =   True
+         Scope           =   0
+         TabIndex        =   9
+         TabPanelIndex   =   0
+         TabStop         =   True
+         Top             =   79
+         UseFocusRing    =   True
+         Visible         =   True
+         Width           =   300
       End
    End
 End
 #tag EndWindow
 
 #tag WindowCode
+	#tag Event
+		Sub Open()
+		  Dim data As String = DecodeBase64(TargetIcon)
+		  Target = Picture.FromData(data)
+		End Sub
+	#tag EndEvent
+
+
 	#tag Property, Flags = &h21
 		Private BorderedParentPic As Picture
 	#tag EndProperty
@@ -343,8 +381,20 @@ End
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
+		Private Dragging As Boolean
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
 		Private ParentPic As Picture
 	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private Target As Picture
+	#tag EndProperty
+
+
+	#tag Constant, Name = TargetIcon, Type = String, Dynamic = False, Default = \"iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKmSURBVGhD7ZjPZyRREMebJYQlf0DIKf/BXvc/yDWEEJaQU67L/gF7WkKuSwg55ZRryHWvIYQ5DSGEZVlC2FOYrc+oGjVverrT3dM1Md6j9HS/evXqW9+q92OK0WhUrIKsBAiIyEDeWzpmRjIjPa2SObVyauXUqj6B5BrJNZJrJLBGiqL4KLIvcilyK/IiIkfT8ZN3vtOP3tzWJm0XUuzi0ZrIschfdRznqwQ99Bk305YCRLzYFrlPHIeBK5Gf+p0n78aQgWQc46daOBCZ/XPCwkDe95JI47Q1GKAfPQMDO9iZtFAgGsk/zqHv8vvD+LaWBDj9gJ4I+gYGOxNmwoBoxH06HfjJ3wDEVA4cGOyNayYSyFfPRDpxAyCoema+hQGRidZFLKWGRLEGyGNJavlPpBl2SDPsrocwIhNRrJbbe2WT1jhe1l1rsw5c43wULy4UyL950WsBBJaxR4Au6pwuDV7TQTKRLZ3X88a2AMKQawUyaOpTq/+1ZDLb1E4WDOREgbxEAak6egxL9pEygp5cnc3YiwLyrE6cLZiRM7X7HAXkTie8WTCQG7V7FwXkfFVWrV2X31NHE4tki1Xri7O5G8UIa/5vnfhBnnU7Oxeq0nuHAqYPOxQ9dmN2dl2V/Fnr9A1nrY0Klk4dG9htvEm32kcUCFG0oieSxzWn33lAuCXa8ou92NOvgtmUif195IelRRJ9HE2BkJ7o+/sI9sYtpEaSyH9y9YJTnHQPE8c9EADRj56BoC6wM2nhQJSZrSTNcPBV5JeI3dlZsnnnu9/JSSfGT7WlAFEw3CmOEnaqjjKwgD7jZtrSgLj9g2LdUSZYdm2Z5sk7DNFftRzH10ibyPU1phX6vpzpYjcD6RK9PsZmRvqIahebmZEu0etjbGakj6h2sfkfqnYCHXFezywAAAAASUVORK5CYII\x3D", Scope = Private
+	#tag EndConstant
 
 
 #tag EndWindowCode
@@ -384,26 +434,15 @@ End
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events PushButton2
-	#tag Event
-		Sub Action()
-		  Dim fw As New ForeignWindow(Me.Handle)
-		  ContPic = fw.Capture
-		  ParentPic = fw.TrueParent.Capture(False)
-		  BorderedParentPic = fw.TrueParent.Capture
-		  
-		  ParentPicture.Refresh
-		  BorderedParentPicture.Refresh
-		  ControlPicture.Refresh
-		  
-		End Sub
-	#tag EndEvent
-#tag EndEvents
 #tag Events ControlPicture
 	#tag Event
 		Sub Paint(g As Graphics)
 		  If ContPic <> Nil Then
-		    g.DrawPicture(ContPic, 0, 0)
+		    If ContPic.Width > g.Width Or ContPic.Height > g.Height Then
+		      g.DrawPicture(ContPic, 0, 0, g.Width, g.Height, 0, 0, ContPic.Width, ContPic.Height)
+		    Else
+		      g.DrawPicture(ContPic, 0, 0)
+		    End If
 		  End If
 		End Sub
 	#tag EndEvent
@@ -414,6 +453,50 @@ End
 		  If ParentPic <> Nil Then
 		    g.DrawPicture(ParentPic, 0, 0, g.Width, g.Height, 0, 0, ParentPic.Width, ParentPic.Height)
 		  End If
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events Canvas1
+	#tag Event
+		Function MouseDown(X As Integer, Y As Integer) As Boolean
+		  Dragging = True
+		  Return True
+		End Function
+	#tag EndEvent
+	#tag Event
+		Sub Paint(g As Graphics)
+		  g.DrawPicture(target, 0, 0, g.Width, g.Height, 0, 0, target.Width, target.Height)
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub MouseDrag(X As Integer, Y As Integer)
+		  Dim d As New DragItem(Self, Me.MouseX, Me.MouseY, Me.Width, Me.Height, target)
+		  d.Drag
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub MouseMove(X As Integer, Y As Integer)
+		  If Dragging Then
+		    Break
+		  End If
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub MouseUp(X As Integer, Y As Integer)
+		  Dragging = False
+		  Dim trueX, trueY As Integer
+		  trueX = System.MouseX
+		  trueY = System.MouseY
+		  Dim fw As ForeignWindow = ForeignWindow.FromXY(trueX, trueY)
+		  ContPic = fw.Capture
+		  ParentPic = fw.TrueParent.Capture(False)
+		  BorderedParentPic = fw.TrueParent.Capture
+		  
+		  ParentPicture.Refresh
+		  BorderedParentPicture.Refresh
+		  ControlPicture.Refresh
+		  
+		  fw.Hilight
 		End Sub
 	#tag EndEvent
 #tag EndEvents

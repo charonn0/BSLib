@@ -21,7 +21,7 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
-		Declare Function ChildWindowFromPoint Lib "User32" (ParentHWND As Integer, Coordinates As POINT) As Integer
+		Declare Function ChildWindowFromPoint Lib "User32" (HWND As Integer, Coordinates As POINT) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
