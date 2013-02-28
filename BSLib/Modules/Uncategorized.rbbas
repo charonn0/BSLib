@@ -233,6 +233,56 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function ExtractLinks(HTML As String, BaseURL As String) As String()
+		  'Given the HTML source code and base URL of a webpage, returns an array of all
+		  'hyperlink addresses.
+		  Dim proto As String
+		  If InStr(BaseURL, "://") > 0 Then
+		    proto = NthField(BaseURL, "://", 1)
+		  Else
+		    proto = "http"
+		  End If
+		  BaseURL = Replace(BaseURL, proto + "://", "")
+		  
+		  Dim ret() As String
+		  Dim hrefReg As RegEx
+		  hrefReg = New RegEx
+		  hrefReg.Options.CaseSensitive = False
+		  hrefReg.SearchPattern = "<a[^"">]*href=""([^"">]*)""[^>]*>"
+		  Dim hrefMatch as RegExMatch
+		  
+		  // find the match
+		  hrefMatch = hrefReg.Search(HTML)
+		  while hrefMatch <> Nil
+		    Dim s As String = hrefMatch.SubExpressionString(1)
+		    If InStr(s, "mailto:") <= 0 Then
+		      Dim prto As String
+		      If InStr(s, "://") > 0 Then
+		        prto = NthField(s, "://", 1)
+		        s = NthField(s, "://", 2)
+		      Else
+		        prto = proto
+		      End If
+		      
+		      If InStr(s, baseURL) > 0 Then
+		        s = s
+		      ElseIf prto.Trim = proto.Trim Then
+		        s = BaseURL + "/" + s
+		      End If
+		      s = ReplaceAll(s, "//", "/")
+		      s = prto + "://" + s
+		      'If Left(s, prto.Len) <> prto Then s = prto + s
+		      ret.Append(s)
+		    Else
+		      ret.Append(s)
+		    End If
+		    hrefMatch = hrefReg.Search()
+		  wend
+		  Return ret
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function F2C(F As Double) As Double
 		  //Converts degrees Fahrenheit to degrees Celcius
 		  Return (5/9) * (F - 32)
