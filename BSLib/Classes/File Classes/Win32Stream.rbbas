@@ -101,7 +101,7 @@ Implements Readable,Writeable
 		  #If Not TargetWin32 Then
 		    #pragma Warning "This class supports only Win32 applications."
 		  #Else
-		    Dim tmp As Win32Stream = New Win32Stream(INVALID_HANDLE_VALUE)
+		    Dim tmp As Win32Stream
 		    Dim hFile As Integer
 		    
 		    If Access = 0 Then Access = GENERIC_ALL
@@ -117,6 +117,7 @@ Implements Readable,Writeable
 		      Dim err As New IOException
 		      err.ErrorNumber = hFile
 		      err.Message = Platform.ErrorMessageFromCode(hFile)
+		      Raise err
 		    End If
 		    
 		    Return tmp
