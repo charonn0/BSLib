@@ -112,6 +112,11 @@ Implements Readable,Writeable
 		    
 		    If hFile <> INVALID_HANDLE_VALUE Then
 		      tmp = New Win32Stream(hFile, GetLastError)
+		    Else
+		      hFile = GetLastError()
+		      Dim err As New IOException
+		      err.ErrorNumber = hFile
+		      err.Message = Platform.ErrorMessageFromCode(hFile)
 		    End If
 		    
 		    Return tmp
