@@ -231,9 +231,6 @@ Implements Readable,Writeable
 		#tag Getter
 			Get
 			  #If Not TargetWin32 Then
-			    Dim err As New RuntimeException
-			    err.Message = "This class supports only Win32 applications."
-			    Raise err
 			    #pragma Warning "This class supports only Win32 applications."
 			  #Else
 			    Dim value, oldvalue As Integer
@@ -283,9 +280,6 @@ Implements Readable,Writeable
 		#tag Getter
 			Get
 			  #If Not TargetWin32 Then
-			    Dim err As New RuntimeException
-			    err.Message = "This class supports only Win32 applications."
-			    Raise err
 			    #pragma Warning "This class supports only Win32 applications."
 			  #Else
 			    Dim value As Integer = SetFilePointer(Me.Handle, 0, Nil, FILE_CURRENT)
