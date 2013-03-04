@@ -1,5 +1,12 @@
 #tag Module
 Protected Module Win32Constants
+	#tag Method, Flags = &h0
+		Function WS_EX_PALETTEWINDOW() As Integer
+		  Return WS_EX_WINDOWEDGE Or WS_EX_TOOLWINDOW Or WS_EX_TOPMOST
+		End Function
+	#tag EndMethod
+
+
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
@@ -1212,6 +1219,15 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = WS_EX_LAYERED, Type = Double, Dynamic = False, Default = \"&h80000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WS_EX_TOOLWINDOW, Type = Double, Dynamic = False, Default = \"&h00000080", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WS_EX_TOPMOST, Type = Double, Dynamic = False, Default = \"&h00000008", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WS_EX_WINDOWEDGE, Type = Double, Dynamic = False, Default = \"&h00000100", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = WT_EXECUTEONLYONCE, Type = Double, Dynamic = False, Default = \"&h00000008\r", Scope = Public

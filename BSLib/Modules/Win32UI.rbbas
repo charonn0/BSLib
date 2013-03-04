@@ -39,6 +39,30 @@ Protected Module Win32UI
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function HasTaskbarButton(Extends Win As Window) As Boolean
+		  Return TestWindowStyleEx(win.Handle, WS_EX_TOOLWINDOW)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub HasTaskbarButton(Extends Win As Window, Assigns HasButton As Boolean)
+		  SetWindowStyleEx(Win.Handle, WS_EX_TOOLWINDOW, Not HasButton)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function IsPaletteWindow(Extends Win As Window) As Boolean
+		  Return TestWindowStyleEx(win.Handle, WS_EX_PALETTEWINDOW)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub IsPaletteWindow(Extends Win As Window, Assigns palettized As Boolean)
+		  SetWindowStyleEx(Win.Handle, WS_EX_PALETTEWINDOW, palettized)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub SetWindowStyle(HWND As Integer, flag As Integer, b As Boolean)
 		  Dim oldFlags as Integer
 		  Dim newFlags as Integer
@@ -80,7 +104,7 @@ Protected Module Win32UI
 		    Dim oldFlags as Integer
 		    oldFlags = GetWindowLong(HWND, GWL_STYLE)
 		    
-		    Return BitAnd(oldFlags, flag) = flag 
+		    Return BitAnd(oldFlags, flag) = flag
 		  #endif
 		End Function
 	#tag EndMethod
@@ -91,7 +115,7 @@ Protected Module Win32UI
 		    Dim oldFlags as Integer
 		    oldFlags = GetWindowLong(HWND, GWL_EXSTYLE)
 		    
-		    Return BitAnd(oldFlags, flag) = flag 
+		    Return BitAnd(oldFlags, flag) = flag
 		  #endif
 		End Function
 	#tag EndMethod
