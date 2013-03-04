@@ -46,7 +46,7 @@ Protected Module Win32UI
 
 	#tag Method, Flags = &h0
 		Sub HasTaskbarButton(Extends Win As Window, Assigns HasButton As Boolean)
-		  SetWindowStyleEx(Win.Handle, WS_EX_TOOLWINDOW, Not HasButton)
+		  SetWindowStyleEx(Win.Handle, WS_EX_TOOLWINDOW) = Not HasButton
 		End Sub
 	#tag EndMethod
 
@@ -58,12 +58,12 @@ Protected Module Win32UI
 
 	#tag Method, Flags = &h0
 		Sub IsPaletteWindow(Extends Win As Window, Assigns palettized As Boolean)
-		  SetWindowStyleEx(Win.Handle, WS_EX_PALETTEWINDOW, palettized)
+		  SetWindowStyleEx(Win.Handle, WS_EX_PALETTEWINDOW) = palettized
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub SetWindowStyle(HWND As Integer, flag As Integer, b As Boolean)
+		Sub SetWindowStyle(HWND As Integer, flag As Integer, Assigns b As Boolean)
 		  Dim oldFlags as Integer
 		  Dim newFlags as Integer
 		  
@@ -81,7 +81,7 @@ Protected Module Win32UI
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub SetWindowStyleEx(HWND As Integer, flag As Integer, b As Boolean)
+		Sub SetWindowStyleEx(HWND As Integer, flag As Integer, Assigns b As Boolean)
 		  Dim oldFlags as Integer
 		  Dim newFlags as Integer
 		  

@@ -178,7 +178,7 @@ Protected Class ForeignWindow
 		#tag Setter
 			Set
 			  If Not TestWindowStyleEx(Me.Handle, WS_EX_LAYERED) Then
-			    SetWindowStyleEx(Me.Handle, WS_EX_LAYERED, True)
+			    SetWindowStyleEx(Me.Handle, WS_EX_LAYERED) = True
 			  End If
 			  Call SetLayeredWindowAttributes(Handle, 0 , value * 255, LWA_ALPHA)
 			  
