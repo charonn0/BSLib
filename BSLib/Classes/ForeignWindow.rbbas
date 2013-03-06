@@ -35,14 +35,14 @@ Protected Class ForeignWindow
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub ClearHilight()
-		  
+		Sub Constructor(HWND As Integer)
+		  Me.mHandle = HWND
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Constructor(HWND As Integer)
-		  Me.mHandle = HWND
+		Sub FlashWindow()
+		  Call FlashWindow(Me.Handle, True)
 		End Sub
 	#tag EndMethod
 
@@ -68,40 +68,6 @@ Protected Class ForeignWindow
 		    Return info
 		  End If
 		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub Hilight()
-		  'Broken, do not use
-		  Dim p As New Picture(Me.Width, Me.Height, 32)
-		  p.Graphics.ForeColor = &cFFFFFF00
-		  p.Transparent = 1
-		  p.Graphics.FillRect(0, 0, p.Width, p.Height)
-		  p.Graphics.ForeColor = &c00000000
-		  p.Graphics.PenHeight = 3
-		  p.Graphics.PenWidth = 3
-		  p.Graphics.DrawRect(0, 0, p.Width, p.Height)
-		  Dim HDC As Integer = GetDC(Me.Handle)
-		  Call BitBlt(HDC, 0, 0, Me.Width, Height, p.Graphics.Handle(Graphics.HandleTypeHDC), 0, 0, SRCCOPY Or CAPTUREBLT)
-		  Call ReleaseDC(Me.Handle, HDC)
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
-		Sub Identify(FlashCount As Integer = 1, FlashWindow As Boolean = True, FlashTaskbar As Boolean = True)
-		  Dim info As FLASHWINFO
-		  info.cbSize = info.Size
-		  info.Count = FlashCount
-		  info.HWND = Me.Handle
-		  Dim flag As Integer
-		  If FlashWindow Then
-		    flag = flag Or FLASHW_CAPTION
-		  ElseIf FlashTaskbar Then
-		    flag = flag Or FLASHW_TRAY
-		  End If
-		  info.Flags = flag
-		  Call User32.FlashWindowEx(info)
-		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0

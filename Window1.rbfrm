@@ -506,8 +506,7 @@ End
 		  ParentPicture.Refresh
 		  BorderedParentPicture.Refresh
 		  ControlPicture.Refresh
-		  
-		  fw.Hilight
+		  fw.TrueParent.FlashWindow
 		End Sub
 	#tag EndEvent
 #tag EndEvents
