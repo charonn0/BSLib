@@ -131,7 +131,7 @@ Protected Class ForeignWindow
 
 	#tag Method, Flags = &h0
 		Sub Minimized()
-		  Call ShowWindow(Me.Handle, SW_MAXIMIZE)
+		  Call ShowWindow(Me.Handle, SW_MINIMIZE)
 		End Sub
 	#tag EndMethod
 

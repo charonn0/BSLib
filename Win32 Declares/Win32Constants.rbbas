@@ -1143,6 +1143,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = SW_MAXIMIZE, Type = Double, Dynamic = False, Default = \"3", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = SW_MINIMIZE, Type = Double, Dynamic = False, Default = \"6", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = SW_RESTORE, Type = Double, Dynamic = False, Default = \"9", Scope = Public
 	#tag EndConstant
 
