@@ -124,14 +124,42 @@ Protected Class ForeignWindow
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Maximized()
-		  Call ShowWindow(Me.Handle, SW_MAXIMIZE)
+		Function Maximized() As Boolean
+		  Dim wp As WINDOWPLACEMENT
+		  wp.Length = wp.Size
+		  If GetWindowPlacement(Me.Handle, wp) Then
+		    Return wp.ShowCmd = SW_SHOWMAXIMIZED
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Maximized(Assigns b As Boolean)
+		  If b Then
+		    Call ShowWindow(Me.Handle, SW_MAXIMIZE)
+		  Else
+		    Call ShowWindow(Me.Handle, SW_SHOWDEFAULT)
+		  End If
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Minimized()
-		  Call ShowWindow(Me.Handle, SW_MINIMIZE)
+		Function Minimized() As Boolean
+		  Dim wp As WINDOWPLACEMENT
+		  wp.Length = wp.Size
+		  If GetWindowPlacement(Me.Handle, wp) Then
+		    Return wp.ShowCmd = SW_SHOWMINIMIZED
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub Minimized(Assigns b As Boolean)
+		  If b Then
+		    Call ShowWindow(Me.Handle, SW_MINIMIZE)
+		  Else
+		    Call ShowWindow(Me.Handle, SW_SHOWDEFAULT)
+		  End If
 		End Sub
 	#tag EndMethod
 
@@ -153,7 +181,7 @@ Protected Class ForeignWindow
 		  'Minimize all Firefox windows
 		  Dim wins() As ForeignWindow = ForeignWindow.ListWindows("Firefox")
 		  For Each win As ForeignWindow In wins
-		    win.Minimize()
+		    win.Minimized = True
 		  Next
 		
 		

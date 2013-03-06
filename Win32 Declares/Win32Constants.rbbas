@@ -1155,6 +1155,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = SW_SHOWDEFAULT, Type = Double, Dynamic = False, Default = \"10", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = SW_SHOWMAXIMIZED, Type = Double, Dynamic = False, Default = \"3", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = SW_SHOWMINIMIZED, Type = Double, Dynamic = False, Default = \"2", Scope = Public
 	#tag EndConstant
 

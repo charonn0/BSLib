@@ -443,6 +443,15 @@ Protected Module Win32Structs
 		CreatorVersion As UInt16
 	#tag EndStructure
 
+	#tag Structure, Name = WINDOWPLACEMENT, Flags = &h0
+		Length As Integer
+		  Flags As Integer
+		  ShowCmd As Integer
+		  MinPosition As POINT
+		  MaxPosition As POINT
+		NormalPosition As RECT
+	#tag EndStructure
+
 	#tag Structure, Name = WINTRUST_DATA, Flags = &h0
 		cbStruct As Integer
 		  PolicyCallbackData As Ptr
