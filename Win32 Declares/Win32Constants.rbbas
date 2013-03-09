@@ -498,6 +498,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = GWL_STYLE, Type = Double, Dynamic = False, Default = \"-16", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = GWL_WNDPROC, Type = Double, Dynamic = False, Default = \"-4", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = GW_HWNDNEXT, Type = Double, Dynamic = False, Default = \"2", Scope = Public
 	#tag EndConstant
 
@@ -655,6 +658,18 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = METHOD_BUFFERED, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MOD_ALT, Type = Double, Dynamic = False, Default = \"&h1", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MOD_CONTROL, Type = Double, Dynamic = False, Default = \"&h2", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MOD_SHIFT, Type = Double, Dynamic = False, Default = \"&h4", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = MOD_WIN, Type = Double, Dynamic = False, Default = \"&h8", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = MOVEFILE_COPY_ALLOWED, Type = Double, Dynamic = False, Default = \"&h2", Scope = Public
@@ -1210,6 +1225,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = WM_GETTEXT, Type = Double, Dynamic = False, Default = \"&h000D", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WM_HOTKEY, Type = Double, Dynamic = False, Default = \"&h0312", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = WM_PRINT, Type = Double, Dynamic = False, Default = \"&h0317", Scope = Public

@@ -7,7 +7,7 @@ Begin Window Window1
    Frame           =   0
    FullScreen      =   False
    HasBackColor    =   False
-   Height          =   5.2e+2
+   Height          =   5.79e+2
    ImplicitInstance=   True
    LiveResize      =   True
    MacProcID       =   0
@@ -35,7 +35,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   349
+      Left            =   26
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -52,7 +52,7 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   15
       TextUnit        =   0
-      Top             =   491
+      Top             =   537
       Transparent     =   False
       Underline       =   True
       Visible         =   True
@@ -71,7 +71,7 @@ Begin Window Window1
       Index           =   -2147483648
       InitialParent   =   ""
       Italic          =   ""
-      Left            =   434
+      Left            =   111
       LockBottom      =   ""
       LockedInPosition=   False
       LockLeft        =   True
@@ -84,7 +84,7 @@ Begin Window Window1
       TextFont        =   "System"
       TextSize        =   0
       TextUnit        =   0
-      Top             =   457
+      Top             =   503
       Underline       =   ""
       Visible         =   True
       Width           =   119
@@ -360,6 +360,78 @@ Begin Window Window1
          Width           =   300
       End
    End
+   Begin GroupBox GroupBox2
+      AutoDeactivate  =   True
+      Bold            =   ""
+      Caption         =   "Global Hotkey Demo"
+      Enabled         =   True
+      Height          =   76
+      HelpTag         =   ""
+      Index           =   -2147483648
+      InitialParent   =   ""
+      Italic          =   ""
+      Left            =   712
+      LockBottom      =   ""
+      LockedInPosition=   False
+      LockLeft        =   True
+      LockRight       =   ""
+      LockTop         =   True
+      Scope           =   0
+      TabIndex        =   10
+      TabPanelIndex   =   0
+      TextFont        =   "System"
+      TextSize        =   0
+      TextUnit        =   0
+      Top             =   483
+      Underline       =   ""
+      Visible         =   True
+      Width           =   251
+      Begin HotKeyListener HotKey
+         Height          =   32
+         Index           =   -2147483648
+         InitialParent   =   "GroupBox2"
+         Left            =   914
+         LockedInPosition=   False
+         Scope           =   0
+         TabPanelIndex   =   0
+         Top             =   503
+         Width           =   32
+      End
+      Begin Label Label6
+         AutoDeactivate  =   True
+         Bold            =   ""
+         DataField       =   ""
+         DataSource      =   ""
+         Enabled         =   True
+         Height          =   56
+         HelpTag         =   ""
+         Index           =   -2147483648
+         InitialParent   =   "GroupBox2"
+         Italic          =   ""
+         Left            =   721
+         LockBottom      =   ""
+         LockedInPosition=   False
+         LockLeft        =   True
+         LockRight       =   ""
+         LockTop         =   True
+         Multiline       =   True
+         Scope           =   0
+         Selectable      =   False
+         TabIndex        =   0
+         TabPanelIndex   =   0
+         Text            =   "Press Ctrl+Alt+A\r\nWorks even if this window is minimized/invisible."
+         TextAlign       =   0
+         TextColor       =   &h000000
+         TextFont        =   "System"
+         TextSize        =   0
+         TextUnit        =   0
+         Top             =   498
+         Transparent     =   False
+         Underline       =   ""
+         Visible         =   True
+         Width           =   175
+      End
+   End
 End
 #tag EndWindow
 
@@ -368,6 +440,7 @@ End
 		Sub Open()
 		  Dim data As String = DecodeBase64(TargetIcon)
 		  Target = Picture.FromData(data)
+		  Call HotKey.RegisterKey(MOD_CONTROL Or MOD_ALT, HotKey.VirtualKey("a"))
 		End Sub
 	#tag EndEvent
 
@@ -390,6 +463,10 @@ End
 
 	#tag Property, Flags = &h21
 		Private Target As Picture
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		WM As WindowMessenger
 	#tag EndProperty
 
 
@@ -517,5 +594,13 @@ End
 		    g.DrawPicture(BorderedParentPic, 0, 0, g.Width, g.Height, 0, 0, BorderedParentPic.Width, BorderedParentPic.Height)
 		  End If
 		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events HotKey
+	#tag Event
+		Function HotKeyPressed(Identifier As Integer, KeyString As String) As Boolean
+		  MsgBox("Hotkey detected: " + KeyString + " (" + Str(Identifier) + ")")
+		  Return True
+		End Function
 	#tag EndEvent
 #tag EndEvents
