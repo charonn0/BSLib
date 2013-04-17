@@ -304,7 +304,9 @@ Inherits TCPSocket
 		  Dim errpage As String
 		  Me.Log(HTTPResponse(500), Severity_Caution)
 		  #If DebugBuild Or VerboseErrors Then
-		    #If VerboseErrors Then #pragma Warning "Verbose errors are on."
+		    #If VerboseErrors Then 
+		      #pragma Warning "Verbose errors are on."
+		    #endif
 		    
 		    Dim stack As String
 		    If UBound(Err.Stack) <= -1 Then
