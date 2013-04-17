@@ -88,8 +88,8 @@ Inherits RuntimeException
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Shared Function CleanStack(error as RuntimeException) As string()
+	#tag Method, Flags = &h0
+		 Shared Function CleanStack(error as RuntimeException) As string()
 		  'This method was written by SirG3 <TheSirG3@gmail.com>; http://fireyesoftware.com/developer/stackcleaner/
 		  Dim result() As String
 		  
