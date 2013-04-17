@@ -180,7 +180,7 @@ Inherits TCPSocket
 		      'We'll send a 302 redirect from "/" to "/" + f.name
 		      Me.Log("Redirect(302) index to single page.", Severity_Debug)
 		      ReplyHeaders = ResponseHeaders()
-		      ReplyHeaders.SetHeader("Connection", "Keep-Alive")
+		      'ReplyHeaders.SetHeader("Connection", "Keep-Alive")
 		      Dim location As String = "http://" + Me.LocalAddress + ":" + Format(Me.Port, "######")
 		      ReplyHeaders.AppendHeader("Location", location + "/" + f.Name)
 		      pagedata = ""
