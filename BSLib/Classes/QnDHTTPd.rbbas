@@ -314,7 +314,7 @@ Inherits TCPSocket
 		    Else
 		      stack = Join(Err.Stack, "<br />")
 		    End If
-		    Dim msg As String = "<img src=""" + SadMan + """ align=""top""/><b>Exception<b>: " + _
+		    Dim msg As String = "<img src=""" + SadMan + """ align=""top""/><b>Exception</b>: " + _
 		    Introspection.GetType(Err).FullName + "<br />Error Number: " + Str(Err.ErrorNumber) + "<br />Message: " + Err.Message + EndOfLine
 		    errpage = ErrorPage(500, msg + "<br />Stack follows:<blockquote>" + stack + "</blockquote>")
 		  #else
