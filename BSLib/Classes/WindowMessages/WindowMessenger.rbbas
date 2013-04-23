@@ -46,12 +46,26 @@ Protected Class WindowMessenger
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function PostMessage(HWND As Integer, Msg As Integer, WParam As Ptr, LParam As Ptr) As Boolean
+		  'Posts the Window Message to the target window's message queue and returns immediately
+		  Return User32.PostMessage(HWND, Msg, WParam, LParam)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub RemoveMessageFilter(MsgID As Integer)
 		  If Me.MessageFilter.HasKey(MsgID) Then
 		    Me.MessageFilter.Remove(MsgID)
 		  End If
 		  
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function SendMessage(HWND As Integer, Msg As Integer, WParam As Ptr, LParam As Ptr) As Integer
+		  'Sends the Window Message to the target window and waits for a response
+		  Return User32.SendMessage(HWND, Msg, WParam, LParam)
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
@@ -149,7 +163,6 @@ Protected Class WindowMessenger
 		    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
 		    COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
 		    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-		
 	#tag EndNote
 
 
