@@ -53,6 +53,7 @@ Window=QnDHTTPdDemo;BSLib/Classes/QnDHTTPdDemo.rbfrm;&h74CFB7FF;&h489DFFFF;false
 Folder=WindowMessages;BSLib/Classes/WindowMessages;&h34390FFF;&h489DFFFF;false
 Class=WindowMessenger;BSLib/Classes/WindowMessages/WindowMessenger.rbbas;&h23AA8FFF;&h34390FFF;false
 Class=HotKeyListener;BSLib/Classes/WindowMessages/HotKeyListener.rbbas;&h70EA97FF;&h34390FFF;false
+Class=WindowMessage;BSLib/Classes/WindowMessages/WindowMessage.rbbas;&h4CDB87FF;&h34390FFF;false
 DefaultWindow=Window1
 AppMenuBar=MenuBar1
 MajorVersion=1

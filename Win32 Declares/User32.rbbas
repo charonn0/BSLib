@@ -173,6 +173,10 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function RegisterWindowMessage Lib "User32" Alias "RegisterWindowMessageW" (MessageName As WString) As UInt16
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function ReleaseDC Lib "User32" (HWND As Integer, DC As Integer) As Integer
 	#tag EndExternalMethod
 
