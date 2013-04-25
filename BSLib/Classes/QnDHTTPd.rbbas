@@ -212,7 +212,6 @@ Inherits TCPSocket
 		      If HTTPVerb = "GET" Then
 		        'They want the file, not just headers
 		        If bs = Nil Then bs = BinaryStream.Open(f)
-		        bs = BinaryStream.Open(f)
 		        pagedata = bs.Read(stop - start)
 		        bs.Close
 		      End If
@@ -304,7 +303,7 @@ Inherits TCPSocket
 		  Dim errpage As String
 		  Me.Log(HTTPResponse(500), Severity_Caution)
 		  #If DebugBuild Or VerboseErrors Then
-		    #If VerboseErrors Then 
+		    #If VerboseErrors Then
 		      #pragma Warning "Verbose errors are on."
 		    #endif
 		    
