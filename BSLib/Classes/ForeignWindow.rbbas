@@ -62,7 +62,7 @@ Protected Class ForeignWindow
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
-		Protected Function GetWindowInfo() As WINDOWINFO
+		Attributes( deprecated = "ForeignWindow.WindowInfo" ) Protected Function GetWindowInfo() As WINDOWINFO
 		  Dim info As WINDOWINFO
 		  If GetWindowInfo(Me.Handle, info) Then
 		    Return info
@@ -184,7 +184,7 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return GetWindowInfo.cxWindowBorders
+			  Return Me.WindowInfo.cxWindowBorders
 			  
 			End Get
 		#tag EndGetter
@@ -194,7 +194,7 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return GetWindowInfo.cyWindowBorders
+			  Return Me.WindowInfo.cyWindowBorders
 			End Get
 		#tag EndGetter
 		BorderSizeY As Integer
@@ -235,8 +235,7 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO = GetWindowInfo
-			  Dim size As RECT = info.ClientArea
+			  Dim size As RECT = Me.WindowInfo.ClientArea
 			  Return size.bottom - size.top
 			End Get
 		#tag EndGetter
@@ -246,8 +245,7 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO = GetWindowInfo
-			  Dim size As RECT = info.ClientArea
+			  Dim size As RECT = Me.WindowInfo.ClientArea
 			  Return size.left
 			End Get
 		#tag EndGetter
@@ -281,8 +279,8 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO = GetWindowInfo
-			  Dim size As RECT = info.ClientArea
+			  
+			  Dim size As RECT = Me.WindowInfo.ClientArea
 			  Return size.top
 			End Get
 		#tag EndGetter
@@ -292,8 +290,7 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO = GetWindowInfo
-			  Dim size As RECT = info.WindowArea
+			  Dim size As RECT = Me.WindowInfo.WindowArea
 			  Return size.bottom - size.top
 			End Get
 		#tag EndGetter
@@ -303,8 +300,8 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO = GetWindowInfo
-			  Dim size As RECT = info.WindowArea
+			  
+			  Dim size As RECT = Me.WindowInfo.WindowArea
 			  Return size.Left
 			End Get
 		#tag EndGetter
@@ -334,8 +331,8 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO = GetWindowInfo
-			  Dim size As RECT = info.WindowArea
+			  
+			  Dim size As RECT = Me.WindowInfo.WindowArea
 			  Return size.right
 			End Get
 		#tag EndGetter
@@ -345,8 +342,8 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO = GetWindowInfo
-			  Dim size As RECT = info.WindowArea
+			  
+			  Dim size As RECT = Me.WindowInfo.WindowArea
 			  Return size.top
 			End Get
 		#tag EndGetter
@@ -356,8 +353,8 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO = GetWindowInfo
-			  Dim size As RECT = info.WindowArea
+			  
+			  Dim size As RECT = Me.WindowInfo.WindowArea
 			  Return size.Right - size.Left
 			End Get
 		#tag EndGetter
@@ -386,12 +383,24 @@ Protected Class ForeignWindow
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Dim info As WINDOWINFO = GetWindowInfo
-			  Dim size As RECT = info.ClientArea
+			  
+			  Dim size As RECT = Me.WindowInfo.ClientArea
 			  Return size.right - size.left
 			End Get
 		#tag EndGetter
 		Width As Integer
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  Dim info As WINDOWINFO
+			  If GetWindowInfo(Me.Handle, info) Then
+			    Return info
+			  End If
+			End Get
+		#tag EndGetter
+		WindowInfo As WINDOWINFO
 	#tag EndComputedProperty
 
 
