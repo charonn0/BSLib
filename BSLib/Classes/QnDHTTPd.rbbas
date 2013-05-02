@@ -376,7 +376,12 @@ Inherits TCPSocket
 		        line = ReplaceAll(line, "%FILESIZE%", FormatBytes(f.TrueItem(i).Length))
 		        line = ReplaceAll(line, "%FILETYPE%", MIMEstring(f.TrueItem(i).Name))
 		      End if
-		      line = ReplaceAll(line, "%FILEICON%", icon)
+		      If f.Count <= 50 Then 'for better performance on large directories
+		        line = ReplaceAll(line, "%FILEICON%", icon)
+		      Else
+		        line = ReplaceAll(line, "%FILEICON%", "&nbsp;")
+		      End If
+		      
 		      If i Mod 2 = 0 Then
 		        line = ReplaceAll(line, "%ROWCOLOR%", "#C0C0C0")
 		      Else
