@@ -107,7 +107,7 @@ Inherits TCPSocket
 		    If Not CheckAuthentication(pw, realm) Then
 		      'HTTP 401 Unauthorized.
 		      Me.Log("Authentication failed.", Severity_Caution)
-		      pagedata = ErrorPage(401)
+		      pagedata = ErrorPage(401, HTTPPath)
 		      HTTPreply = HTTPResponse(401) + CRLF
 		      ReplyHeaders = ResponseHeaders(pagedata.LenB, MIMEstring("error.html"))
 		      mLastHTTPCode = 401
