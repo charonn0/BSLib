@@ -468,11 +468,13 @@ Inherits TCPSocket
 		  
 		  page = ReplaceAll(page, "%SIGNATURE%", "<em>Powered By " + DaemonVersion + "</em><br />")
 		  
-		  page = page + "<!--"
-		  Do
-		    page = page + " padding to make IE happy. "
-		  Loop Until page.LenB >= 512
-		  page = page + "-->"
+		  If page.LenB < 512 Then
+		    page = page + "<!--"
+		    Do
+		      page = page + " padding to make IE happy. "
+		    Loop Until page.LenB >= 512
+		    page = page + "-->"
+		  End If
 		  
 		  
 		  Return Page
