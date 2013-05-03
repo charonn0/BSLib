@@ -366,9 +366,7 @@ Begin Window QnDHTTPdDemo
       LogLevel        =   0
       Port            =   0
       Scope           =   0
-      TabIndex        =   9
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   12
       Width           =   32
    End
@@ -450,9 +448,7 @@ Begin Window QnDHTTPdDemo
       LockTop         =   True
       Maximum         =   100
       Scope           =   0
-      TabIndex        =   12
       TabPanelIndex   =   0
-      TabStop         =   True
       Top             =   203
       Value           =   0
       Visible         =   True
@@ -625,7 +621,7 @@ End
 		  Username.Enabled = Me.Value
 		  Password.Enabled = Me.Value
 		  realmtext.Enabled = Me.Value
-		  sock.Authenticate = True
+		  sock.Authenticate = Me.Value
 		  Sock.Close
 		  Sock.Listen
 		End Sub
