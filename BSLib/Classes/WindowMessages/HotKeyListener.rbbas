@@ -96,6 +96,11 @@ Inherits WindowMessenger
 		  #If TargetWin32 Then
 		    Call UnregisterHotkey(Me.ParentWindow, id)
 		    Call GlobalDeleteAtom(id)
+		    For i As Integer = UBound(KeyIDs) DownTo 0
+		      If KeyIDs(i) = id Then
+		        KeyIDs.Remove(i)
+		      End If
+		    Next
 		  #Else
 		    #pragma Warning "This class supports Win32 applications only"
 		  #endif
@@ -148,7 +153,6 @@ Inherits WindowMessenger
 		    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
 		    COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
 		    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-		
 	#tag EndNote
 
 
