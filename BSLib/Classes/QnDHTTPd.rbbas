@@ -53,10 +53,12 @@ Inherits TCPSocket
 	#tag Method, Flags = &h1
 		Protected Shared Function Acceptable(MIMEType As String, RequestHeaders As InternetHeaders) As Boolean
 		  'Returns true if the passed MIMEType is listed as acceptable in the passed headers.
+		  If InStr(MIMEType, ";") > 0 Then MIMEType = NthField(MIMEType, ";", 1)
 		  For i As Integer = 0 To RequestHeaders.Count - 1
 		    If RequestHeaders.Name(i) = "Accept" Then
 		      Dim acceptable() As String = Split(RequestHeaders.Value("Accept"), ",")
 		      For Each type As String In acceptable
+		        If InStr(type, ";") > 0 Then type = NthField(type, ";", 1)
 		        type = type.Trim
 		        If Left(type, MIMEType.Len) = MIMEType Or Left(type, Len("*/*")) = "*/*" Then
 		          Return True
@@ -264,8 +266,7 @@ Inherits TCPSocket
 		    PageData = Replace(PageData, "%PAGEGZIPSTATUS%", "No compression.")
 		  #endif
 		  
-		  Dim tamperMIME As String = GetHeader(ReplyHeaders,"Content-Type")
-		  If Not Acceptable(tamperMIME, QueryHeaders) And HasHeader(QueryHeaders, "Accept") Then
+		  If Not Acceptable(GetHeader(ReplyHeaders,"Content-Type"), QueryHeaders) And HasHeader(QueryHeaders, "Accept") Then
 		    Me.Log(HTTPResponse(406), Severity_Caution)
 		    HTTPreply = HTTPResponse(406) + CRLF 'HTTP 406 Not acceptable
 		    pagedata = ErrorPage(406)
