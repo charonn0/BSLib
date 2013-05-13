@@ -274,7 +274,6 @@ Inherits TCPSocket
 		    mLastHTTPCode = 406
 		  End If
 		  
-		  Dim response As String = HTTPreply + ReplyHeaders.Source + CRLF + CRLF + pagedata
 		  #If GZIPAvailable Then
 		    If LenB(response) > 2^26 Then Log("Compressing large data streams can lock up the application!", Severity_Caution)
 		  #endif
