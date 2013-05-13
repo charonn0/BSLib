@@ -411,7 +411,7 @@ Inherits TCPSocket
 		    Log("Tampering with outbound headers", Severity_Debug)
 		    Me.ReplyHeaders = tamper
 		  End If
-		  pagedata = HTTPResponse(404) + CRLF + ReplyHeaders.Source + CRLF + CRLF + pagedata
+		  pagedata = HTTPResponse(Code) + CRLF + ReplyHeaders.Source + CRLF + CRLF + pagedata
 		  Me.Log(HTTPResponse(Code), Severity_Caution)
 		  DoResponse(pagedata)
 		End Sub
