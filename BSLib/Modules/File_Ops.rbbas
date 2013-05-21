@@ -250,6 +250,21 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub DeleteTree(Extends folder as FolderItem)
+		  Dim count As Integer
+		  count = folder.Count
+		  For i As Integer = count DownTo 1
+		    If folder.TrueItem(i) <> Nil Then
+		      If folder.TrueItem(i).Directory Then
+		        folder.TrueItem(i).DeleteTree
+		      End If
+		      folder.TrueItem(i).Delete
+		    End If
+		  Next i
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function Encrypted(Extends target As FolderItem) As Boolean
 		  //Returns True if the file has the Encrypted attribute
 		  #If TargetWin32 Then
