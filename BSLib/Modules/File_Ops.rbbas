@@ -354,12 +354,13 @@ Protected Module File_Ops
 		    Dim thisDir As FolderItem = dirs.Pop
 		    Dim thisDirCount As Integer = thisDir.Count
 		    For i As Integer = 1 To thisDirCount
-		      If thisDir.Item(i).Directory Then
-		        For each item As FolderItem In getChildren(thisDir.Item(i))
+		      Dim thisItem As FolderItem = thisDir.Item(i)
+		      If thisItem.Directory Then
+		        For each item As FolderItem In getChildren(thisItem)
 		          files.Append(item)
 		        Next
 		      Else
-		        files.Append(thisDir.Item(i))
+		        files.Append(thisItem)
 		      End If
 		    Next
 		  Wend
