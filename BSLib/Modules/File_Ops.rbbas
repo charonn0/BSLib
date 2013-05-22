@@ -347,23 +347,19 @@ Protected Module File_Ops
 		  //This function recursively builds a FolderItem array consisting of all files beneath a given Directory.
 		  //It does not return subfolders, only their contents
 		  
-		  Dim files(), dirs() As FolderItem
-		  dirs.Append(dir)
+		  Dim files() As FolderItem
+		  Dim dirCount As Integer = dir.Count
+		  For i As Integer = 1 To dirCount
+		    Dim thisItem As FolderItem = dir.Item(i)
+		    If thisItem.Directory Then
+		      For each item As FolderItem In getChildren(thisItem)
+		        files.Append(item)
+		      Next
+		    Else
+		      files.Append(thisItem)
+		    End If
+		  Next
 		  
-		  While dirs.Ubound > -1
-		    Dim thisDir As FolderItem = dirs.Pop
-		    Dim thisDirCount As Integer = thisDir.Count
-		    For i As Integer = 1 To thisDirCount
-		      Dim thisItem As FolderItem = thisDir.Item(i)
-		      If thisItem.Directory Then
-		        For each item As FolderItem In getChildren(thisItem)
-		          files.Append(item)
-		        Next
-		      Else
-		        files.Append(thisItem)
-		      End If
-		    Next
-		  Wend
 		  
 		  Return files()
 		  
