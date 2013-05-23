@@ -343,6 +343,28 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function FindFile(Root As FolderItem, Filename As String) As FolderItem
+		  'performs a depth-first search on the passed directory for the named file. Returns the first matching file.
+		  Dim file As FolderItem
+		  If Root = Nil Or Not Root.Directory Then Return Nil
+		  Dim count As Integer = Root.Count
+		  For i As Integer = 1 To count
+		    Dim item As FolderItem = Root.Item(i)
+		    If item.Directory Then
+		      file = FindFile(item, Filename)
+		    ElseIf item.Name = Filename Then
+		      file = item
+		    End If
+		    If file <> Nil Then Exit For
+		  Next
+		  
+		  Return file
+		  
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function getChildren(dir As FolderItem) As FolderItem()
 		  //This function recursively builds a FolderItem array consisting of all files beneath a given Directory.
 		  //It does not return subfolders, only their contents
