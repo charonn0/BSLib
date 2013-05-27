@@ -164,10 +164,10 @@ Protected Module Platform
 		Protected Function ComputerName() As String
 		  //Returns the system's NetBIOS name.
 		  #If TargetWin32 Then
-		    Dim mb As New MemoryBlock(16)
+		    Dim mb As New MemoryBlock(32)
 		    Dim size As Integer = mb.Size
 		    Call GetComputerName(mb, size)
-		    Return mb.WString( 0 )
+		    Return mb.WString(0)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -1120,6 +1120,7 @@ Protected Module Platform
 		      ret.Value("EFSSupport") = BitwiseAnd(flags, &h00020000) = &h00020000
 		      ret.Value("HardLinkSupport") = BitwiseAnd(flags, &h00400000) = &h00400000
 		      ret.Value("ReparsePointSupport") = BitwiseAnd(flags, &h00000080) = &h00000080
+		      ret.Value("SerialNumber") = Hex(serialNumber.Int32Value(0)) + Hex(serialNumber.Int32Value(4))
 		      Return ret
 		    Else
 		      Return Nil
