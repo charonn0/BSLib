@@ -1,6 +1,31 @@
 #tag Class
 Protected Class CaughtException
 Inherits RuntimeException
+	#tag Method, Flags = &h0
+		 Shared Function CleanedStack(Err As RuntimeException) As String()
+		  'This method was written by SirG3 <TheSirG3@gmail.com>; http://fireyesoftware.com/developer/stackcleaner/
+		  Dim result() As String
+		  
+		  #If rbVersion >= 2005.5
+		    For Each s As String In Err.stack
+		      Dim tmp As String = cleanMangledFunction( s )
+		      
+		      If tmp <> "" Then _
+		      result.append( tmp )
+		    Next
+		    
+		  #Else
+		    // leave result empty
+		    
+		  #EndIf
+		  
+		  // we must return some sort of array (even if empty), otherwise REALbasic will return a "nil" array, causing a crash when trying to use the array.
+		  // see http://realsoftware.com/feedback/viewreport.php?reportid=urvbevct
+		  
+		  Return result
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Shared Function CleanMangledFunction(item as string) As string
 		  'This method was written by SirG3 <TheSirG3@gmail.com>; http://fireyesoftware.com/developer/stackcleaner/
@@ -31,7 +56,7 @@ Inherits RuntimeException
 		    Dim args() As String = parseParams( parts( 2 ) )
 		    
 		    If func.InStr( "$" ) > 0 Then
-		      args( 0 ) = "extends " + args( 0 )
+		      args( 0 ) = "Extends " + args( 0 )
 		      func = func.ReplaceAll( "$", "" )
 		      
 		    Elseif ubound( args ) >= 0 And func.NthField( ".", 1 ) = args( 0 ) Then
@@ -42,20 +67,24 @@ Inherits RuntimeException
 		    If func.InStr( "=" ) > 0 Then
 		      Dim index As Integer = ubound( args )
 		      
-		      args( index ) = "assigns " + args( index )
+		      args( index ) = "Assigns " + args( index )
 		      func = func.ReplaceAll( "=", "" )
 		    End If
 		    
 		    If func.InStr( "*" ) > 0 Then
 		      Dim index As Integer = ubound( args )
 		      
-		      args( index ) = "paramarray " + args( index )
+		      args( index ) = "ParamArray " + args( index )
 		      func = func.ReplaceAll( "*", "" )
 		    End If
 		    
 		    Dim sig As String
 		    If func.InStr( "#" ) > 0 Then
-		      sig = "Event"
+		      if returnType = "" Then
+		        sig = "Event Sub"
+		      Else
+		        sig = "Event Function"
+		      end if
 		      func = func.ReplaceAll( "#", "" )
 		      
 		    Elseif returnType = "" Then
@@ -67,7 +96,7 @@ Inherits RuntimeException
 		    End If
 		    
 		    If ubound( args ) >= 0 Then
-		      sig = sig + " " + func + "( " + Join( args, ", " ) + " )"
+		      sig = sig + " " + func + "(" + Join( args, ", " ) + ")"
 		      
 		    Else
 		      sig = sig + " " + func + "()"
@@ -76,7 +105,7 @@ Inherits RuntimeException
 		    
 		    
 		    If returnType <> "" Then
-		      sig = sig + " as " + returnType
+		      sig = sig + " As " + returnType
 		    End If
 		    
 		    Return sig
@@ -166,16 +195,16 @@ Inherits RuntimeException
 		        mode = kObjectMode
 		        
 		      Case "b"
-		        funcTypes.append( "boolean" )
+		        funcTypes.append( "Boolean" )
 		        
 		      Case "s"
-		        funcTypes.append( "string" )
+		        funcTypes.append( "String" )
 		        
 		      Case "f"
 		        mode = kFloatingMode
 		        
 		      Case "c"
-		        funcTypes.append( "color" )
+		        funcTypes.append( "Color" )
 		        
 		      Case "A"
 		        mode = kArrayMode
@@ -202,10 +231,10 @@ Inherits RuntimeException
 		      
 		      
 		    Case kIntMode, kUIntMode
-		      Dim intType As String = "int"
+		      Dim intType As String = "Int"
 		      
 		      If mode = kUIntMode Then _
-		      intType = "uint"
+		      intType = "UInt"
 		      
 		      funcTypes.append( intType + Str( Val( char ) * 8 ) )
 		      mode = kParamMode
@@ -213,10 +242,10 @@ Inherits RuntimeException
 		      
 		    Case kFloatingMode
 		      If char = "4" Then
-		        funcTypes.append( "single" )
+		        funcTypes.append( "Single" )
 		        
 		      Elseif char = "8" Then
-		        funcTypes.append( "double" )
+		        funcTypes.append( "Double" )
 		        
 		      End If
 		      
@@ -242,7 +271,7 @@ Inherits RuntimeException
 		  Next
 		  
 		  For Each b As Integer In byrefs
-		    funcTypes( b ) = "byref " + funcTypes( b )
+		    funcTypes( b ) = "ByRef " + funcTypes( b )
 		  Next
 		  
 		  Return funcTypes
@@ -259,6 +288,23 @@ Inherits RuntimeException
 		  #Else
 		    Return Self.OriginalException.Stack
 		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		 Shared Function StackTrace(Err As RuntimeException) As String
+		  Dim d As New Date
+		  Dim stack() As String = CleanedStack(Err)
+		  Dim m As String = "Message: "
+		  If Err.Message.Trim = "" Then
+		    m = m + "No additional details"
+		  Else
+		    m = m + Err.Message
+		  End If
+		  Dim Error As String = "Runtime Exception:" + EndOfLine + "Date: " + d.SQLDateTime + EndOfLine + "Exception type: " + Introspection.GetType(Err).FullName + EndOfLine + _
+		  "Error number: " + Str(Err.ErrorNumber) + EndOfLine + m + Err.Message + EndOfLine + EndOfLine + "Call stack at last call to Raise:" + EndOfLine + EndOfLine + _
+		  Join(stack, "     " + EndOfLine) + EndOfLine
+		  Return Error
 		End Function
 	#tag EndMethod
 
