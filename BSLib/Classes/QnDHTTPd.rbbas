@@ -274,10 +274,6 @@ Inherits TCPSocket
 		    mLastHTTPCode = 406
 		  End If
 		  
-		  #If GZIPAvailable Then
-		    If LenB(response) > 2^26 Then Log("Compressing large data streams can lock up the application!", Severity_Caution)
-		  #endif
-		  
 		  tamper = ParseRawHeaders(Me.ReplyHeaders.Source)
 		  If TamperResponseHeaders(tamper) Then
 		    'last chance tampering by subclasses
@@ -298,6 +294,7 @@ Inherits TCPSocket
 		  #If DebugBuild Or VerboseErrors Then
 		    #If VerboseErrors Then
 		      #pragma Warning "Verbose errors are on."
+		      'If your version of RS doesn't include Introspection, then you must set VerboseErrors=False
 		    #endif
 		    
 		    Dim stack As String
@@ -321,82 +318,130 @@ Inherits TCPSocket
 
 	#tag Method, Flags = &h0
 		 Shared Function DirectoryIndex(serverpath As String, f As FolderItem) As String
-		  Dim timestart, timestop As UInt64
-		  Dim PageData As String
-		  Dim i As Integer
-		  Const pagetop = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Transitional//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd""><html xmlns=""http://www.w3.org/1999/xhtml""><meta http-equiv=""Content-Type"" content=""text/html; charset=iso-8859-1"" /><head><title>Index of %FILENAME%</title></head><body link=""#0000FF"" vlink=""#004080"" alink=""#FF0000""><h1>Index of %FILENAME%</h1><h2>%INDEXCOUNT% item(s) found. </h2>"
-		  Const TableHead = "<Table cellpadding=5 width=""90%""><TR><TD>&nbsp;</TD><TD>Name</TD><TD>Last modified</TD><TD>Size</TD><TD>Description</TD>%UPDIR%"
-		  Const TableRow = "<TR bgcolor=%ROWCOLOR%><TD><img src=""%FILEICON%"" width=22 height=22 /></TD><TD><a href=""%FILEPATH%"">%FILENAME%</a></TD><TD>%FILEDATE%</TD><TD>%FILESIZE%</TD><TD>%FILETYPE%</TD></TR>"
-		  Const pageend = "</Table><hr><p><small>Powered by: %DAEMON%<br >%TIMESTAMP% %PAGEGZIPSTATUS%</small></p></body></html>"
+		  Dim timestart, timestop As Double
+		  timestart = Microseconds
 		  
-		  timeStart = Microseconds
-		  If f.Directory Then
-		    PageData = ReplaceAll(pagetop, "%FILENAME%", serverpath) + ReplaceAll(TableHead , "%UPICON%", MIMEIcon_Back)
-		    Dim parentpath As String = serverpath
-		    If Right(parentpath, 1) = "/" Then parentpath = Left(parentpath, parentpath.Len - 1)
-		    parentpath = NthField(parentpath, "/", CountFields(parentpath, "/"))
-		    parentpath = Replace(serverpath, parentpath, "")
-		    parentpath = ReplaceAll(parentpath, "//", "/")
-		    If serverpath <> "/" Then
-		      PageData = ReplaceAll(PageData, "%UPDIR%", "<img src=""" + MIMEIcon_Back + """ width=22 height=22 /><a href=""" + parentpath + """>Parent Directory</a>")
-		    Else
-		      PageData = ReplaceAll(PageData, "%UPDIR%", "")
-		    End If
-		    i = 1
-		    While i <= f.Count
-		      Dim line As String
-		      Dim name, href, icon As String
-		      name = f.TrueItem(i).Name
-		      href = URLEncode(ReplaceAll(ServerPath + "/" + name, "//", "/"))
-		      While Name.len > 40
-		        Dim start As Integer
-		        Dim snip As String
-		        start = Name.Len / 3
-		        snip = mid(Name, start, 5)
-		        Name = Replace(Name, snip, "...")
-		      Wend
-		      
-		      line = TableRow
-		      line = ReplaceAll(line, "%FILENAME%", URLDecode(name))
-		      line = ReplaceAll(line, "%FILEPATH%", href)
-		      line = ReplaceAll(line, "%FILEDATE%", HTTPDate(f.TrueItem(i).ModificationDate))
-		      if f.TrueItem(i).Directory Then
-		        icon = MIMEIcon("folder")
-		        line = ReplaceAll(line, "%FILESIZE%", " - ")
-		        line = ReplaceAll(line, "%FILETYPE%", "Directory")
-		      Else
-		        icon = MIMEIcon(NthField(name, ".", CountFields(name, ".")))
-		        line = ReplaceAll(line, "%FILESIZE%", FormatBytes(f.TrueItem(i).Length))
-		        line = ReplaceAll(line, "%FILETYPE%", MIMEstring(f.TrueItem(i).Name))
-		      End if
-		      If f.Count <= 50 Then 'for better performance on large directories
-		        line = ReplaceAll(line, "%FILEICON%", icon)
-		      Else
-		        line = ReplaceAll(line, "%FILEICON%", "&nbsp;")
-		      End If
-		      
-		      If i Mod 2 = 0 Then
-		        line = ReplaceAll(line, "%ROWCOLOR%", "#C0C0C0")
-		      Else
-		        line = ReplaceAll(line, "%ROWCOLOR%", "#A7A7A7")
-		      End If
-		      
-		      PageData = PageData + line + EndOfLine
-		      i = i + 1
-		    Wend
-		    
-		    PageData = ReplaceAll(PageData, "%INDEXCOUNT%", Format(i - 1, "###,###,##0"))
-		    PageData = PageData + ReplaceAll(pageend, "%DAEMON%", DaemonVersion)
-		  Else
-		    PageData = "Not a Directory"
-		    
+		  Dim sortby As Integer
+		  If InStr(ServerPath, "?") > 0 Then
+		    Dim sortterm As String = NthField(ServerPath, "?", 2)
+		    Select Case sortterm
+		    Case "sort=A"
+		      sortby = 0
+		    Case "sort=D"
+		      sortby = 1
+		    Case "sort=S"
+		      sortby = 2
+		    Case "sort=T"
+		      sortby = 3
+		    End Select
 		  End If
+		  Dim sorter() As Integer
+		  
+		  Dim items() As FolderItem
+		  Dim names(), dirtypes() As String
+		  Dim dates() As Double
+		  Dim sizes() As UInt64
+		  Dim pagedata As String = IndexPage
+		  
+		  Dim count As Integer = f.Count
+		  For i As Integer = 1 To Count
+		    Dim item As FolderItem = f.Item(i)
+		    items.Append(item)
+		    sorter.Append(i - 1)
+		    If sortby > 0 Then
+		      If item.Directory Then
+		        dirtypes.Append("0000AAAA")
+		      Else
+		        Dim type As String = NthField(item.Name, ".", CountFields(item.Name, "."))
+		        dirtypes.Append(type)
+		      End If
+		      
+		      names.Append(item.Name)
+		      dates.Append(item.ModificationDate.TotalSeconds)
+		      sizes.Append(item.Length)
+		    End If
+		  Next
+		  If sortby > 0 Then
+		    Select Case SortBy
+		    Case 0
+		      names.SortWith(sorter)
+		    Case 3
+		      dirtypes.SortWith(sorter)
+		    Case 1
+		      dates.SortWith(sorter)
+		    Case 2
+		      sizes.SortWith(sorter)
+		    End Select
+		  End If
+		  Dim lines() As String
+		  
+		  For i As Integer = 0 To UBound(sorter)
+		    Dim item As FolderItem = items(sorter(i))
+		    Dim line As String = TableRow
+		    Dim name, href, icon As String
+		    name = item.Name
+		    href = ReplaceAll(NthField(serverpath, "?", 1) + "/" + name, "//", "/")
+		    href = URLEncode(href)
+		    While Name.len > 40
+		      Dim start As Integer
+		      Dim snip As String
+		      start = Name.Len / 3
+		      snip = mid(Name, start, 5)
+		      Name = Replace(Name, snip, "...")
+		    Wend
+		    Dim c As String
+		    If i Mod 2 = 0 Then
+		      c = "#C0C0C0"
+		    Else
+		      c = "#A7A7A7"
+		    End If
+		    line = ReplaceAll(line, "%ROWCOLOR%", c)
+		    line = ReplaceAll(line, "%FILEPATH%", href)
+		    line = ReplaceAll(line, "%FILENAME%", name)
+		    if item.Directory Then
+		      icon = MIMEIcon_Folder
+		      line = ReplaceAll(line, "%FILESIZE%", " - ")
+		      line = ReplaceAll(line, "%FILETYPE%", "Directory")
+		    Else
+		      icon = MIMEIcon(NthField(item.name, ".", CountFields(item.name, ".")))
+		      line = ReplaceAll(line, "%FILESIZE%", FormatBytes(item.Length))
+		      line = ReplaceAll(line, "%FILETYPE%", MIMEstring(NthField(item.name, ".", CountFields(item.name, "."))))
+		    End if
+		    line = ReplaceAll(line, "%FILEICON%", icon)
+		    line = ReplaceAll(line, "%FILEDATE%", item.ModificationDate.ShortDate + " " + item.ModificationDate.ShortTime)
+		    lines.Append(line)
+		  Next
+		  Dim parentpath As String = NthField(serverpath, "?", 1)
+		  If Right(parentpath, 1) = "/" Then parentpath = Left(parentpath, parentpath.Len - 1)
+		  parentpath = NthField(parentpath, "/", CountFields(parentpath, "/"))
+		  parentpath = Replace(serverpath, parentpath, "")
+		  parentpath = ReplaceAll(parentpath, "//", "/")
+		  If NthField(serverpath, "?", 1) <> "/" Then
+		    PageData = ReplaceAll(PageData, "%UPLINK%", "<img src=""" + MIMEIcon_Back + """ width=22 height=22 /><a href=""" + parentpath + """>Parent Directory</a>")
+		  Else
+		    PageData = ReplaceAll(PageData, "%UPLINK%", "")
+		  End If
+		  Dim head As String = TableHeader
+		  head = ReplaceAll(head, "%SORTICON%", Sort_Icon)
+		  pagedata = Replace(pagedata, "%TABLE%", head + Join(lines, EndOfLine))
+		  pagedata = ReplaceAll(pagedata, "%PAGETITLE%", "Index of " + NthField(serverpath, "?", 1))
+		  If Ubound(sorter) + 1 = 1 Then
+		    pagedata = Replace(pagedata, "%ITEMCOUNT%", "1 item.")
+		  Else
+		    pagedata = Replace(pagedata, "%ITEMCOUNT%", Format(Ubound(sorter) + 1, "###,###,###") + " items.")
+		  End If
+		  
+		  pagedata = Replace(pagedata, "%DAEMONVERSION%", DaemonVersion)
 		  timestop = Microseconds
 		  timestart = timestop - timestart
-		  Dim timestamp As String = "This page was generated in " + Format(timestart / 1000, "###,##0.0#") + "ms. <br />"
-		  PageData = Replace(PageData, "%TIMESTAMP%", timestamp)
-		  
-		  Return PageData
+		  Dim timestamp As String = "This page was generated in " + Format(timestart / 1000, "###,##0.0#") + "ms."
+		  #If GZIPAvailable Then
+		    pagedata = Replace(pagedata, "%COMPRESSION%", GZip.Version)
+		  #Else
+		    pagedata = Replace(pagedata, "%COMPRESSION%", "No Compression")
+		  #endif
+		  pagedata = Replace(pagedata, "%TIME%", timestamp)
+		  Return pagedata
 		End Function
 	#tag EndMethod
 
@@ -482,6 +527,7 @@ Inherits TCPSocket
 	#tag Method, Flags = &h21
 		Private Function FindItem(Path As String) As FolderItem
 		  Dim s As String
+		  Path = NthField(Path, "?", 1)
 		  Path = Path.ReplaceAll("/", "\")
 		  
 		  If Not Page.Directory And "\" + Page.Name = path Then
@@ -3429,6 +3475,9 @@ Inherits TCPSocket
 	#tag Constant, Name = GZIPAvailable, Type = Boolean, Dynamic = False, Default = \"False", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = IndexPage, Type = String, Dynamic = False, Default = \"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\r<html xmlns\x3D\"http://www.w3.org/1999/xhtml\">\r<head>\r<title>%PAGETITLE%</title>\r</head>\r\r<body link\x3D\"#0000FF\" vlink\x3D\"#004080\" alink\x3D\"#FF0000\">\r<h1>%PAGETITLE%</h1><h2>%ITEMCOUNT%</h2>\r<p>%UPLINK%</p>\r<table width\x3D\"90%\" border\x3D\"0\" cellspacing\x3D\"5\" cellpadding\x3D\"1\">\r%TABLE%\r</table>\r<hr />\r<p style\x3D\"font-size: x-small;\">Powered by: %DAEMONVERSION% <br />\r%TIME% <br /> \r%COMPRESSION%\r</p>\r</body>\r</html>", Scope = Private
+	#tag EndConstant
+
 	#tag Constant, Name = MIMEIcon_Back, Type = String, Dynamic = False, Default = \"data:image/png;charset\x3DUS-ASCII;base64\x2CiVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAAABmJLR0QAAAAAAAD5Q7t/AAAACXBI\rWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAWAAAAFgDcxelYAAADRUlEQVQ4y53TTWhcVRTA8f+5\r9703mUym+bQxiW1DNAakWK0xQRFRUFvpWsSNKC504c6dQkAraBeCtjUqlULblRtBwaXZiBY/6kLU\rtilppzO1mmBqM87Xm/fuPS4marTNR3O2597fPZxzD6wVXdMw+XFw24HZif6pn0ZUleE3zrKRkNVT\rO3hXC3z4funhbHfuSOHMfKcR9uW7u75JkybnXhpeEzarJV7VAp9/urSr846Bty80w1uT2PWFkf0k\racb3Y/y6FV8XfuGXhPMny7urQ/mjcw29s7ZYplxpEqvcHATykao+OHqoeGPwM6erRI57Fgfy07OO\r3dWFKkGSEAmU646GcksYBsdU9ZHhw8WNwc+dbRCkOlHaYg/NpkyWL8VEDY8VsFYIDSzWPTU1w2Fo\rp1Hds+NgcW34ya8WCVK9a2Gw7fDPidz3R8ERVRKM/DtiKxAKLMWeCmbUBME7qO4ZPLZwPfhNdr72\rNaR69/xQ5shZ7L1XL0BYu/bPOEAMiBEqKTSDaEw6swe96qOPH7/6X9hayQg8EU90nzjTLuPNELK9\rUOu21KMALwIKzkPdQy3y2E5LJp/BdWbxW3O3b89n31PlofEVePDiKw/0LQV2/7dHSyPnF5qNjHM0\rm56nx/Ph6fxN9oeGJRKIU2Wox7Ct2MHJP8vO1OcSk23DZxxXCgPb+sd6Puje5Z8CvgcI2nPhfOzk\rscq5KsnlGHUpiXNs6S1PVbfnntWozXhAU89AV8TOQRpfHI9OaH3pdZuNcWFCPNdD74gY4Ld/KvZO\rUwfFIGcx+QDjgFT4cnZpZnHE7s0IQ7rc4LgOHaOmGIy4/W4uLJlMgGbA5wzyv3kEB16evGZAALXn\rZ/qM+I5Wi1u3nIO4rhnf5Yb8Z3tLK/ev8B0U1ts8AFWTwasFbR2TFq9OjabazjqxKoxHN3r0xuC/\rF2O5YMQAfkViszBYwKDLjgXUsVF59R63alURwAsYQR1oq9XBpmGf6kU0uIIIWItaQ5IoRmgY4dJ6\r8Kovu0bzR6LwsjiJNJBfsZYEtoqRWlubuVjZLKxJMotjSsQEEpoFNYBqb2TIj/WH1VObhTEmodKc\rsfl2zECXc3O/Y5w3WRF76q2SruPyF/GBZ+iTkw4aAAAAJXRFWHRjcmVhdGUtZGF0ZQAyMDA5LTEx\rLTI4VDE3OjE4OjI4LTA3OjAwMZGyLAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMC0wMi0yMFQyMzoy\rNjoxNy0wNzowMJGkTagAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTAtMDEtMTFUMDg6NDQ6MDYtMDc6\rMDA+Z9PyAAAANXRFWHRMaWNlbnNlAGh0dHA6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2Vz\rL0xHUEwvMi4xLzvBtBgAAAAldEVYdG1vZGlmeS1kYXRlADIwMDktMTEtMjhUMTQ6MzI6MTUtMDc6\rMDBz/Of9AAAAFnRFWHRTb3VyY2UAQ3J5c3RhbCBQcm9qZWN06+PkiwAAACd0RVh0U291cmNlX1VS\rTABodHRwOi8vZXZlcmFsZG8uY29tL2NyeXN0YWwvpZGTWwAAAABJRU5ErkJggg\x3D\x3D", Scope = Protected
 	#tag EndConstant
 
@@ -3496,6 +3545,15 @@ Inherits TCPSocket
 	#tag EndConstant
 
 	#tag Constant, Name = Severity_Normal, Type = Double, Dynamic = False, Default = \"0", Scope = Protected
+	#tag EndConstant
+
+	#tag Constant, Name = Sort_Icon, Type = String, Dynamic = False, Default = \"data:image/png;charset\x3DUS-ASCII;base64\x2CiVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACx\rjwv8YQUAAAAJcEhZcwAATiAAAE4gARZ9md4AAACvSURBVDhPpZCLDcMgDERNMxijMAqjeBRGySjU\r5+B8qFGhfZIVIriXC1T/ZCjIzDWmooM1l9J2nqigyGYImz4NC/brnlOw0eshuKNN8pcGFOgUoG7k\roz6CcwK6BPb/91/4SQC0zapAQ1a9NYlRxpG4ghWmBTlmd6YFLIdLu9RdziHMaUHghYHkSC4oqcCe\rI/owIBYzQjZ49/DCaKWfM8koDBCEwEAY9zLu24Hw5+T6Bj0hUky38+r0AAAAAElFTkSuQmCC", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = TableHeader, Type = String, Dynamic = False, Default = \"<tr>\r    <th bgcolor\x3D\"#FFFFFF\" scope\x3D\"row\"></th>\r    <td bgcolor\x3D\"#FFFFFF\"><a href\x3D\"\?sort\x3DA\"><img src\x3D\"%SORTICON%\" alt\x3D\"Sort alphabetically\" width\x3D16 height\x3D16 border\x3D\"0\" />Name</a></td>\r    <td bgcolor\x3D\"#FFFFFF\"><a href\x3D\"\?sort\x3DD\"><img src\x3D\"%SORTICON%\" alt\x3D\"Sort by date\" width\x3D16 height\x3D16 border\x3D\"0\" />Last modified</a> </td>\r    <td bgcolor\x3D\"#FFFFFF\"><a href\x3D\"\?sort\x3DS\"><img src\x3D\"%SORTICON%\" alt\x3D\"Sort by size\" width\x3D16 height\x3D16 border\x3D\"0\" />Size</a></td>\r    <td bgcolor\x3D\"#FFFFFF\"><a href\x3D\"\?sort\x3DT\"><img src\x3D\"%SORTICON%\" alt\x3D\"Sort by type\" width\x3D16 height\x3D16 border\x3D\"0\" />Description</a></td>\r  </tr>", Scope = Private
+	#tag EndConstant
+
+	#tag Constant, Name = TableRow, Type = String, Dynamic = False, Default = \"    <tr>\r    <th width\x3D\"4%\" bgcolor\x3D\"%ROWCOLOR%\" scope\x3D\"row\"><img src\x3D\"%FILEICON%\" width\x3D22 height\x3D22 /></th>\r    <td width\x3D\"47%\" bgcolor\x3D\"%ROWCOLOR%\"><a href\x3D\"%FILEPATH%\">%FILENAME%</a></td>\r    <td width\x3D\"18%\" bgcolor\x3D\"%ROWCOLOR%\">%FILEDATE%</td>\r    <td width\x3D\"7%\" bgcolor\x3D\"%ROWCOLOR%\">%FILESIZE%</td>\r    <td width\x3D\"24%\" bgcolor\x3D\"%ROWCOLOR%\">%FILETYPE%</td>\r    </tr>\r    ", Scope = Private
 	#tag EndConstant
 
 	#tag Constant, Name = VerboseErrors, Type = Boolean, Dynamic = False, Default = \"False", Scope = Private
