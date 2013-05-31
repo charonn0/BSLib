@@ -204,6 +204,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = ERROR_HANDLE_EOF, Type = Double, Dynamic = False, Default = \"&h26", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = ERROR_NO_MORE_FILES, Type = Double, Dynamic = False, Default = \"18", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = EWX_LOGOFF, Type = Double, Dynamic = False, Default = \"0", Scope = Public
 	#tag EndConstant
 

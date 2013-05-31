@@ -1,5 +1,13 @@
 #tag Class
 Protected Class FileEnumerator
+	#tag Method, Flags = &h1
+		Protected Sub Close()
+		  Call FindClose(FindHandle)
+		  FindHandle = -1
+		  mLastError = 0
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
 		Sub Constructor(Root As FolderItem, Pattern As String)
 		  //Root is the directory in which to search
@@ -12,7 +20,7 @@ Protected Class FileEnumerator
 
 	#tag Method, Flags = &h0
 		Sub Destructor()
-		  Call FindClose(FindHandle)
+		  Me.Close
 		End Sub
 	#tag EndMethod
 
@@ -76,8 +84,8 @@ Protected Class FileEnumerator
 		Private mLastError As Integer
 	#tag EndProperty
 
-	#tag Property, Flags = &h21
-		Private RootDirectory As FolderItem
+	#tag Property, Flags = &h1
+		Protected RootDirectory As FolderItem
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
