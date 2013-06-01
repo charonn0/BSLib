@@ -1,31 +1,6 @@
 #tag Class
 Protected Class CaughtException
 Inherits RuntimeException
-	#tag Method, Flags = &h0
-		 Shared Function CleanedStack(Err As RuntimeException) As String()
-		  'This method was written by SirG3 <TheSirG3@gmail.com>; http://fireyesoftware.com/developer/stackcleaner/
-		  Dim result() As String
-		  
-		  #If rbVersion >= 2005.5
-		    For Each s As String In Err.stack
-		      Dim tmp As String = cleanMangledFunction( s )
-		      
-		      If tmp <> "" Then _
-		      result.append( tmp )
-		    Next
-		    
-		  #Else
-		    // leave result empty
-		    
-		  #EndIf
-		  
-		  // we must return some sort of array (even if empty), otherwise REALbasic will return a "nil" array, causing a crash when trying to use the array.
-		  // see http://realsoftware.com/feedback/viewreport.php?reportid=urvbevct
-		  
-		  Return result
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h21
 		Private Shared Function CleanMangledFunction(item as string) As string
 		  'This method was written by SirG3 <TheSirG3@gmail.com>; http://fireyesoftware.com/developer/stackcleaner/
@@ -294,7 +269,7 @@ Inherits RuntimeException
 	#tag Method, Flags = &h0
 		 Shared Function StackTrace(Err As RuntimeException) As String
 		  Dim d As New Date
-		  Dim stack() As String = CleanedStack(Err)
+		  Dim stack() As String = CleanStack(Err)
 		  Dim m As String = "Message: "
 		  If Err.Message.Trim = "" Then
 		    m = m + "No additional details"
