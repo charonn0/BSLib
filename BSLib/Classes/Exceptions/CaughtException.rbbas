@@ -3,10 +3,9 @@ Protected Class CaughtException
 Inherits RuntimeException
 	#tag Method, Flags = &h21
 		Private Shared Function CleanMangledFunction(item as string) As string
-		  'This method was written by SirG3 <TheSirG3@gmail.com>; http://fireyesoftware.com/developer/stackcleaner/
+		  'This method was originally written by SirG3 <TheSirG3@gmail.com>; http://fireyesoftware.com/developer/stackcleaner/
 		  #If rbVersion >= 2005.5
-		    
-		    Static blacklist() As String
+		    Static blacklist As String
 		    If UBound(blacklist) <= -1 Then
 		      blacklist = Array(_
 		      "REALbasic._RuntimeRegisterAppObject%%o<Application>", _
@@ -17,50 +16,55 @@ Inherits RuntimeException
 		      )
 		    End If
 		    
-		    If blacklist.indexOf( item ) >= 0 Then _
-		    Exit Function
+		    If blacklist.indexOf(item) >= 0 Then Return ""
 		    
-		    Dim parts() As String = item.Split( "%" )
-		    If ubound( parts ) < 2 Then _
-		    Exit Function
+		    Dim parts() As String = item.Split("%")
+		    If ubound(parts) < 2 Then Return ""
 		    
-		    Dim func As String = parts( 0 )
+		    Dim func As String = parts(0)
 		    Dim returnType As String
-		    If parts( 1 ) <> "" Then _
-		    returnType = parseParams( parts( 1 ) ).pop
-		    Dim args() As String = parseParams( parts( 2 ) )
+		    If parts(1) <> "" Then returnType = parseParams(parts(1)).pop
+		    Dim args() As String = parseParams(parts(2))
 		    
-		    If func.InStr( "$" ) > 0 Then
-		      args( 0 ) = "Extends " + args( 0 )
-		      func = func.ReplaceAll( "$", "" )
+		    If func.InStr("$") > 0 Then
+		      args(0) = "Extends " + args(0)
+		      func = func.ReplaceAll("$", "")
 		      
-		    Elseif ubound( args ) >= 0 And func.NthField( ".", 1 ) = args( 0 ) Then
-		      args.remove( 0 )
+		    Elseif ubound(args) >= 0 And func.NthField(".", 1) = args(0) Then
+		      args.remove(0)
 		      
 		    End If
 		    
-		    If func.InStr( "=" ) > 0 Then
-		      Dim index As Integer = ubound( args )
+		    If func.InStr("=") > 0 Then
+		      Dim index As Integer = ubound(args)
 		      
-		      args( index ) = "Assigns " + args( index )
-		      func = func.ReplaceAll( "=", "" )
+		      args(index) = "Assigns " + args(index)
+		      func = func.ReplaceAll("=", "")
 		    End If
 		    
-		    If func.InStr( "*" ) > 0 Then
-		      Dim index As Integer = ubound( args )
+		    If func.InStr("*") > 0 Then
+		      Dim index As Integer = ubound(args)
 		      
-		      args( index ) = "ParamArray " + args( index )
-		      func = func.ReplaceAll( "*", "" )
+		      args(index) = "ParamArray " + args(index)
+		      func = func.ReplaceAll("*", "")
 		    End If
 		    
 		    Dim sig As String
-		    If func.InStr( "#" ) > 0 Then
-		      if returnType = "" Then
+		    If func.InStr("#") > 0 Then
+		      If returnType = "" Then
 		        sig = "Event Sub"
 		      Else
 		        sig = "Event Function"
-		      end if
-		      func = func.ReplaceAll( "#", "" )
+		      End If
+		      func = func.ReplaceAll("#", "")
+		      
+		    Elseif func.InStr("!") > 0 Then
+		      If returnType = "" Then
+		        sig = "Shared Sub"
+		      Else
+		        sig = "Shared Function"
+		      End If
+		      func = func.ReplaceAll("!", "")
 		      
 		    Elseif returnType = "" Then
 		      sig = "Sub"
@@ -70,8 +74,8 @@ Inherits RuntimeException
 		      
 		    End If
 		    
-		    If ubound( args ) >= 0 Then
-		      sig = sig + " " + func + "(" + Join( args, ", " ) + ")"
+		    If ubound(args) >= 0 Then
+		      sig = sig + " " + func + "(" + Join(args, ", ") + ")"
 		      
 		    Else
 		      sig = sig + " " + func + "()"
@@ -99,10 +103,9 @@ Inherits RuntimeException
 		  
 		  #If rbVersion >= 2005.5
 		    For Each s As String In error.stack
-		      Dim tmp As String = cleanMangledFunction( s )
+		      Dim tmp As String = cleanMangledFunction(s)
+		      If tmp <> "" Then result.append(tmp)
 		      
-		      If tmp <> "" Then _
-		      result.append( tmp )
 		    Next
 		    
 		  #Else
@@ -152,7 +155,7 @@ Inherits RuntimeException
 		  Const kFloatingMode = 4
 		  Const kArrayMode = 5
 		  
-		  Dim chars() As String = Input.Split( "" )
+		  Dim chars() As String = Input.Split("")
 		  Dim funcTypes(), buffer As String
 		  Dim arrays(), arrayDims(), byrefs(), mode As Integer
 		  
@@ -170,32 +173,31 @@ Inherits RuntimeException
 		        mode = kObjectMode
 		        
 		      Case "b"
-		        funcTypes.append( "Boolean" )
+		        funcTypes.append("Boolean")
 		        
 		      Case "s"
-		        funcTypes.append( "String" )
+		        funcTypes.append("String")
 		        
 		      Case "f"
 		        mode = kFloatingMode
 		        
 		      Case "c"
-		        funcTypes.append( "Color" )
+		        funcTypes.append("Color")
 		        
 		      Case "A"
 		        mode = kArrayMode
 		        
 		      Case "&"
-		        byrefs.append( ubound( funcTypes ) + 1 )
+		        byrefs.append(ubound(funcTypes) + 1)
 		        
 		      End Select
 		      
 		      
 		    Case kObjectMode
-		      If char = "<" Then _
-		      Continue
+		      If char = "<" Then Continue
 		      
 		      If char = ">" Then
-		        funcTypes.append( buffer )
+		        funcTypes.append(buffer)
 		        buffer = ""
 		        mode = kParamMode
 		        
@@ -208,45 +210,44 @@ Inherits RuntimeException
 		    Case kIntMode, kUIntMode
 		      Dim intType As String = "Int"
 		      
-		      If mode = kUIntMode Then _
-		      intType = "UInt"
+		      If mode = kUIntMode Then intType = "UInt"
 		      
-		      funcTypes.append( intType + Str( Val( char ) * 8 ) )
+		      funcTypes.append(intType + Str(Val(char) * 8))
 		      mode = kParamMode
 		      
 		      
 		    Case kFloatingMode
 		      If char = "4" Then
-		        funcTypes.append( "Single" )
+		        funcTypes.append("Single")
 		        
 		      Elseif char = "8" Then
-		        funcTypes.append( "Double" )
+		        funcTypes.append("Double")
 		        
 		      End If
 		      
 		      mode = kParamMode
 		      
 		    Case kArrayMode
-		      arrays.append( ubound( funcTypes ) + 1 )
-		      arrayDims.append( Val( char ) )
+		      arrays.append(ubound(funcTypes) + 1)
+		      arrayDims.append(Val(char))
 		      mode = kParamMode
 		      
 		    End Select
 		  Next
 		  
-		  For i As Integer = 0 To ubound( arrays )
-		    Dim arr As Integer = arrays( i )
-		    Dim s As String = funcTypes( arr ) + "("
+		  For i As Integer = 0 To ubound(arrays)
+		    Dim arr As Integer = arrays(i)
+		    Dim s As String = funcTypes(arr) + "("
 		    
-		    For i2 As Integer = 2 To arrayDims( i )
+		    For i2 As Integer = 2 To arrayDims(i)
 		      s = s + ","
 		    Next
 		    
-		    funcTypes( arr ) = s + ")"
+		    funcTypes(arr) = s + ")"
 		  Next
 		  
 		  For Each b As Integer In byrefs
-		    funcTypes( b ) = "ByRef " + funcTypes( b )
+		    funcTypes(b) = "ByRef " + funcTypes(b)
 		  Next
 		  
 		  Return funcTypes
@@ -270,14 +271,20 @@ Inherits RuntimeException
 		 Shared Function StackTrace(Err As RuntimeException) As String
 		  Dim d As New Date
 		  Dim stack() As String = CleanStack(Err)
-		  Dim m As String = "Message: "
+		  Dim mesg As String = "Message: "
 		  If Err.Message.Trim = "" Then
-		    m = m + "No additional details"
+		    mesg = mesg + "No additional details"
 		  Else
-		    m = m + Err.Message
+		    mesg = mesg + Err.Message
 		  End If
-		  Dim Error As String = "Runtime Exception:" + EndOfLine + "Date: " + d.SQLDateTime + EndOfLine + "Exception type: " + Introspection.GetType(Err).FullName + EndOfLine + _
-		  "Error number: " + Str(Err.ErrorNumber) + EndOfLine + m + Err.Message + EndOfLine + EndOfLine + "Call stack at last call to Raise:" + EndOfLine + EndOfLine + _
+		  Dim Error As String = _
+		  "Runtime Exception:" + EndOfLine + _
+		  "Date: " + d.SQLDateTime + EndOfLine + _
+		  "Exception type: " + Introspection.GetType(Err).FullName + EndOfLine + _
+		  "Error number: " + Str(Err.ErrorNumber) + EndOfLine + _
+		  "Error message: " + mesg + Err.Message + EndOfLine + _
+		  EndOfLine + _
+		  "Stack at last call to Raise:" + EndOfLine + EndOfLine + _
 		  Join(stack, "     " + EndOfLine) + EndOfLine
 		  Return Error
 		End Function
