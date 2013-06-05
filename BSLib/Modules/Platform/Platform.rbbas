@@ -146,7 +146,7 @@ Protected Module Platform
 		    Dim mb As New MemoryBlock(55)
 		    Dim nilBuffer As New MemoryBlock(0)
 		    
-		    If GetVolumeNameForVolumeMountPoint(f.AbsolutePath, mb, mb.Size) Then
+		    If GetVolumeNameForVolumeMountPoint(f.AbsolutePath_, mb, mb.Size) Then
 		      Dim drvRoot As String = "\\.\" + mb.StringValue(0, 55)
 		      dhandle = CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		    Else
@@ -306,7 +306,7 @@ Protected Module Platform
 		  #If TargetWin32 Then
 		    Dim IO_CODE As Integer = Platform.CTL_CODE(FILE_DEVICE_MASS_STORAGE, &h0500, 0, 0)
 		    
-		    Dim drvRoot As String = "\\.\" + Left(target.AbsolutePath, 2)
+		    Dim drvRoot As String = "\\.\" + Left(target.AbsolutePath_, 2)
 		    Dim drvHWND As Integer = CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		    Dim mb As New MemoryBlock(34)
 		    Dim bRet As New MemoryBlock(4)
@@ -343,7 +343,7 @@ Protected Module Platform
 		    Dim mb As New MemoryBlock(55)
 		    Dim nilBuffer As New MemoryBlock(0)
 		    
-		    If GetVolumeNameForVolumeMountPoint(f.AbsolutePath, mb, mb.Size) Then
+		    If GetVolumeNameForVolumeMountPoint(f.AbsolutePath_, mb, mb.Size) Then
 		      Dim drvRoot As String = "\\.\" + mb.StringValue(0, 55)
 		      dhandle = CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		    Else
@@ -438,7 +438,7 @@ Protected Module Platform
 		      Call CloseHandle(hProcess)
 		      
 		      Result = Replace(Result, "\??\", "")
-		      Result = Replace(Result, "\SystemRoot\", SpecialFolder.Windows.AbsolutePath)
+		      Result = Replace(Result, "\SystemRoot\", SpecialFolder.Windows.AbsolutePath_)
 		      Dim ret As FolderItem
 		      
 		      If Result <> "" Then
@@ -498,7 +498,7 @@ Protected Module Platform
 		    Dim flags As Integer = PRF_REQUIREABSOLUTE Or PRF_VERIFYEXISTS
 		    
 		    If searchDir <> Nil Then
-		      bm = searchDir.AbsolutePath
+		      bm = searchDir.AbsolutePath_
 		      flags = flags Or PRF_FIRSTDIRDEF
 		      If PathResolve(mb, bm, flags) Then Return GetFolderItem(mb.WString(0) + "\" + fileName)
 		    Else
@@ -655,8 +655,8 @@ Protected Module Platform
 		  
 		  #If TargetWin32 Then
 		    Dim sysDrive As FolderItem = SpecialFolder.Windows.Parent  //Assumes that Windows is installed in a first-level directory
-		    Dim drive As String = NthField(f.AbsolutePath, "\", 1) + "\"
-		    Return sysDrive.AbsolutePath = drive
+		    Dim drive As String = NthField(f.AbsolutePath_, "\", 1) + "\"
+		    Return sysDrive.AbsolutePath_ = drive
 		  #endif
 		End Function
 	#tag EndMethod
@@ -1104,7 +1104,7 @@ Protected Module Platform
 		  #If TargetWin32 Then
 		    Dim volumeName As New MemoryBlock(255)
 		    Dim fsName As New MemoryBlock(255)
-		    Dim drive As String = NthField(volume.AbsolutePath, "\", 1) + "\"
+		    Dim drive As String = NthField(volume.AbsolutePath_, "\", 1) + "\"
 		    Dim serialNumber As New MemoryBlock(255)
 		    Dim maxLen, flags As Integer
 		    
@@ -1183,7 +1183,7 @@ Protected Module Platform
 		#tag EndGetter
 		#tag Setter
 			Set
-			  Dim path As String = value.AbsolutePath
+			  Dim path As String = value.AbsolutePath_
 			  Call SetCurrentDirectory(path)
 			End Set
 		#tag EndSetter
@@ -1456,6 +1456,7 @@ Protected Module Platform
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -1463,18 +1464,21 @@ Protected Module Platform
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -1482,6 +1486,7 @@ Protected Module Platform
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 	#tag EndViewBehavior

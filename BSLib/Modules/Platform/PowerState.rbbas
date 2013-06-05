@@ -43,7 +43,7 @@ Protected Module PowerState
 		Protected Function IsFileOnActiveDrive(target As FolderItem) As Boolean
 		  #If TargetWin32 Then
 		    Dim dhandle As Integer
-		    Dim drvRoot As String = target.AbsolutePath
+		    Dim drvRoot As String = target.AbsolutePath_
 		    dhandle = CreateFile(drvRoot, GENERIC_READ, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		    If dhandle = -1 Then
 		      dhandle = GetLastError
@@ -197,6 +197,7 @@ Protected Module PowerState
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -204,18 +205,21 @@ Protected Module PowerState
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -223,6 +227,7 @@ Protected Module PowerState
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 	#tag EndViewBehavior

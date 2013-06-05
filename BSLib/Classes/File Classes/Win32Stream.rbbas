@@ -108,7 +108,7 @@ Implements Readable,Writeable
 		    If CreateDisposition = 0 Then CreateDisposition = OPEN_EXISTING
 		    If sharemode = 0 Then sharemode = FILE_SHARE_READ 'exclusive write access
 		    
-		    hFile = CreateFile("//?/" + ReplaceAll(File.AbsolutePath, "/", "//"), Access, sharemode, 0, CreateDisposition, Flags, 0)
+		    hFile = CreateFile("//?/" + ReplaceAll(File.AbsolutePath_, "/", "//"), Access, sharemode, 0, CreateDisposition, Flags, 0)
 		    
 		    If hFile <> INVALID_HANDLE_VALUE Then
 		      tmp = New Win32Stream(hFile, GetLastError)
@@ -322,6 +322,7 @@ Implements Readable,Writeable
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -334,6 +335,7 @@ Implements Readable,Writeable
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -345,6 +347,7 @@ Implements Readable,Writeable
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -356,6 +359,7 @@ Implements Readable,Writeable
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -363,6 +367,7 @@ Implements Readable,Writeable
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 	#tag EndViewBehavior

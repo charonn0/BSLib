@@ -109,13 +109,13 @@ Implements Readable,Writeable
 		        
 		        For v As Integer = 0 To VolumeCount - 1
 		          Dim outpath As New MemoryBlock(2048)
-		          Dim Size As Integer = QueryDosDevice(Volume(v).AbsolutePath, outpath, outpath.Size)
+		          Dim Size As Integer = QueryDosDevice(Volume(v).AbsolutePath_, outpath, outpath.Size)
 		          If Size > outpath.Size Then
 		            outpath = New MemoryBlock(Size)
-		            Call QueryDosDevice(Volume(v).AbsolutePath, outpath, outpath.Size)
+		            Call QueryDosDevice(Volume(v).AbsolutePath_, outpath, outpath.Size)
 		          End If
 		          If Left(path.WString(0), outpath.WString(0).Len) = outpath.WString(0) Then
-		            Return GetFolderItem(Replace(outpath.WString(0), path.WString(0), Volume(v).AbsolutePath))
+		            Return GetFolderItem(Replace(outpath.WString(0), path.WString(0), Volume(v).AbsolutePath_))
 		          End If
 		        Next
 		        
@@ -294,6 +294,7 @@ Implements Readable,Writeable
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -301,12 +302,14 @@ Implements Readable,Writeable
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -318,6 +321,7 @@ Implements Readable,Writeable
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -325,6 +329,7 @@ Implements Readable,Writeable
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 	#tag EndViewBehavior

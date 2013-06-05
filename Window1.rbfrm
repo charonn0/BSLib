@@ -1,20 +1,21 @@
 #tag Window
 Begin Window Window1
-   BackColor       =   16777215
-   Backdrop        =   ""
+   BackColor       =   &cFFFFFF00
+   Backdrop        =   0
    CloseButton     =   True
+   Compatibility   =   ""
    Composite       =   False
    Frame           =   0
    FullScreen      =   False
    HasBackColor    =   False
-   Height          =   5.79e+2
+   Height          =   579
    ImplicitInstance=   True
    LiveResize      =   True
    MacProcID       =   0
    MaxHeight       =   32000
    MaximizeButton  =   True
    MaxWidth        =   32000
-   MenuBar         =   ""
+   MenuBar         =   0
    MenuBarVisible  =   True
    MinHeight       =   64
    MinimizeButton  =   True
@@ -23,10 +24,10 @@ Begin Window Window1
    Resizeable      =   True
    Title           =   "BSLib"
    Visible         =   True
-   Width           =   9.86e+2
+   Width           =   986
    Begin Label Label1
       AutoDeactivate  =   True
-      Bold            =   ""
+      Bold            =   False
       DataField       =   ""
       DataSource      =   ""
       Enabled         =   True
@@ -34,23 +35,23 @@ Begin Window Window1
       HelpTag         =   ""
       Index           =   -2147483648
       InitialParent   =   ""
-      Italic          =   ""
+      Italic          =   False
       Left            =   26
-      LockBottom      =   ""
+      LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   True
-      LockRight       =   ""
+      LockRight       =   False
       LockTop         =   True
-      Multiline       =   ""
+      Multiline       =   False
       Scope           =   0
       Selectable      =   False
       TabIndex        =   0
       TabPanelIndex   =   0
       Text            =   "http://www.boredomsoft.org/bslib.bs"
       TextAlign       =   1
-      TextColor       =   &h000000FF
+      TextColor       =   &c0000FF00
       TextFont        =   "System"
-      TextSize        =   15
+      TextSize        =   15.0
       TextUnit        =   0
       Top             =   537
       Transparent     =   False
@@ -60,66 +61,67 @@ Begin Window Window1
    End
    Begin PushButton PushButton1
       AutoDeactivate  =   True
-      Bold            =   ""
-      ButtonStyle     =   0
-      Cancel          =   ""
+      Bold            =   False
+      ButtonStyle     =   "0"
+      Cancel          =   False
       Caption         =   "QNDHTTPd Demo"
-      Default         =   ""
+      Default         =   False
       Enabled         =   True
       Height          =   22
       HelpTag         =   ""
       Index           =   -2147483648
       InitialParent   =   ""
-      Italic          =   ""
+      Italic          =   False
       Left            =   111
-      LockBottom      =   ""
+      LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   True
-      LockRight       =   ""
+      LockRight       =   False
       LockTop         =   True
       Scope           =   0
       TabIndex        =   1
       TabPanelIndex   =   0
       TabStop         =   True
       TextFont        =   "System"
-      TextSize        =   0
+      TextSize        =   0.0
       TextUnit        =   0
       Top             =   503
-      Underline       =   ""
+      Underline       =   False
       Visible         =   True
       Width           =   119
    End
    Begin GroupBox GroupBox1
       AutoDeactivate  =   True
-      Bold            =   ""
+      Bold            =   False
       Caption         =   "Window and Control Capture Demo"
       Enabled         =   True
       Height          =   401
       HelpTag         =   ""
       Index           =   -2147483648
       InitialParent   =   ""
-      Italic          =   ""
+      Italic          =   False
       Left            =   12
-      LockBottom      =   ""
+      LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   True
-      LockRight       =   ""
+      LockRight       =   False
       LockTop         =   True
       Scope           =   0
       TabIndex        =   9
       TabPanelIndex   =   0
+      TabStop         =   True
       TextFont        =   "System"
-      TextSize        =   0
+      TextSize        =   0.0
       TextUnit        =   0
       Top             =   11
-      Underline       =   ""
+      Underline       =   False
       Visible         =   True
       Width           =   962
       Begin Canvas ControlPicture
-         AcceptFocus     =   ""
-         AcceptTabs      =   ""
+         AcceptFocus     =   False
+         AcceptTabs      =   False
          AutoDeactivate  =   True
-         Backdrop        =   ""
+         Backdrop        =   0
          DoubleBuffer    =   False
          Enabled         =   True
          EraseBackground =   True
@@ -128,25 +130,26 @@ Begin Window Window1
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Left            =   20
-         LockBottom      =   ""
+         LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
-         LockRight       =   ""
+         LockRight       =   False
          LockTop         =   True
          Scope           =   0
          TabIndex        =   1
          TabPanelIndex   =   0
          TabStop         =   True
          Top             =   79
+         Transparent     =   True
          UseFocusRing    =   True
          Visible         =   True
          Width           =   300
       End
       Begin Canvas ParentPicture
-         AcceptFocus     =   ""
-         AcceptTabs      =   ""
+         AcceptFocus     =   False
+         AcceptTabs      =   False
          AutoDeactivate  =   True
-         Backdrop        =   ""
+         Backdrop        =   0
          DoubleBuffer    =   False
          Enabled         =   True
          EraseBackground =   True
@@ -155,23 +158,24 @@ Begin Window Window1
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Left            =   343
-         LockBottom      =   ""
+         LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
-         LockRight       =   ""
+         LockRight       =   False
          LockTop         =   True
          Scope           =   0
          TabIndex        =   2
          TabPanelIndex   =   0
          TabStop         =   True
          Top             =   79
+         Transparent     =   True
          UseFocusRing    =   True
          Visible         =   True
          Width           =   300
       End
       Begin Label Label2
          AutoDeactivate  =   True
-         Bold            =   ""
+         Bold            =   False
          DataField       =   ""
          DataSource      =   ""
          Enabled         =   True
@@ -179,33 +183,33 @@ Begin Window Window1
          HelpTag         =   ""
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
-         Italic          =   ""
+         Italic          =   False
          Left            =   99
-         LockBottom      =   ""
+         LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
-         LockRight       =   ""
+         LockRight       =   False
          LockTop         =   True
-         Multiline       =   ""
+         Multiline       =   False
          Scope           =   0
          Selectable      =   False
          TabIndex        =   4
          TabPanelIndex   =   0
          Text            =   "Control/Window"
          TextAlign       =   1
-         TextColor       =   &h000000
+         TextColor       =   &c00000000
          TextFont        =   "System"
-         TextSize        =   0
+         TextSize        =   0.0
          TextUnit        =   0
          Top             =   384
          Transparent     =   False
-         Underline       =   ""
+         Underline       =   False
          Visible         =   True
          Width           =   142
       End
       Begin Label Label3
          AutoDeactivate  =   True
-         Bold            =   ""
+         Bold            =   False
          DataField       =   ""
          DataSource      =   ""
          Enabled         =   True
@@ -213,33 +217,33 @@ Begin Window Window1
          HelpTag         =   ""
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
-         Italic          =   ""
+         Italic          =   False
          Left            =   380
-         LockBottom      =   ""
+         LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
-         LockRight       =   ""
+         LockRight       =   False
          LockTop         =   True
-         Multiline       =   ""
+         Multiline       =   False
          Scope           =   0
          Selectable      =   False
          TabIndex        =   5
          TabPanelIndex   =   0
          Text            =   "Parent"
          TextAlign       =   1
-         TextColor       =   &h000000
+         TextColor       =   &c00000000
          TextFont        =   "System"
-         TextSize        =   0
+         TextSize        =   0.0
          TextUnit        =   0
          Top             =   384
          Transparent     =   False
-         Underline       =   ""
+         Underline       =   False
          Visible         =   True
          Width           =   227
       End
       Begin Label Label4
          AutoDeactivate  =   True
-         Bold            =   ""
+         Bold            =   False
          DataField       =   ""
          DataSource      =   ""
          Enabled         =   True
@@ -247,33 +251,33 @@ Begin Window Window1
          HelpTag         =   ""
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
-         Italic          =   ""
+         Italic          =   False
          Left            =   763
-         LockBottom      =   ""
+         LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
-         LockRight       =   ""
+         LockRight       =   False
          LockTop         =   True
-         Multiline       =   ""
+         Multiline       =   False
          Scope           =   0
          Selectable      =   False
          TabIndex        =   6
          TabPanelIndex   =   0
          Text            =   "Parent + Borders"
          TextAlign       =   1
-         TextColor       =   &h000000
+         TextColor       =   &c00000000
          TextFont        =   "System"
-         TextSize        =   0
+         TextSize        =   0.0
          TextUnit        =   0
          Top             =   384
          Transparent     =   False
-         Underline       =   ""
+         Underline       =   False
          Visible         =   True
          Width           =   100
       End
       Begin Canvas Canvas1
-         AcceptFocus     =   ""
-         AcceptTabs      =   ""
+         AcceptFocus     =   False
+         AcceptTabs      =   False
          AutoDeactivate  =   True
          Backdrop        =   459339775
          DoubleBuffer    =   False
@@ -284,23 +288,24 @@ Begin Window Window1
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Left            =   20
-         LockBottom      =   ""
+         LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
-         LockRight       =   ""
+         LockRight       =   False
          LockTop         =   True
          Scope           =   0
          TabIndex        =   7
          TabPanelIndex   =   0
          TabStop         =   True
          Top             =   24
+         Transparent     =   True
          UseFocusRing    =   True
          Visible         =   True
          Width           =   50
       End
       Begin Label Label5
          AutoDeactivate  =   True
-         Bold            =   ""
+         Bold            =   False
          DataField       =   ""
          DataSource      =   ""
          Enabled         =   True
@@ -308,35 +313,35 @@ Begin Window Window1
          HelpTag         =   ""
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
-         Italic          =   ""
+         Italic          =   False
          Left            =   106
-         LockBottom      =   ""
+         LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
-         LockRight       =   ""
+         LockRight       =   False
          LockTop         =   True
-         Multiline       =   ""
+         Multiline       =   False
          Scope           =   0
          Selectable      =   False
          TabIndex        =   8
          TabPanelIndex   =   0
          Text            =   "<-- Drag over any window or control (system-wide)"
          TextAlign       =   0
-         TextColor       =   &h000000
+         TextColor       =   &c00000000
          TextFont        =   "System"
-         TextSize        =   0
+         TextSize        =   0.0
          TextUnit        =   0
          Top             =   39
          Transparent     =   False
-         Underline       =   ""
+         Underline       =   False
          Visible         =   True
          Width           =   574
       End
       Begin Canvas BorderedParentPicture
-         AcceptFocus     =   ""
-         AcceptTabs      =   ""
+         AcceptFocus     =   False
+         AcceptTabs      =   False
          AutoDeactivate  =   True
-         Backdrop        =   ""
+         Backdrop        =   0
          DoubleBuffer    =   False
          Enabled         =   True
          EraseBackground =   True
@@ -345,16 +350,17 @@ Begin Window Window1
          Index           =   -2147483648
          InitialParent   =   "GroupBox1"
          Left            =   663
-         LockBottom      =   ""
+         LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
-         LockRight       =   ""
+         LockRight       =   False
          LockTop         =   True
          Scope           =   0
          TabIndex        =   9
          TabPanelIndex   =   0
          TabStop         =   True
          Top             =   79
+         Transparent     =   True
          UseFocusRing    =   True
          Visible         =   True
          Width           =   300
@@ -362,28 +368,29 @@ Begin Window Window1
    End
    Begin GroupBox GroupBox2
       AutoDeactivate  =   True
-      Bold            =   ""
+      Bold            =   False
       Caption         =   "Global Hotkey Demo"
       Enabled         =   True
       Height          =   76
       HelpTag         =   ""
       Index           =   -2147483648
       InitialParent   =   ""
-      Italic          =   ""
+      Italic          =   False
       Left            =   712
-      LockBottom      =   ""
+      LockBottom      =   False
       LockedInPosition=   False
       LockLeft        =   True
-      LockRight       =   ""
+      LockRight       =   False
       LockTop         =   True
       Scope           =   0
       TabIndex        =   10
       TabPanelIndex   =   0
+      TabStop         =   True
       TextFont        =   "System"
-      TextSize        =   0
+      TextSize        =   0.0
       TextUnit        =   0
       Top             =   483
-      Underline       =   ""
+      Underline       =   False
       Visible         =   True
       Width           =   251
       Begin HotKeyListener HotKey
@@ -399,7 +406,7 @@ Begin Window Window1
       End
       Begin Label Label6
          AutoDeactivate  =   True
-         Bold            =   ""
+         Bold            =   False
          DataField       =   ""
          DataSource      =   ""
          Enabled         =   True
@@ -407,12 +414,12 @@ Begin Window Window1
          HelpTag         =   ""
          Index           =   -2147483648
          InitialParent   =   "GroupBox2"
-         Italic          =   ""
+         Italic          =   False
          Left            =   721
-         LockBottom      =   ""
+         LockBottom      =   False
          LockedInPosition=   False
          LockLeft        =   True
-         LockRight       =   ""
+         LockRight       =   False
          LockTop         =   True
          Multiline       =   True
          Scope           =   0
@@ -421,13 +428,13 @@ Begin Window Window1
          TabPanelIndex   =   0
          Text            =   "Press Ctrl+Alt+A\r\nWorks even if this window is minimized/invisible."
          TextAlign       =   0
-         TextColor       =   &h000000
+         TextColor       =   &c00000000
          TextFont        =   "System"
-         TextSize        =   0
+         TextSize        =   0.0
          TextUnit        =   0
          Top             =   498
          Transparent     =   False
-         Underline       =   ""
+         Underline       =   False
          Visible         =   True
          Width           =   175
       End
@@ -516,7 +523,11 @@ End
 #tag EndEvents
 #tag Events ControlPicture
 	#tag Event
-		Sub Paint(g As Graphics)
+		Sub Paint(g As Graphics, areas() As REALbasic.Rect)
+		  #If RBVersion >= 2012 Then 'areas() was added in RS2012 R1
+		    #pragma Unused areas
+		  #endif
+		  
 		  If ContPic <> Nil Then
 		    If ContPic.Width > g.Width Or ContPic.Height > g.Height Then
 		      g.DrawPicture(ContPic, 0, 0, g.Width, g.Height, 0, 0, ContPic.Width, ContPic.Height)
@@ -529,7 +540,10 @@ End
 #tag EndEvents
 #tag Events ParentPicture
 	#tag Event
-		Sub Paint(g As Graphics)
+		Sub Paint(g As Graphics, areas() As REALbasic.Rect)
+		  #If RBVersion >= 2012 Then 'areas() was added in RS2012 R1
+		    #pragma Unused areas
+		  #endif
 		  If ParentPic <> Nil Then
 		    g.DrawPicture(ParentPic, 0, 0, g.Width, g.Height, 0, 0, ParentPic.Width, ParentPic.Height)
 		  End If
@@ -546,7 +560,10 @@ End
 		End Function
 	#tag EndEvent
 	#tag Event
-		Sub Paint(g As Graphics)
+		Sub Paint(g As Graphics, areas() As REALbasic.Rect)
+		  #If RBVersion >= 2012 Then 'areas() was added in RS2012 R1
+		    #pragma Unused areas
+		  #endif
 		  g.DrawPicture(target, 0, 0, g.Width, g.Height, 0, 0, target.Width, target.Height)
 		End Sub
 	#tag EndEvent
@@ -589,7 +606,10 @@ End
 #tag EndEvents
 #tag Events BorderedParentPicture
 	#tag Event
-		Sub Paint(g As Graphics)
+		Sub Paint(g As Graphics, areas() As REALbasic.Rect)
+		  #If RBVersion >= 2012 Then 'areas() was added in RS2012 R1
+		    #pragma Unused areas
+		  #endif
 		  If BorderedParentPic <> Nil Then
 		    g.DrawPicture(BorderedParentPic, 0, 0, g.Width, g.Height, 0, 0, BorderedParentPic.Width, BorderedParentPic.Height)
 		  End If

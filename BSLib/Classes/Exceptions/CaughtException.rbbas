@@ -5,12 +5,10 @@ Inherits RuntimeException
 		Private Shared Function CleanMangledFunction(item as string) As string
 		  'This method was originally written by SirG3 <TheSirG3@gmail.com>; http://fireyesoftware.com/developer/stackcleaner/
 		  #If rbVersion >= 2005.5
-		    Static blacklist As String
+		    Static blacklist() As String
 		    If UBound(blacklist) <= -1 Then
-		      blacklist = Array(_
-		      "REALbasic._RuntimeRegisterAppObject%%o<Application>", _
-		      "_NewAppInstance", _'
-		      "_Main", _
+		      blacklist = Array("REALbasic._RuntimeRegisterAppObject%%o<Application>", _
+		      "_NewAppInstance", "_Main", _
 		      "% main", _
 		      "REALbasic._RuntimeRun" _
 		      )
@@ -347,6 +345,7 @@ Inherits RuntimeException
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -354,6 +353,7 @@ Inherits RuntimeException
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -367,12 +367,14 @@ Inherits RuntimeException
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -380,6 +382,7 @@ Inherits RuntimeException
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 	#tag EndViewBehavior

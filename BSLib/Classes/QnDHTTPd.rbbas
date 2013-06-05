@@ -535,7 +535,7 @@ Inherits TCPSocket
 		    Return Page
 		  End If
 		  
-		  s = ReplaceAll(Page.AbsolutePath + Path, "\\", "\")
+		  s = ReplaceAll(Page.AbsolutePath_ + Path, "\\", "\")
 		  Me.Log("Found: " + s, Severity_Debug)
 		  Return GetTrueFolderItem(s, FolderItem.PathTypeAbsolute)
 		End Function
@@ -3565,7 +3565,6 @@ Inherits TCPSocket
 			Name="Address"
 			Group="Behavior"
 			Type="String"
-			EditorType="MultiLineEditor"
 			InheritedFrom="TCPSocket"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -3604,6 +3603,7 @@ Inherits TCPSocket
 			Name="Left"
 			Visible=true
 			Group="Position"
+			Type="Integer"
 			InheritedFrom="TCPSocket"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -3617,6 +3617,7 @@ Inherits TCPSocket
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="TCPSocket"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -3631,12 +3632,14 @@ Inherits TCPSocket
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="TCPSocket"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Top"
 			Visible=true
 			Group="Position"
+			Type="Integer"
 			InheritedFrom="TCPSocket"
 		#tag EndViewProperty
 	#tag EndViewBehavior

@@ -32,7 +32,7 @@ Protected Class FileEnumerator
 		  Dim data As WIN32_FIND_DATA
 		  
 		  If FindHandle <= 0 Then
-		    FindHandle = FindFirstFile("//?/" + ReplaceAll(RootDirectory.AbsolutePath, "/", "//") + SearchPattern + Chr(0), data)
+		    FindHandle = FindFirstFile("//?/" + ReplaceAll(RootDirectory.AbsolutePath_, "/", "//") + SearchPattern + Chr(0), data)
 		    mLastError = GetLastError()
 		  ElseIf FindNextFile(FindHandle, data) Then
 		    mLastError = 0
@@ -99,6 +99,7 @@ Protected Class FileEnumerator
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -111,18 +112,21 @@ Protected Class FileEnumerator
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -130,6 +134,7 @@ Protected Class FileEnumerator
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 	#tag EndViewBehavior

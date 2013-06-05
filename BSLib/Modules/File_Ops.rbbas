@@ -1,6 +1,22 @@
 #tag Module
 Protected Module File_Ops
 	#tag Method, Flags = &h0
+		Function AbsolutePath_(Extends f As FolderItem) As String
+		  'This method fixes the deprecation warning for Xojo 2013 R1 and newer
+		  'FolderItem.AbsolutePath is deprecated in favor of FolderItem.NativePath
+		  'However older versions of REALstudio will not recognize the property name.
+		  'This method works just like FolderItem.AbsolutePath or FolderItem.NativePath
+		  'depending on the IDE Version.
+		  
+		  #If RBVersion >= 2013 Then
+		    Return f.NativePath
+		  #Else
+		    Return f.AbsolutePath
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function AllNamedStreams(Extends target As FolderItem) As String()
 		  //Returns a String array containing the names of all named streams. If the target does not contain any named streams,
 		  //then this function returns a string array with Ubound -1
@@ -11,7 +27,7 @@ Protected Module File_Ops
 		    Dim ret() As String
 		    
 		    If Platform.KernelVersion < 6.0 And Platform.KernelVersion >= 5.0 Then
-		      Dim fHandle As Integer = CreateFile(target.AbsolutePath, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		      Dim fHandle As Integer = CreateFile(target.AbsolutePath_, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		      If fHandle > 0 Then
 		        Dim mb As New MemoryBlock(64 * 1024)
 		        Dim status As IO_STATUS_BLOCK
@@ -28,7 +44,7 @@ Protected Module File_Ops
 		      End If
 		    ElseIf Platform.KernelVersion >= 6.0 Then
 		      Dim buffer As WIN32_FIND_STREAM_DATA
-		      Dim sHandle As Integer = FindFirstStream(target.AbsolutePath, 0, buffer, 0)
+		      Dim sHandle As Integer = FindFirstStream(target.AbsolutePath_, 0, buffer, 0)
 		      
 		      If sHandle > 0 Then
 		        Do
@@ -49,7 +65,7 @@ Protected Module File_Ops
 		Function Archive(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the archive attribute
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_ARCHIVE) = FILE_ATTRIBUTE_ARCHIVE
 		  #endif
 		End Function
@@ -59,7 +75,7 @@ Protected Module File_Ops
 		Sub Archive(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the archive attibute of the file
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    
 		    If target.Archive = b Then Return
 		    If b Then
@@ -69,7 +85,7 @@ Protected Module File_Ops
 		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_ARCHIVE
 		    End If
 		    
-		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -78,7 +94,7 @@ Protected Module File_Ops
 		Function Compressed(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the compressed attribute
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_COMPRESSED) = FILE_ATTRIBUTE_COMPRESSED
 		  #endif
 		End Function
@@ -88,7 +104,7 @@ Protected Module File_Ops
 		Sub Compressed(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the Compressed attribute. Generally, this will cause Windows to compress the file but there's no guarentee
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    
 		    If target.Compressed = b Then Return
 		    If b Then
@@ -98,7 +114,7 @@ Protected Module File_Ops
 		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_COMPRESSED
 		    End If
 		    
-		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -114,7 +130,7 @@ Protected Module File_Ops
 		    Dim linkname As New MemoryBlock(4096)
 		    buffSize = linkname.Size
 		    linkname = New MemoryBlock(buffSize)
-		    findHandle = FindFirstFileNameW(target.AbsolutePath, 0, buffSize, linkname)
+		    findHandle = FindFirstFileNameW(target.AbsolutePath_, 0, buffSize, linkname)
 		    If findHandle <> INVALID_HANDLE_VALUE Then
 		      Do
 		        linkCount = linkCount + 1
@@ -136,7 +152,7 @@ Protected Module File_Ops
 		  
 		  #If TargetWin32 Then
 		    If System.IsFunctionAvailable("CreateHardLinkW", "Kernel32") Then
-		      Return CreateHardLink(destination.AbsolutePath, source.AbsolutePath, Nil)
+		      Return CreateHardLink(destination.AbsolutePath_, source.AbsolutePath_, Nil)
 		    Else
 		      Raise New PlatformNotSupportedException
 		    End If
@@ -156,11 +172,11 @@ Protected Module File_Ops
 		    Dim scriptShell As New OLEObject("{F935DC22-1CF0-11D0-ADB9-00C04FD58A0B}")
 		    
 		    If scriptShell <> Nil then
-		      lnkObj = scriptShell.CreateShortcut(SpecialFolder.Temporary.AbsolutePath + scName + ".lnk")
+		      lnkObj = scriptShell.CreateShortcut(SpecialFolder.Temporary.AbsolutePath_ + scName + ".lnk")
 		      If lnkObj <> Nil then
 		        lnkObj.Description = scName
-		        lnkObj.TargetPath = scTarget.AbsolutePath
-		        lnkObj.WorkingDirectory = scTarget.AbsolutePath
+		        lnkObj.TargetPath = scTarget.AbsolutePath_
+		        lnkObj.WorkingDirectory = scTarget.AbsolutePath_
 		        lnkObj.Save
 		        Return SpecialFolder.Temporary.TrueChild(scName + ".lnk")
 		      Else
@@ -182,15 +198,15 @@ Protected Module File_Ops
 		  #If TargetWin32 Then
 		    If target = Nil Then Return Nil
 		    If Not Target.Exists Then Return Nil
-		    Dim fHandle As Integer = CreateFile(target.AbsolutePath + ":" + StreamName + ":$DATA", 0, _
+		    Dim fHandle As Integer = CreateFile(target.AbsolutePath_ + ":" + StreamName + ":$DATA", 0, _
 		    FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, CREATE_NEW, 0, 0)
 		    If fHandle > 0 Then
-		      target = GetFolderItem(target.AbsolutePath + ":" + StreamName + ":$DATA")
+		      target = GetFolderItem(target.AbsolutePath_ + ":" + StreamName + ":$DATA")
 		      Call CloseHandle(fHandle)
 		      Return target
 		    Else
 		      If GetLastError = 80 Then  //ERROR_FILE_EXISTS
-		        target = GetFolderItem(target.AbsolutePath + ":" + StreamName + ":$DATA")
+		        target = GetFolderItem(target.AbsolutePath_ + ":" + StreamName + ":$DATA")
 		        Return target
 		      End If
 		    End If
@@ -212,7 +228,7 @@ Protected Module File_Ops
 		        flags = &h1
 		      End If
 		      
-		      Return CreateSymbolicLink(destination.AbsolutePath, source.AbsolutePath, flags)
+		      Return CreateSymbolicLink(destination.AbsolutePath_, source.AbsolutePath_, flags)
 		    Else
 		      Return False
 		    End If
@@ -228,7 +244,7 @@ Protected Module File_Ops
 		  //Or if the user does not have write access to the Target file.
 		  
 		  #If TargetWin32
-		    Return MoveFileEx(source.AbsolutePath, Nil, MOVEFILE_DELAY_UNTIL_REBOOT)
+		    Return MoveFileEx(source.AbsolutePath_, Nil, MOVEFILE_DELAY_UNTIL_REBOOT)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -241,7 +257,7 @@ Protected Module File_Ops
 		  
 		  #If TargetWin32 Then
 		    If f <> Nil Then
-		      Return DeleteFile(f.AbsolutePath + ":" + StreamName + ":$DATA")
+		      Return DeleteFile(f.AbsolutePath_ + ":" + StreamName + ":$DATA")
 		    Else
 		      Return False
 		    End If
@@ -268,7 +284,7 @@ Protected Module File_Ops
 		Function Encrypted(Extends target As FolderItem) As Boolean
 		  //Returns True if the file has the Encrypted attribute
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_ENCRYPTED) = FILE_ATTRIBUTE_ENCRYPTED
 		  #endif
 		End Function
@@ -279,7 +295,7 @@ Protected Module File_Ops
 		  //Clears or sets the encrypted attribute
 		  
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    If target.Encrypted = b Then Return
 		    If b Then
 		      cfattribs = cfattribs Or FILE_ATTRIBUTE_ENCRYPTED
@@ -288,7 +304,7 @@ Protected Module File_Ops
 		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_ENCRYPTED
 		    End If
 		    
-		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -307,7 +323,7 @@ Protected Module File_Ops
 		  
 		  #If TargetWin32 Then
 		    Dim type As Integer
-		    If GetBinaryType(f.AbsolutePath, type) Then
+		    If GetBinaryType(f.AbsolutePath_, type) Then
 		      Return type
 		    Else
 		      Return -1
@@ -335,7 +351,7 @@ Protected Module File_Ops
 		  
 		  #If TargetWin32 Then
 		    Dim mb As New MemoryBlock(260)
-		    If FindExecutable(documentFile.AbsolutePath, Nil, mb) > 32 Then
+		    If FindExecutable(documentFile.AbsolutePath_, Nil, mb) > 32 Then
 		      Return GetFolderItem(mb.WString(0))
 		    End If
 		  #endif
@@ -394,7 +410,7 @@ Protected Module File_Ops
 		  //not refer directly to the volume root.
 		  
 		  #If TargetWin32 Then
-		    Dim drvRoot As String = Left(Drive.AbsolutePath, 1) + ":\"
+		    Dim drvRoot As String = Left(Drive.AbsolutePath_, 1) + ":\"
 		    Dim total, free, x As UInt64
 		    Call GetDiskFreeSpaceEx(drvRoot, x, total, free)
 		    
@@ -409,7 +425,7 @@ Protected Module File_Ops
 		  //not refer directly to the volume root.
 		  
 		  #If TargetWin32 Then
-		    Dim drvRoot As String = Left(Drive.AbsolutePath, 1) + ":\"
+		    Dim drvRoot As String = Left(Drive.AbsolutePath_, 1) + ":\"
 		    Dim total, free, x As UInt64
 		    Call GetDiskFreeSpaceEx(drvRoot, x, total, free)
 		    
@@ -592,10 +608,10 @@ Protected Module File_Ops
 		    Dim ret() As FolderItem
 		    buffSize = linkname.Size
 		    linkname = New MemoryBlock(buffSize)
-		    findHandle = FindFirstFileNameW(target.AbsolutePath, 0, buffSize, linkname)
+		    findHandle = FindFirstFileNameW(target.AbsolutePath_, 0, buffSize, linkname)
 		    If findHandle <> INVALID_HANDLE_VALUE Then
 		      Do
-		        Dim f As FolderItem = GetFolderItem(Left(target.AbsolutePath, 2) + linkname.WString(0))
+		        Dim f As FolderItem = GetFolderItem(Left(target.AbsolutePath_, 2) + linkname.WString(0))
 		        If f <> Nil Then ret.Append(f)
 		        buffSize = linkname.Size
 		      Loop Until Not FindNextFileNameW(findHandle, buffSize, linkname)
@@ -610,7 +626,7 @@ Protected Module File_Ops
 		Function Hidden(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the hidden attribute
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_HIDDEN) = FILE_ATTRIBUTE_HIDDEN
 		  #endif
 		End Function
@@ -620,7 +636,7 @@ Protected Module File_Ops
 		Sub Hidden(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the hidden attibute of the file
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    If target.Hidden = b Then Return
 		    If b Then
 		      cfattribs = cfattribs Or FILE_ATTRIBUTE_HIDDEN
@@ -629,7 +645,7 @@ Protected Module File_Ops
 		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_HIDDEN
 		    End If
 		    
-		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -641,7 +657,7 @@ Protected Module File_Ops
 		  
 		  If Not Parent.Directory Then Return False
 		  While Child.Parent <> Nil
-		    If Child.Parent.AbsolutePath = Parent.AbsolutePath Then
+		    If Child.Parent.AbsolutePath_ = Parent.AbsolutePath_ Then
 		      Return True
 		    End If
 		    Child = Child.Parent
@@ -687,7 +703,7 @@ Protected Module File_Ops
 		  //See: http://msdn.microsoft.com/en-us/library/windows/desktop/ms722429%28v=vs.85%29.aspx
 		  
 		  #If TargetWin32 Then
-		    Return SaferiIsExecutableFileType(target.AbsolutePath, False)
+		    Return SaferiIsExecutableFileType(target.AbsolutePath_, False)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -713,7 +729,7 @@ Protected Module File_Ops
 		Function IsNormal(Extends target As FolderItem) As Boolean
 		  //Returns True if the target has no file attributes set
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_NORMAL) = FILE_ATTRIBUTE_NORMAL
 		  #endif
 		End Function
@@ -723,7 +739,7 @@ Protected Module File_Ops
 		Sub IsNormal(Extends target As FolderItem, Assigns b As Boolean)
 		  //Clears all file attributes
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    If target.IsNormal = b Then Return
 		    If b Then
 		      cfattribs = FILE_ATTRIBUTE_NORMAL
@@ -732,7 +748,7 @@ Protected Module File_Ops
 		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_NORMAL
 		    End If
 		    
-		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -751,9 +767,9 @@ Protected Module File_Ops
 		    StartInfo.Long(0) = StartInfo.Size
 		    StartInfo.Ptr(8) = deskName
 		    Dim path, args As MemoryBlock
-		    path = EXE.AbsolutePath
+		    path = EXE.AbsolutePath_
 		    args = Arguments
-		    If CreateProcess(EXE.AbsolutePath, args, 0, 0, False, 0, Nil, Nil, StartInfo, procInfo) Then
+		    If CreateProcess(EXE.AbsolutePath_, args, 0, 0, False, 0, Nil, Nil, StartInfo, procInfo) Then
 		      Const INFINITE = -1
 		      Const WAIT_TIMEOUT = &h00000102
 		      Const WAIT_OBJECT_0 = &h0
@@ -781,7 +797,7 @@ Protected Module File_Ops
 		  #If TargetWin32
 		    Dim params as String
 		    params = Join(args, " ")
-		    Call ShellExecute(0, "runas", f.AbsolutePath, params, App.ExecutableFile.Parent.AbsolutePath, 1)
+		    Call ShellExecute(0, "runas", f.AbsolutePath_, params, App.ExecutableFile.Parent.AbsolutePath_, 1)
 		  #Endif
 		End Sub
 	#tag EndMethod
@@ -790,7 +806,7 @@ Protected Module File_Ops
 		Function ListDirectory(Root As FolderItem, SearchPattern As String = "*", PrependPath As Boolean = True) As String()
 		  'See also the FileEnumerator class.
 		  Dim list(), rootdir As String
-		  If PrependPath Then rootdir = Root.AbsolutePath
+		  If PrependPath Then rootdir = Root.AbsolutePath_
 		  Dim Result As WIN32_FIND_DATA
 		  Dim lister As New FileEnumerator(Root, SearchPattern)
 		  While lister.LastError = 0
@@ -825,7 +841,7 @@ Protected Module File_Ops
 		  #If TargetWin32 Then
 		    If lockedFile = Nil Then Return 0
 		    
-		    Dim fHandle As Integer = CreateFile(lockedFile.AbsolutePath, GENERIC_READ Or GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)
+		    Dim fHandle As Integer = CreateFile(lockedFile.AbsolutePath_, GENERIC_READ Or GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0)
 		    If fHandle > 0 Then
 		      If LockFile(fHandle, 0, 0, 1, 0) Then
 		        Return fHandle   //You MUST keep this return value if you want to unlock the file later!!!
@@ -899,7 +915,7 @@ Protected Module File_Ops
 	#tag Method, Flags = &h0
 		Function ReadOnly(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the ReadOnly attribute
-		  #If TargetWin32 Then Return BitwiseAnd(GetFileAttributes(target.AbsolutePath), FILE_ATTRIBUTE_READONLY) = FILE_ATTRIBUTE_READONLY
+		  #If TargetWin32 Then Return BitwiseAnd(GetFileAttributes(target.AbsolutePath_), FILE_ATTRIBUTE_READONLY) = FILE_ATTRIBUTE_READONLY
 		End Function
 	#tag EndMethod
 
@@ -907,7 +923,7 @@ Protected Module File_Ops
 		Sub ReadOnly(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the Read Only attibute of the file
 		  #If TargetWin32
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    
 		    If target.ReadOnly = b Then Return
 		    If b Then
@@ -917,7 +933,7 @@ Protected Module File_Ops
 		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_READONLY
 		    End If
 		    
-		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -936,7 +952,7 @@ Protected Module File_Ops
 		    If CurrentDir = Nil Then CurrentDir = App.ExecutableFile.Parent
 		    
 		    Dim outBuff As New MemoryBlock(1024)
-		    outBuff.WString(0) = CurrentDir.AbsolutePath
+		    outBuff.WString(0) = CurrentDir.AbsolutePath_
 		    Dim inBuff As New MemoryBlock(1024)
 		    inBuff.WString(0) = RelativePath
 		    If PathAppend(outBuff, inBuff) Then
@@ -958,7 +974,7 @@ Protected Module File_Ops
 		  //HKEY_LOCAL_MACHINE registry hive (HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations)
 		  
 		  #If TargetWin32
-		    Return MoveFileEx(source.AbsolutePath, destination.AbsolutePath, MOVEFILE_DELAY_UNTIL_REBOOT Or MOVEFILE_REPLACE_EXISTING)
+		    Return MoveFileEx(source.AbsolutePath_, destination.AbsolutePath_, MOVEFILE_DELAY_UNTIL_REBOOT Or MOVEFILE_REPLACE_EXISTING)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -976,11 +992,11 @@ Protected Module File_Ops
 		    If forceSync Then rpFlags = REPLACEFILE_WRITE_THROUGH
 		    
 		    If backupFile = Nil Then
-		      Return ReplaceFile(source.AbsolutePath, destination.AbsolutePath, Nil, rpFlags, 0, 0)
+		      Return ReplaceFile(source.AbsolutePath_, destination.AbsolutePath_, Nil, rpFlags, 0, 0)
 		    Else
-		      Dim backupPath As New MemoryBlock(LenB(backupFile.AbsolutePath) * 2 + 2)
-		      backupPath.WString(0) = backupFile.AbsolutePath
-		      Return ReplaceFile(source.AbsolutePath, destination.AbsolutePath, backupPath, rpFlags, 0, 0)
+		      Dim backupPath As New MemoryBlock(LenB(backupFile.AbsolutePath_) * 2 + 2)
+		      backupPath.WString(0) = backupFile.AbsolutePath_
+		      Return ReplaceFile(source.AbsolutePath_, destination.AbsolutePath_, backupPath, rpFlags, 0, 0)
 		    End If
 		  #endif
 		End Function
@@ -991,7 +1007,7 @@ Protected Module File_Ops
 		  //Shows the file in Windows Explorer
 		  
 		  #If TargetWin32 Then
-		    Dim param As String = "/select, """ + f.AbsolutePath + """"
+		    Dim param As String = "/select, """ + f.AbsolutePath_ + """"
 		    Call ShellExecute(0, "open", "explorer", param, "", SW_SHOW)
 		  #endif
 		End Sub
@@ -1002,7 +1018,7 @@ Protected Module File_Ops
 		  //Returns True if the specified FolderItem is located on a high-latentcy (<40000 baud) network location.
 		  
 		  #If TargetWin32 Then
-		    Return PathIsSlow(f.AbsolutePath, -1)
+		    Return PathIsSlow(f.AbsolutePath_, -1)
 		  #endif
 		End Function
 	#tag EndMethod
@@ -1031,7 +1047,7 @@ Protected Module File_Ops
 		    If StreamIndex = 0 Then Return ""  //Stream zero is the unnamed main stream
 		    
 		    If Platform.KernelVersion < 6.0 And Platform.KernelVersion >= 5.0 Then
-		      Dim fHandle As Integer = CreateFile(target.AbsolutePath, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		      Dim fHandle As Integer = CreateFile(target.AbsolutePath_, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		      If fHandle > 0 Then
 		        Dim mb As New MemoryBlock(64 * 1024)
 		        Dim status As IO_STATUS_BLOCK
@@ -1055,7 +1071,7 @@ Protected Module File_Ops
 		      End If
 		    ElseIf Platform.KernelVersion >= 6.0 Then
 		      Dim buffer As WIN32_FIND_STREAM_DATA
-		      Dim sHandle As Integer = FindFirstStream(target.AbsolutePath, 0, buffer, 0)
+		      Dim sHandle As Integer = FindFirstStream(target.AbsolutePath_, 0, buffer, 0)
 		      Dim ret As String
 		      
 		      If sHandle > 0 Then
@@ -1097,9 +1113,9 @@ Protected Module File_Ops
 		  #If TargetWin32 Then
 		    If target <> Nil Then
 		      If target.Exists Then
-		        Dim fHandle As Integer = CreateFile(target.AbsolutePath + ":" + StreamName + ":$DATA", 0, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		        Dim fHandle As Integer = CreateFile(target.AbsolutePath_ + ":" + StreamName + ":$DATA", 0, FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		        If fHandle > 0 Then
-		          target = GetFolderItem(target.AbsolutePath + ":" + StreamName + ":$DATA")
+		          target = GetFolderItem(target.AbsolutePath_ + ":" + StreamName + ":$DATA")
 		          Call CloseHandle(fHandle)
 		          Return target
 		        Else
@@ -1122,7 +1138,7 @@ Protected Module File_Ops
 		  #If TargetWin32 Then
 		    If Platform.KernelVersion >= 5.0 And Platform.KernelVersion < 6.0 Then
 		      
-		      Dim fHandle As Integer = CreateFile(f.AbsolutePath, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
+		      Dim fHandle As Integer = CreateFile(f.AbsolutePath_, 0,  FILE_SHARE_READ Or FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0)
 		      If fHandle > 0 Then
 		        Dim mb As New MemoryBlock(64 * 1024)
 		        Dim status As IO_STATUS_BLOCK
@@ -1143,7 +1159,7 @@ Protected Module File_Ops
 		      End If
 		    ElseIf Platform.KernelVersion >= 6.0 Then
 		      Dim buffer As WIN32_FIND_STREAM_DATA
-		      Dim sHandle As Integer = FindFirstStream(f.AbsolutePath, 0, buffer, 0)
+		      Dim sHandle As Integer = FindFirstStream(f.AbsolutePath_, 0, buffer, 0)
 		      Dim ret As Integer
 		      
 		      If sHandle > 0 Then
@@ -1166,7 +1182,7 @@ Protected Module File_Ops
 		Function SystemFile(Extends target As FolderItem) As Boolean
 		  //Returns True if the target has the System File attribute set
 		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_SYSTEM) = FILE_ATTRIBUTE_SYSTEM
 		  #endif
 		End Function
@@ -1176,7 +1192,7 @@ Protected Module File_Ops
 		Sub SystemFile(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the System File attribute of the file
 		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath)
+		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
 		    
 		    If target.SystemFile = b Then Return
 		    If b Then
@@ -1186,7 +1202,7 @@ Protected Module File_Ops
 		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_SYSTEM
 		    End If
 		    
-		    Call SetFileAttributes(target.AbsolutePath, cfattribs)
+		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
 		  #endif
 		End Sub
 	#tag EndMethod
@@ -1265,11 +1281,11 @@ Protected Module File_Ops
 		    If f = Nil Then Return Nil
 		    If Not f.Exists Then Return Nil
 		    
-		    Dim infoSize As Integer = GetFileVersionInfoSize(f.AbsolutePath, 0)
+		    Dim infoSize As Integer = GetFileVersionInfoSize(f.AbsolutePath_, 0)
 		    If infoSize <= 0 Then Return Nil
 		    
 		    Dim buff As New MemoryBlock(infoSize)
-		    If GetFileVersionInfo(f.AbsolutePath, 0, buff.Size, buff) Then
+		    If GetFileVersionInfo(f.AbsolutePath_, 0, buff.Size, buff) Then
 		      Dim mb As New MemoryBlock(4)
 		      Dim retBuffLen As Integer
 		      If VerQueryValue(buff, "\VarFileInfo\Translation", mb, retBuffLen) Then
@@ -1311,11 +1327,11 @@ Protected Module File_Ops
 		    If dir = Nil Then Return 0
 		    If Not dir.Exists Or Not dir.Directory Then Return 0
 		    
-		    Dim customData As MemoryBlock = dir.AbsolutePath  //Supposedly this gets passed to the callback function, but it doesn't for some reason.
+		    Dim customData As MemoryBlock = dir.AbsolutePath_  //Supposedly this gets passed to the callback function, but it doesn't for some reason.
 		    Dim allFilters As Integer = FILE_NOTIFY_CHANGE_ATTRIBUTES Or FILE_NOTIFY_CHANGE_DIR_NAME Or FILE_NOTIFY_CHANGE_FILE_NAME Or _
 		    FILE_NOTIFY_CHANGE_LAST_WRITE Or FILE_NOTIFY_CHANGE_SECURITY Or FILE_NOTIFY_CHANGE_SIZE
 		    
-		    Dim monHandle As Integer = FindFirstChangeNotification(dir.AbsolutePath, True, allFilters)
+		    Dim monHandle As Integer = FindFirstChangeNotification(dir.AbsolutePath_, True, allFilters)
 		    If monHandle > 0 Then
 		      Dim waitHandle As Integer
 		      If RegisterWaitForSingleObject(waitHandle, monHandle, callbackFunction, customData, &hFFFFFFFF, WT_EXECUTEONLYONCE) Then
@@ -1367,6 +1383,7 @@ Protected Module File_Ops
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -1374,18 +1391,21 @@ Protected Module File_Ops
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -1393,6 +1413,7 @@ Protected Module File_Ops
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 	#tag EndViewBehavior

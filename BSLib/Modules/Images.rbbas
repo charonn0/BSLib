@@ -67,7 +67,7 @@ Protected Module Images
 		  'If the optional IncludeBorder parameter is False, then only the client area of the window
 		  'is captured; if True then the client area, borders, and titlebar are included in the capture.
 		  'If the window is a ContainerControl or similar construct (AKA child windows), only the contents of the container
-		  'are captured. 
+		  'are captured.
 		  
 		  Dim fw As New ForeignWindow(Win.Handle)
 		  Return fw.Capture(IncludeBorder)
@@ -156,7 +156,7 @@ Protected Module Images
 		    
 		    Dim largeIco As New MemoryBlock(4)
 		    Try
-		      Call ExtractIconEx(resource.AbsolutePath, Index, largeIco, Nil, 1)
+		      Call ExtractIconEx(resource.AbsolutePath_, Index, largeIco, Nil, 1)
 		      Call DrawIconEx(theIcon.Graphics.Handle(Graphics.HandleTypeHDC), 0, 0, largeIco.Int32Value(0), pixsize, pixsize, 0, 0, &h3)
 		    Catch
 		      Call DestroyIcon(largeIco.Int32Value(0))
@@ -285,7 +285,7 @@ Protected Module Images
 		    
 		    Dim resourceLen, Index As Integer
 		    Dim resource As New MemoryBlock(1024)
-		    resource.WString(0) = IconResource.AbsolutePath
+		    resource.WString(0) = IconResource.AbsolutePath_
 		    resourceLen = resource.Size
 		    Index = DefaultIndex
 		    
@@ -361,6 +361,7 @@ Protected Module Images
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -368,18 +369,21 @@ Protected Module Images
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -387,6 +391,7 @@ Protected Module Images
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 	#tag EndViewBehavior

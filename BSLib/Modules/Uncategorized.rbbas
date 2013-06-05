@@ -62,14 +62,14 @@ Protected Module Uncategorized
 		    Dim scriptShell As New OLEObject("Wscript.shell")
 		    
 		    If scriptShell <> Nil then
-		      lnkObj = scriptShell.CreateShortcut(SpecialFolder.Temporary.AbsolutePath + ShortcutName + ".url")
+		      lnkObj = scriptShell.CreateShortcut(SpecialFolder.Temporary.AbsolutePath_ + ShortcutName + ".url")
 		      If lnkObj <> Nil then
 		        lnkObj.TargetPath = URL
 		        lnkObj.Save
 		        
 		        Dim optionalparams As String
 		        
-		        If IconResource <> Nil Then optionalparams = "IconFile=" + IconResource.AbsolutePath + EndOfLine.Windows + _
+		        If IconResource <> Nil Then optionalparams = "IconFile=" + IconResource.AbsolutePath_ + EndOfLine.Windows + _
 		        "IconIndex=" + Str(IconIndex) + EndOfLine
 		        
 		        If optionalparams.Trim <> "" Then
@@ -457,7 +457,7 @@ Protected Module Uncategorized
 		    If CurrentDir = Nil Then CurrentDir = App.ExecutableFile.Parent
 		    
 		    Dim outBuff As New MemoryBlock(1024)
-		    outBuff.WString(0) = CurrentDir.AbsolutePath
+		    outBuff.WString(0) = CurrentDir.AbsolutePath_
 		    Dim inBuff As New MemoryBlock(1024)
 		    inBuff.WString(0) = RelativePath
 		    If PathAppend(outBuff, inBuff) Then
@@ -683,6 +683,7 @@ Protected Module Uncategorized
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -690,18 +691,21 @@ Protected Module Uncategorized
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -709,6 +713,7 @@ Protected Module Uncategorized
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 	#tag EndViewBehavior
