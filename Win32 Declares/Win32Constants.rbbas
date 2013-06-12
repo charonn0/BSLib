@@ -516,6 +516,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = HANDLE_FLAG_PROTECT_FROM_CLOSE, Type = Double, Dynamic = False, Default = \"&h00000002", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = HWND_BROADCAST, Type = Double, Dynamic = False, Default = \"&hffff", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = ICU_BROWSER_MODE, Type = Double, Dynamic = False, Default = \"&h2000000", Scope = Public
 	#tag EndConstant
 
@@ -1322,6 +1325,7 @@ Protected Module Win32Constants
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -1329,12 +1333,14 @@ Protected Module Win32Constants
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -1346,6 +1352,7 @@ Protected Module Win32Constants
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -1353,6 +1360,7 @@ Protected Module Win32Constants
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 	#tag EndViewBehavior
