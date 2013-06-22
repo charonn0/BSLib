@@ -62,60 +62,38 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Archive(Extends target As FolderItem) As Boolean
+		Attributes( deprecated = "FileAttributes.Archive" )  Function Archive(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the archive attribute
-		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_ARCHIVE) = FILE_ATTRIBUTE_ARCHIVE
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(target)
+		  Return attribs.Archive
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Archive(Extends target As FolderItem, Assigns b As Boolean)
+		Attributes( deprecated = "FileAttributes.Archive" )  Sub Archive(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the archive attibute of the file
-		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    
-		    If target.Archive = b Then Return
-		    If b Then
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_ARCHIVE
-		    Else
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_ARCHIVE
-		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_ARCHIVE
-		    End If
-		    
-		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(Target)
+		  attribs.Archive = b
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Compressed(Extends target As FolderItem) As Boolean
+		Attributes( deprecated = "FileAttributes.Compressed" )  Function Compressed(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the compressed attribute
-		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_COMPRESSED) = FILE_ATTRIBUTE_COMPRESSED
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(target)
+		  Return attribs.Compressed
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Compressed(Extends target As FolderItem, Assigns b As Boolean)
+		Attributes( deprecated = "FileAttributes.Compressed" )  Sub Compressed(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the Compressed attribute. Generally, this will cause Windows to compress the file but there's no guarentee
-		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    
-		    If target.Compressed = b Then Return
-		    If b Then
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_COMPRESSED
-		    Else
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_COMPRESSED
-		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_COMPRESSED
-		    End If
-		    
-		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(Target)
+		  attribs.Compressed = b
 		End Sub
 	#tag EndMethod
 
@@ -281,31 +259,20 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Encrypted(Extends target As FolderItem) As Boolean
+		Attributes( deprecated = "FileAttributes.Encrypted" )  Function Encrypted(Extends target As FolderItem) As Boolean
 		  //Returns True if the file has the Encrypted attribute
-		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_ENCRYPTED) = FILE_ATTRIBUTE_ENCRYPTED
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(target)
+		  Return attribs.Encrypted
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Encrypted(Extends target As FolderItem, Assigns b As Boolean)
+		Attributes( deprecated = "FileAttributes.Encrypted" )  Sub Encrypted(Extends target As FolderItem, Assigns b As Boolean)
 		  //Clears or sets the encrypted attribute
-		  
-		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    If target.Encrypted = b Then Return
-		    If b Then
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_ENCRYPTED
-		    Else
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_ENCRYPTED
-		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_ENCRYPTED
-		    End If
-		    
-		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(Target)
+		  attribs.Encrypted = b
 		End Sub
 	#tag EndMethod
 
@@ -623,30 +590,20 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Hidden(Extends target As FolderItem) As Boolean
+		Attributes( deprecated = "FileAttributes.Hidden" )  Function Hidden(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the hidden attribute
-		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_HIDDEN) = FILE_ATTRIBUTE_HIDDEN
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(target)
+		  Return attribs.Hidden
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Hidden(Extends target As FolderItem, Assigns b As Boolean)
+		Attributes( deprecated = "FileAttributes.Hidden" )  Sub Hidden(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the hidden attibute of the file
-		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    If target.Hidden = b Then Return
-		    If b Then
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_HIDDEN
-		    Else
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_HIDDEN
-		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_HIDDEN
-		    End If
-		    
-		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(Target)
+		  attribs.Hidden = b
 		End Sub
 	#tag EndMethod
 
@@ -726,30 +683,20 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function IsNormal(Extends target As FolderItem) As Boolean
+		Attributes( deprecated = "FileAttributes.Normal" )  Function IsNormal(Extends target As FolderItem) As Boolean
 		  //Returns True if the target has no file attributes set
-		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_NORMAL) = FILE_ATTRIBUTE_NORMAL
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(target)
+		  Return attribs.Normal
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub IsNormal(Extends target As FolderItem, Assigns b As Boolean)
+		Attributes( deprecated = "FileAttributes.Normal" )  Sub IsNormal(Extends target As FolderItem, Assigns b As Boolean)
 		  //Clears all file attributes
-		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    If target.IsNormal = b Then Return
-		    If b Then
-		      cfattribs = FILE_ATTRIBUTE_NORMAL
-		    Else
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_NORMAL
-		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_NORMAL
-		    End If
-		    
-		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(Target)
+		  attribs.Normal = b
 		End Sub
 	#tag EndMethod
 
@@ -913,28 +860,20 @@ Protected Module File_Ops
 	#tag EndDelegateDeclaration
 
 	#tag Method, Flags = &h0
-		Function ReadOnly(Extends target As FolderItem) As Boolean
+		Attributes( deprecated = "FileAttributes.ReadOnly" )  Function ReadOnly(Extends target As FolderItem) As Boolean
 		  //Returns true if the file has the ReadOnly attribute
-		  #If TargetWin32 Then Return BitwiseAnd(GetFileAttributes(target.AbsolutePath_), FILE_ATTRIBUTE_READONLY) = FILE_ATTRIBUTE_READONLY
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(target)
+		  Return attribs.ReadOnly
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub ReadOnly(Extends target As FolderItem, Assigns b As Boolean)
+		Attributes( deprecated = "FileAttributes.ReadOnly" )  Sub ReadOnly(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the Read Only attibute of the file
-		  #If TargetWin32
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    
-		    If target.ReadOnly = b Then Return
-		    If b Then
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_READONLY
-		    Else
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_READONLY
-		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_READONLY
-		    End If
-		    
-		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(Target)
+		  attribs.ReadOnly = b
 		End Sub
 	#tag EndMethod
 
@@ -1179,31 +1118,21 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function SystemFile(Extends target As FolderItem) As Boolean
+		Attributes( deprecated = "FileAttributes.SystemFile" )  Function SystemFile(Extends target As FolderItem) As Boolean
 		  //Returns True if the target has the System File attribute set
-		  #If TargetWin32 Then
-		    Dim attribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    Return BitwiseAnd(attribs, FILE_ATTRIBUTE_SYSTEM) = FILE_ATTRIBUTE_SYSTEM
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(target)
+		  Return attribs.SystemFile
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub SystemFile(Extends target As FolderItem, Assigns b As Boolean)
+		Attributes( deprecated = "FileAttributes.SystemFile" )  Sub SystemFile(Extends target As FolderItem, Assigns b As Boolean)
 		  //Sets or clears the System File attribute of the file
-		  #If TargetWin32 Then
-		    Dim cfattribs As Integer = GetFileAttributes(target.AbsolutePath_)
-		    
-		    If target.SystemFile = b Then Return
-		    If b Then
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_SYSTEM
-		    Else
-		      cfattribs = cfattribs Or FILE_ATTRIBUTE_SYSTEM
-		      cfattribs = cfattribs Xor FILE_ATTRIBUTE_SYSTEM
-		    End If
-		    
-		    Call SetFileAttributes(target.AbsolutePath_, cfattribs)
-		  #endif
+		  //This method has been deprecated in favor of the FileAttributes class
+		  //This method has been deprecated in favor of the FileAttributes class
+		  Dim attribs As New FileAttributes(Target)
+		  attribs.SystemFile = b
 		End Sub
 	#tag EndMethod
 

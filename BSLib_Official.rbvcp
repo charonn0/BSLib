@@ -56,6 +56,7 @@ Class=HotKeyListener;BSLib/Classes/WindowMessages/HotKeyListener.rbbas;&h70EA97F
 Class=WindowMessage;BSLib/Classes/WindowMessages/WindowMessage.rbbas;&h4CDB87FF;&h34390FFF;false
 Class=FolderWatcher;BSLib/Classes/File Classes/FolderWatcher.rbbas;&h32B99FFF;&h3D4FC7FF;false
 Class=Win32Waiter;BSLib/Classes/Win32Waiter.rbbas;&h4077BFFF;&h489DFFFF;false
+Class=FileAttributes;BSLib/Classes/File Classes/FileAttributes.rbbas;&h3ED7D7FF;&h3D4FC7FF;false
 DefaultWindow=Window1
 AppMenuBar=MenuBar1
 MajorVersion=1
