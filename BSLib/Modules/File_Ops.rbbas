@@ -168,7 +168,7 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function CreateStream(Extends target As FolderItem, StreamName As String) As FolderItem
+		Attributes( deprecated = "AlternateDataStream.Stream" )  Function CreateStream(Extends target As FolderItem, StreamName As String) As FolderItem
 		  //Creates a new named stream for the file or directory specified in target. If creation was successful or if
 		  //the named stream already exists, returns a FolderItem corresponding to the stream. Otherwise, returns Nil.
 		  //Failure reasons may be: the volume is not NTFS, access to the file or directory was denied, or the target does not exist.
@@ -228,7 +228,7 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function DeleteStream(Extends f As FolderItem, StreamName As String) As Boolean
+		Attributes( deprecated = "AlternateDataStream.Delete" )  Function DeleteStream(Extends f As FolderItem, StreamName As String) As Boolean
 		  //Deletes the named stream of the file or directory specified in target. If deletion was successful, returns True. Otherwise, returns False.
 		  //Failure reasons may be: access to the file or directory was denied or the target or named stream does not exist. Passing "" as the
 		  //StreamName will delete the file altogether (same as FolderItem.Delete)
@@ -973,7 +973,7 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Stream(Extends target As FolderItem, StreamIndex As Integer) As String
+		Attributes( deprecated = "AlternateDataStream.Stream" )  Function Stream(Extends target As FolderItem, StreamIndex As Integer) As String
 		  //Accesses the data stream of the target FolderItem at StreamIndex. If target has fewer than StreamIndex data streams, or if the target
 		  //is not on an NTFS volume, an OutOfBoundsException is raised. If the file is not readable, an IOException is raised.
 		  //Otherwise, a String corresponding to the name of the requested data stream is Returned.
@@ -1044,7 +1044,7 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Stream(Extends target As FolderItem, StreamName As String) As FolderItem
+		Attributes( deprecated = "AlternateDataStream.Stream" )  Function Stream(Extends target As FolderItem, StreamName As String) As FolderItem
 		  //Accesses the named data stream of the target specified by StreamName. If there is no such stream, or if the target
 		  //is not on an NTFS volume, returns Nil. Otherwise, a FolderItem corresponding to the requested data stream is Returned.
 		  //Passing an empty string as the StreamName returns the main stream which is synonymous with the file itself.
@@ -1069,7 +1069,7 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function StreamCount(Extends f As FolderItem) As Integer
+		Attributes( deprecated = "AlternateDataStream.Count" )  Function StreamCount(Extends f As FolderItem) As Integer
 		  //Counts the number of data streams attached to a file or directory on an NTFS volume. This count includes the default main stream.
 		  //Windows Vista and newer have much better APIs for handling streams than previous versions, so we use those when possible.
 		  //On error, returns -1

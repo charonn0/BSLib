@@ -45,6 +45,7 @@ Folder=Exceptions;BSLib/Classes/Exceptions;&h3619D7FF;&h489DFFFF;false
 Class=CaughtException;BSLib/Classes/Exceptions/CaughtException.rbbas;&h5C3A2FFF;&h3619D7FF;false
 Class=Win32Exception;BSLib/Classes/Exceptions/Win32Exception.rbbas;&h233D0FFF;&h3619D7FF;false
 Folder=File Classes;BSLib/Classes/File Classes;&h3D4FC7FF;&h489DFFFF;false
+Class=AlternateDataStream;BSLib/Classes/File Classes/AlternateDataStream.rbbas;&h4C6A7FFF;&h3D4FC7FF;false
 Class=ForeignWindow;BSLib/Classes/ForeignWindow.rbbas;&h404C77FF;&h489DFFFF;false
 Class=Win32Stream;BSLib/Classes/File Classes/Win32Stream.rbbas;&h15330FFF;&h3D4FC7FF;false
 Class=FileEnumerator;BSLib/Classes/File Classes/FileEnumerator.rbbas;&h10EB17FF;&h3D4FC7FF;false
