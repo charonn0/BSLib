@@ -38,7 +38,9 @@ Class FileAttributes
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  Return GetFileAttributes(Me.TargetItem.AbsolutePath_)
+			  #If TargetWin32 Then
+			    Return GetFileAttributes(Me.TargetItem.AbsolutePath_)
+			  #endif
 			End Get
 		#tag EndGetter
 		#tag Setter
@@ -142,13 +144,13 @@ Class FileAttributes
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  //Returns true if the file has the normal attribute
+			  //Returns true if the file has the read only attribute
 			  Return HasFlag(FILE_ATTRIBUTE_READONLY)
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
-			  //Sets or clears the normal attibute of the file
+			  //Sets or clears the read only attibute of the file
 			  If Me.Hidden = value Then Return
 			  If value Then
 			    Me.Attribs = Me.Attribs Or FILE_ATTRIBUTE_READONLY
@@ -164,13 +166,13 @@ Class FileAttributes
 	#tag ComputedProperty, Flags = &h0
 		#tag Getter
 			Get
-			  //Returns true if the file has the normal attribute
+			  //Returns true if the file has the sytem file attribute
 			  Return HasFlag(FILE_ATTRIBUTE_SYSTEM)
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
-			  //Sets or clears the normal attibute of the file
+			  //Sets or clears the system file attibute of the file
 			  If Me.Hidden = value Then Return
 			  If value Then
 			    Me.Attribs = Me.Attribs Or FILE_ATTRIBUTE_SYSTEM
