@@ -528,14 +528,20 @@ Inherits TCPSocket
 		Private Function FindItem(Path As String) As FolderItem
 		  Dim s As String
 		  Path = NthField(Path, "?", 1)
-		  Path = Path.ReplaceAll("/", "\")
+		  #If TargetWin32 Then
+		    Path = Path.ReplaceAll("/", "\")
+		  #endif
 		  
 		  If Not Page.Directory And "\" + Page.Name = path Then
 		    Me.Log("Request found at page/root.", Severity_Debug)
 		    Return Page
 		  End If
 		  
-		  s = ReplaceAll(Page.AbsolutePath_ + Path, "\\", "\")
+		  #If RBVersion >= 2013 Then
+		    s = ReplaceAll(Page.NativePath + Path, "\\", "\")
+		  #Else
+		    s = ReplaceAll(Page.AbsolutePath + Path, "\\", "\")
+		  #endif
 		  Me.Log("Found: " + s, Severity_Debug)
 		  Return GetTrueFolderItem(s, FolderItem.PathTypeAbsolute)
 		End Function
