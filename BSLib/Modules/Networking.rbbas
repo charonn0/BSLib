@@ -93,8 +93,16 @@ Protected Module Networking
 		  //cause weirdness
 		  //This function should be cross-platform safe.
 		  
-		  Return (Val(NthField(dottedIP, ".", 4))) + (Val(NthField(dottedIP, ".", 3)) * 256) + (Val(NthField(dottedIP, ".", 2)) * 256 ^ 2) + _
-		  (Val(NthField(dottedIP, ".", 1)) * 256 ^ 3)
+		  If CountFields(dottedIP, ".") <> 4 Then Raise New UnsupportedFormatException
+		  Dim octets() As String = Split(dottedIP, ".")
+		  Dim a, b, c, d As UInt32
+		  a = Val(octets(0)) * 256^3
+		  b = Val(octets(1)) * 256^2
+		  c = Val(octets(2)) * 256
+		  d = Val(octets(3))
+		  
+		  
+		  Return a + b + c + d
 		End Function
 	#tag EndMethod
 
@@ -103,8 +111,13 @@ Protected Module Networking
 		  //Returns a formatted IPv4 address like "192.168.0.1" See also: IPv4DotToInt
 		  //This function should be cross-platform safe.
 		  
-		  Return Str(((s Mod 16777216) Mod 65536) Mod 256) + "." + Str(((s Mod 16777216) Mod 65536) \ 256) + "." + _
-		  Str((s Mod 16777216) \ 65536) + "." + Str(s \ 16777216)
+		  Dim a, b, c, d As UInt64
+		  a = ((s Mod 16777216) Mod 65536) Mod 256
+		  b = ((s Mod 16777216) Mod 65536) \ 256
+		  c = (s Mod 16777216) \ 65536
+		  d = (s \ 16777216)
+		  
+		  Return Str(d) +  "." + Str(c) + "." + Str(b) + "." + Str(a)
 		End Function
 	#tag EndMethod
 
@@ -201,6 +214,7 @@ Protected Module Networking
 			Visible=true
 			Group="ID"
 			InitialValue="-2147483648"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -208,18 +222,21 @@ Protected Module Networking
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
 			Visible=true
 			Group="ID"
+			Type="String"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 		#tag ViewProperty
@@ -227,6 +244,7 @@ Protected Module Networking
 			Visible=true
 			Group="Position"
 			InitialValue="0"
+			Type="Integer"
 			InheritedFrom="Object"
 		#tag EndViewProperty
 	#tag EndViewBehavior
