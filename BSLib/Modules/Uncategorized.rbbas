@@ -133,102 +133,73 @@ Protected Module Uncategorized
 		  //If you pass the optional d2 Date object, then the time difference is calculated as the
 		  //difference from d2 (the "present") to d.
 		  
-		  Dim words As String
-		  Dim secsremaining As UInt64
-		  If d2 = Nil Then d2 = New Date
-		  If d.TotalSeconds < d2.TotalSeconds Then  //In the future
-		    secsremaining = d2.TotalSeconds - d.TotalSeconds
-		  Else  //In the past (or present)
-		    secsremaining = d.TotalSeconds - d2.TotalSeconds
-		  End If
-		  
 		  Const secs_in_min = 60
 		  Const secs_in_hour = 3600
 		  Const secs_in_day = 86400
 		  Const secs_in_week = 604800
 		  Const secs_in_year = 31556926
 		  
-		  Dim tmp As UInt64
-		  Dim periodname As String
+		  Dim years, weeks, days, hours, minutes, seconds, diff As UInt64
+		  If d2 = Nil Then d2 = New Date
 		  
-		  
-		  tmp = secsremaining \ secs_in_year
-		  If tmp > 0 Then
-		    If tmp > 1000 Then Return "Just prior to the heat death of the Universe."  //We've overflowed
-		    If tmp = 1 Then
-		      periodname = " year, "
-		    Else
-		      periodname = " years, "
-		    End If
-		    words = words + Str(tmp) + periodname
+		  If d.TotalSeconds < d2.TotalSeconds Then  //In the future
+		    diff = d2.TotalSeconds - d.TotalSeconds
+		  ElseIf d.TotalSeconds <> d2.TotalSeconds Then  //In the past (or present)
+		    diff = d.TotalSeconds - d2.TotalSeconds
+		  Else //dates are identical
+		    Return "0 seconds"
 		  End If
-		  secsremaining = secsremaining - tmp * secs_in_year
-		  tmp = 0
 		  
+		  years = diff \ secs_in_year
+		  diff = diff Mod secs_in_year
+		  weeks = diff \ secs_in_week
+		  diff = diff Mod secs_in_week
+		  days = diff \ secs_in_day
+		  diff = diff Mod secs_in_day
+		  hours = diff \ secs_in_hour
+		  diff = diff Mod secs_in_hour
+		  minutes = diff \ secs_in_min
+		  diff = diff Mod secs_in_min
+		  seconds = diff
 		  
-		  tmp = secsremaining \ secs_in_week
-		  If tmp > 0 Then
-		    If tmp = 1 Then
-		      periodname = " week, "
-		    Else
-		      periodname = " weeks, "
-		    End If
-		    words = words + Str(tmp) + periodname
+		  Dim data As String
+		  
+		  If years > 0 Then
+		    data = data + Format(years, "###,###,###,###") + " year"
+		    If years > 1 Then data = data + "s"
+		    data = data + ", "
 		  End If
-		  secsremaining = secsremaining - tmp * secs_in_week
-		  tmp = 0
 		  
-		  
-		  tmp = secsremaining \ secs_in_day
-		  If tmp > 0 Then
-		    If tmp = 1 Then
-		      periodname = " day, "
-		    Else
-		      periodname = " days, "
-		    End If
-		    words = words + Str(tmp) + periodname
+		  If weeks > 0 Then
+		    data = data + Format(weeks, "###") + " week"
+		    If weeks > 1 Then data = data + "s"
+		    data = data + ", "
 		  End If
-		  secsremaining = secsremaining - tmp * secs_in_day
-		  tmp = 0
 		  
-		  tmp = secsremaining \ secs_in_hour
-		  If tmp > 0 Then
-		    If tmp = 1 Then
-		      periodname = " hour, "
-		    Else
-		      periodname = " hours, "
-		    End If
-		    words = words + Str(tmp) + periodname
+		  If days > 0 Then
+		    data = data + Format(days, "#") + " day"
+		    If days > 1 Then data = data + "s"
+		    data = data + ", "
 		  End If
-		  secsremaining = secsremaining - tmp * secs_in_hour
-		  tmp = 0
 		  
-		  
-		  tmp = secsremaining \ secs_in_min
-		  If tmp > 0 Then
-		    If tmp > 1 Then
-		      periodname = " minutes"
-		    Else
-		      periodname = " minute"
-		    End If
-		    words = words + Str(tmp) + periodname
+		  If hours > 0 Then
+		    data = data + Format(hours, "##") + " hour"
+		    If hours > 1 Then data = data + "s"
+		    data = data + ", "
 		  End If
-		  secsremaining = secsremaining - tmp * secs_in_min
 		  
-		  If secsremaining >= 1 Then
-		    If words.Trim <> "" Then words = words + ", "
-		    If tmp > 1 Then
-		      periodname = " seconds"
-		    Else
-		      periodname = " second"
-		    End If
-		    words = words + Str(secsremaining) + periodname
+		  If minutes > 0 Then
+		    data = data + Format(minutes, "##") + " minute"
+		    If minutes > 1 Then data = data + "s"
+		    data = data + ", "
 		  End If
-		  words = words + " "
 		  
-		  Return words
+		  If seconds > 0 Then
+		    data = data + Format(seconds, "##") + " second"
+		    If seconds > 1 Then data = data + "s"
+		  End If
 		  
-		  
+		  Return data
 		End Function
 	#tag EndMethod
 
