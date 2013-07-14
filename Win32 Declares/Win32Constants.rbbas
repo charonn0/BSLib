@@ -549,6 +549,15 @@ Protected Module Win32Constants
 	#tag Constant, Name = IDYES, Type = Double, Dynamic = False, Default = \"6", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = IMAGE_BITMAP, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = IMAGE_CURSOR, Type = Double, Dynamic = False, Default = \"2", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = IMAGE_ICON, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = INVALID_HANDLE_VALUE, Type = Double, Dynamic = False, Default = \"&hffffffff", Scope = Public
 	#tag EndConstant
 

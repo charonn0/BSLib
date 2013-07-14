@@ -214,6 +214,25 @@ Protected Module Images
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function OpenAsIcon(Extends IcoFile As FolderItem, DesiredSize As Integer = 32) As Picture
+		  ' Opens the passed *.ico icon file and returns a Picture object of the icon at the Desired Size
+		  #If TargetWin32 Then
+		    Dim imghandle As Integer = LoadImage(0, IcoFile.AbsolutePath, IMAGE_ICON, DesiredSize, DesiredSize, LR_LOADFROMFILE)
+		    If imghandle > 0 Then
+		      Dim pic As New Picture(DesiredSize, DesiredSize, 24)
+		      If Not DrawIconEx(pic.Graphics.Handle(Graphics.HandleTypeHDC), 0, 0, imghandle, DesiredSize, DesiredSize, 0, 0, &h3) Then
+		        Call DestroyIcon(imghandle)
+		        Return Nil
+		      Else
+		        Call DestroyIcon(imghandle)
+		        Return pic
+		      End If
+		    End If
+		  #endif
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function PictureToHTML(MyPic As Picture, AltText As String = "") As String
 		  //Given a Picture, returns the base64-encoded HTML representation
 		  //e.g.
