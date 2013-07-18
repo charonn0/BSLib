@@ -2,7 +2,7 @@
 Class FileAttributes
 	#tag Method, Flags = &h0
 		Sub Constructor(Target As FolderItem)
-		  Me.TargetItem = Target
+		  Me.TargetItem = Target.AbsolutePath
 		End Sub
 	#tag EndMethod
 
@@ -39,14 +39,14 @@ Class FileAttributes
 		#tag Getter
 			Get
 			  #If TargetWin32 Then
-			    Return GetFileAttributes(Me.TargetItem.AbsolutePath_)
+			    Return GetFileAttributes(Me.TargetItem)
 			  #endif
 			End Get
 		#tag EndGetter
 		#tag Setter
 			Set
 			  #If TargetWin32 Then
-			    Call SetFileAttributes(Me.TargetItem.AbsolutePath_, value)
+			    Call SetFileAttributes(Me.TargetItem, value)
 			  #endif
 			End Set
 		#tag EndSetter
@@ -186,7 +186,7 @@ Class FileAttributes
 	#tag EndComputedProperty
 
 	#tag Property, Flags = &h0
-		TargetItem As FolderItem
+		TargetItem As String
 	#tag EndProperty
 
 
