@@ -2,7 +2,7 @@
 Class FileAttributes
 	#tag Method, Flags = &h0
 		Sub Constructor(Target As FolderItem)
-		  Me.TargetItem = Target.AbsolutePath
+		  Me.TargetItem = Target.AbsolutePath_
 		End Sub
 	#tag EndMethod
 

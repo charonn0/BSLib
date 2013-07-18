@@ -9,7 +9,7 @@ Protected Class FileEnumerator
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Constructor(Root As FolderItem, Pattern As String)
+		Sub Constructor(Root As FolderItem = Nil, Pattern As String = "*.*")
 		  //Root is the directory in which to search
 		  //Pattern is a full or partial filename, with support for wildcards (e.g. "*.exe" to enumerate all files ending in .exe)
 		  
@@ -84,13 +84,43 @@ Protected Class FileEnumerator
 		Private mLastError As Integer
 	#tag EndProperty
 
-	#tag Property, Flags = &h1
-		Protected RootDirectory As FolderItem
+	#tag Property, Flags = &h21
+		Private mRootDirectory As FolderItem
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
-		Private SearchPattern As String
+		Private mSearchPattern As String
 	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mRootDirectory
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Me.Close
+			  mRootDirectory = value
+			End Set
+		#tag EndSetter
+		RootDirectory As FolderItem
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mSearchPattern
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Me.Close
+			  mSearchPattern = value
+			End Set
+		#tag EndSetter
+		SearchPattern As String
+	#tag EndComputedProperty
 
 
 	#tag ViewBehavior
