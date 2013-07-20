@@ -323,6 +323,17 @@ Protected Module Images
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function SystemPixel(X As Integer, Y As Integer) As Color
+		  // This method replaces System.Pixel which has been removed from RB as of RS2012R2
+		  
+		  Dim p As Picture = CaptureRect(X, Y, 5, 5)
+		  If p <> Nil Then
+		    Return p.RGBSurface.Pixel(1, 1)
+		  End If
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function TextToPicture(Text As String, Font As String = "System", FontSize As Single = 11.0, Bold As Boolean = False, Underline As Boolean = False, Italic As Boolean = False, forecolor As Color = &c000000, BackColor As Color = &cFFFFFF) As Picture
 		  //Given any String, returns a picture of that string. Line breaks are honored.
 		  //The optional parameters ought to be self-explanitory.
