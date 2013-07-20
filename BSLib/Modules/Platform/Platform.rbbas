@@ -266,6 +266,29 @@ Protected Module Platform
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function CurrentDirectory(Extends Ap As Application) As FolderItem
+		  #pragma Unused Ap
+		  Dim mb As New MemoryBlock(1024)
+		  Dim i As Integer
+		  Do
+		    i = GetCurrentDirectory(mb.Size, mb)
+		  Loop Until i <= mb.Size And i > 0
+		  
+		  Return GetFolderItem(mb.WString(0), FolderItem.PathTypeAbsolute)
+		  
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub CurrentDirectory(Extends Ap As Application, Assigns NewDir As FolderItem)
+		  #pragma Unused Ap
+		  Dim path As String = NewDir.AbsolutePath_
+		  Call SetCurrentDirectory(path)
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h1
 		Protected Function CurrentUser() As String
 		  //Returns the username of the account under which the application is running.
@@ -1187,7 +1210,7 @@ Protected Module Platform
 			  Call SetCurrentDirectory(path)
 			End Set
 		#tag EndSetter
-		Protected CurrentDirectory As FolderItem
+		Attributes( deprecated = "App.CurrentDirectory" ) Protected CurrentDirectory As FolderItem
 	#tag EndComputedProperty
 
 	#tag ComputedProperty, Flags = &h1
