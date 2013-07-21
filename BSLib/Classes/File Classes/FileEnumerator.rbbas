@@ -13,8 +13,8 @@ Protected Class FileEnumerator
 		  //Root is the directory in which to search
 		  //Pattern is a full or partial filename, with support for wildcards (e.g. "*.exe" to enumerate all files ending in .exe)
 		  
-		  RootDirectory = Root
-		  SearchPattern = Pattern
+		  mRootDirectory = Root
+		  mSearchPattern = Pattern
 		End Sub
 	#tag EndMethod
 
@@ -151,6 +151,11 @@ Protected Class FileEnumerator
 			Group="ID"
 			Type="String"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="SearchPattern"
+			Group="Behavior"
+			Type="String"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
