@@ -453,6 +453,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = FILE_WRITE_EA, Type = Double, Dynamic = False, Default = \"&h0010", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = FIND_FIRST_EX_CASE_SENSITIVE, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = FLASHW_ALL, Type = Double, Dynamic = False, Default = \"&h00000003", Scope = Public
 	#tag EndConstant
 

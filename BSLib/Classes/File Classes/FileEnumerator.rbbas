@@ -9,12 +9,13 @@ Protected Class FileEnumerator
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Constructor(Root As FolderItem = Nil, Pattern As String = "*.*")
+		Sub Constructor(Root As FolderItem = Nil, Pattern As String = "*.*", CaseSensitive As Boolean = False)
 		  //Root is the directory in which to search
 		  //Pattern is a full or partial filename, with support for wildcards (e.g. "*.exe" to enumerate all files ending in .exe)
 		  
 		  mRootDirectory = Root
 		  mSearchPattern = Pattern
+		  mCaseSensitive = CaseSensitive
 		End Sub
 	#tag EndMethod
 
@@ -33,7 +34,7 @@ Protected Class FileEnumerator
 		  Dim data As WIN32_FIND_DATA = Me.NextItem
 		  If data.FileName.Trim = "." Or data.FileName.Trim = ".." Then Return NextFolderItem
 		  If Me.LastError = 0 Then
-		    Return Me.RootDirectory.Child(data.FileName)
+		    Return Me.RootDirectory.TrueChild(data.FileName)
 		  End If
 		  
 		End Function
@@ -46,9 +47,15 @@ Protected Class FileEnumerator
 		  
 		  
 		  Dim data As WIN32_FIND_DATA
-		  
+		  Dim namepattern As WString = "//?/" + ReplaceAll(RootDirectory.AbsolutePath_, "/", "//") + SearchPattern + Chr(0)
 		  If FindHandle <= 0 Then
-		    FindHandle = FindFirstFile("//?/" + ReplaceAll(RootDirectory.AbsolutePath_, "/", "//") + SearchPattern + Chr(0), data)
+		    If System.IsFunctionAvailable("FindFirstFileExW", "Kernel32") Then
+		      Dim flags As Integer
+		      If Me.CaseSensitive Then flags = FIND_FIRST_EX_CASE_SENSITIVE
+		      FindHandle = FindFirstFileEx(namepattern, 0, data, 0, Nil, flags)
+		    Else
+		      FindHandle = FindFirstFile(NamePattern, data)
+		    End If
 		    mLastError = GetLastError()
 		  ElseIf FindNextFile(FindHandle, data) Then
 		    mLastError = 0
@@ -82,8 +89,26 @@ Protected Class FileEnumerator
 		Using this class to enumerate a folder will be much faster than FolderItem.Item(Index), especially on large
 		directories. Execution time of FolderItem.Item rises exponentially relative to the number of items in the directory.
 		The execution time of FileEnumerator.NextItem rises only linearly relative to the number of items.
+		
+		Case sensitive searches are only available on Windows XP and newer and only if the user has set 
+		HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel\obcaseinsensitive to 0 in their registry.
 	#tag EndNote
 
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mCaseSensitive
+			End Get
+		#tag EndGetter
+		#tag Setter
+			Set
+			  Me.Close
+			  mCaseSensitive = value
+			End Set
+		#tag EndSetter
+		CaseSensitive As Boolean
+	#tag EndComputedProperty
 
 	#tag Property, Flags = &h21
 		Private FindHandle As Integer
@@ -97,6 +122,10 @@ Protected Class FileEnumerator
 		#tag EndGetter
 		LastError As Integer
 	#tag EndComputedProperty
+
+	#tag Property, Flags = &h21
+		Private mCaseSensitive As Boolean = False
+	#tag EndProperty
 
 	#tag Property, Flags = &h1
 		Protected mLastError As Integer

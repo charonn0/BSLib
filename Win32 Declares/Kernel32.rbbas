@@ -101,6 +101,10 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function FindFirstFileEx Lib "Kernel32" Alias "FindFirstFileExW" (FileName As WString, InfoLevel As Integer, ByRef FindData As WIN32_FIND_DATA, SearchOptions As Integer, Reserved As Ptr, AdditionalFlags As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Soft Declare Function FindFirstFileNameW Lib "Kernel32" (filename As WString, flags As Integer, ByRef StringLength As Integer, LinkName As Ptr) As Integer
 	#tag EndExternalMethod
 

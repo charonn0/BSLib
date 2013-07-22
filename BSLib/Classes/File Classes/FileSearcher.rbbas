@@ -19,6 +19,11 @@ Inherits Thread
 
 	#tag Method, Flags = &h21
 		Private Sub List(Dir As FolderItem)
+		  Depth = Depth + 1
+		  If Depth > MaximumDepth And MaximumDepth > 0 Then 
+		    Depth = Depth - 1
+		    Return
+		  End If
 		  Dim fe As New FileEnumerator(Dir, Pattern)
 		  Dim i As Integer
 		  Do
@@ -29,11 +34,15 @@ Inherits Thread
 		      Else
 		        FoundItems.Insert(0, file)
 		      End If
-		      If file.Directory Then List(file)
+		      If file.Directory Then 
+		        List(file)
+		      End If
 		    End If
 		    If i Mod 5 = 0 Then App.YieldToNextThread
 		    i = i + 1
 		  Loop Until fe.LastError <> 0
+		  
+		  Depth = Depth - 1
 		End Sub
 	#tag EndMethod
 
@@ -45,6 +54,7 @@ Inherits Thread
 
 	#tag Method, Flags = &h0
 		Sub Search(Root As FolderItem, Pattern As String = "*", GUISafe As Boolean = True)
+		  Depth = 0
 		  ReDim FoundItems(-1)
 		  mRootDirectory = Root
 		  mPattern = Pattern
@@ -69,6 +79,10 @@ Inherits Thread
 		Return True from the FoundItem event to stop searching and kill the thread.
 	#tag EndNote
 
+
+	#tag Property, Flags = &h21
+		Private Depth As Integer
+	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		Private FoundItems() As FolderItem
@@ -98,6 +112,10 @@ Inherits Thread
 
 	#tag Property, Flags = &h21
 		Private GUITimer As Timer
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		MaximumDepth As Integer = -1
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
