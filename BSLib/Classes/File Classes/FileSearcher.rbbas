@@ -3,7 +3,7 @@ Protected Class FileSearcher
 Inherits Thread
 	#tag Event
 		Sub Run()
-		  List(RootDir)
+		  List(RootDirectory)
 		End Sub
 	#tag EndEvent
 
@@ -45,8 +45,9 @@ Inherits Thread
 
 	#tag Method, Flags = &h0
 		Sub Search(Root As FolderItem, Pattern As String = "*", GUISafe As Boolean = True)
-		  Me.RootDir = Root
-		  Me.Pattern = Pattern
+		  ReDim FoundItems(-1)
+		  mRootDirectory = Root
+		  mPattern = Pattern
 		  Me.GUISafe = GUISafe
 		  Me.Run
 		End Sub
@@ -103,13 +104,31 @@ Inherits Thread
 		Private mGUISafe As Boolean
 	#tag EndProperty
 
-	#tag Property, Flags = &h1
-		Protected Pattern As String
+	#tag Property, Flags = &h21
+		Private mPattern As String
 	#tag EndProperty
 
-	#tag Property, Flags = &h1
-		Protected RootDir As FolderItem
+	#tag Property, Flags = &h21
+		Private mRootDirectory As FolderItem
 	#tag EndProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mPattern
+			End Get
+		#tag EndGetter
+		Pattern As String
+	#tag EndComputedProperty
+
+	#tag ComputedProperty, Flags = &h0
+		#tag Getter
+			Get
+			  return mRootDirectory
+			End Get
+		#tag EndGetter
+		RootDirectory As FolderItem
+	#tag EndComputedProperty
 
 
 	#tag ViewBehavior
