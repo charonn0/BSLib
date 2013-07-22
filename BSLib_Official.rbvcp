@@ -1,5 +1,5 @@
 Type=Desktop
-RBProjectVersion=2013.01
+RBProjectVersion=2011.043
 MinIDEVersion=20070100
 MenuBar=MenuBar1;MenuBar1.rbmnu;&h5D95A7FF;&h0;false
 Folder=Win32 Declares;Win32 Declares;&h20572FFF;&h0;false
@@ -58,6 +58,7 @@ Class=WindowMessage;BSLib/Classes/WindowMessages/WindowMessage.rbbas;&h4CDB87FF;
 Class=FolderWatcher;BSLib/Classes/File Classes/FolderWatcher.rbbas;&h32B99FFF;&h3D4FC7FF;false
 Class=Win32Waiter;BSLib/Classes/Win32Waiter.rbbas;&h4077BFFF;&h489DFFFF;false
 Class=FileAttributes;BSLib/Classes/File Classes/FileAttributes.rbbas;&h3ED7D7FF;&h3D4FC7FF;false
+Class=FileSearcher;BSLib/Classes/File Classes/FileSearcher.rbbas;&h2214C7FF;&h3D4FC7FF;false
 DefaultWindow=Window1
 AppMenuBar=MenuBar1
 MajorVersion=1
