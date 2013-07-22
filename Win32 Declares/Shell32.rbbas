@@ -33,6 +33,10 @@ Protected Module Shell32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function Shell_NotifyIcon Lib "Shell32" Alias "Shell_NotifyIconW" (Message As Integer, Data As NOTIFYICONDATA) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function SHGetFileInfo Lib "Shell32" Alias "SHGetFileInfoW" (FilePath As WString, Attribs As Integer, ByRef info As SHFILEINFO, infoSize As Integer, flags As Integer) As Boolean
 	#tag EndExternalMethod
 

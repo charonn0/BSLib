@@ -711,6 +711,21 @@ Protected Module Win32Constants
 	#tag Constant, Name = MS_DEF_PROV, Type = String, Dynamic = False, Default = \"Microsoft Enhanced RSA and AES Cryptogrphic Provider", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = NIM_ADD, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = NIM_DELETE, Type = Double, Dynamic = False, Default = \"&h00000002", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = NIM_MODIFY, Type = Double, Dynamic = False, Default = \"&h00000001", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = NIM_SETFOCUS, Type = Double, Dynamic = False, Default = \"&h00000003", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = NIM_SETVERSION, Type = Double, Dynamic = False, Default = \"&h00000004", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = NOTSRCCOPY, Type = Double, Dynamic = False, Default = \"&h00330008", Scope = Public
 	#tag EndConstant
 
@@ -1252,6 +1267,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = WM_SETICON, Type = Double, Dynamic = False, Default = \"&h0080", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WM_USER, Type = Double, Dynamic = False, Default = \"&h0400", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = WRITE_DAC, Type = Double, Dynamic = False, Default = \"&h00040000", Scope = Public
