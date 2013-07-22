@@ -25,9 +25,25 @@ Protected Class FileEnumerator
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function NextFolderItem() As FolderItem
+		  //This function returns a folderitem representing the next file or directory (starting with the first) in the RootDirectory
+		  //If there are no more files, this function sets LastError=18 (ERROR_NO_MORE_FILES). If no more files or an error occurred,
+		  //returns Nil.
+		  
+		  Dim data As WIN32_FIND_DATA = Me.NextItem
+		  If data.FileName.Trim = "." Or data.FileName.Trim = ".." Then Return NextFolderItem
+		  If Me.LastError = 0 Then
+		    Return Me.RootDirectory.Child(data.FileName)
+		  End If
+		  
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function NextItem() As WIN32_FIND_DATA
-		  //This function returns the WIN32_FIND_DATA structure of the next file (starting with the first) in the RootDirectory
-		  //If there are no more files, this function sets LastError <> 0
+		  //This function returns the WIN32_FIND_DATA structure of the next file or directory (starting with the first) in the RootDirectory
+		  //If there are no more files, this function sets LastError=18 (ERROR_NO_MORE_FILES).
+		  
 		  
 		  Dim data As WIN32_FIND_DATA
 		  
@@ -55,15 +71,17 @@ Protected Class FileEnumerator
 		Example, finding all EXE files in a user selected folder:
 		
 		  Dim fe As New FileEnumerator(SelectFolder, "*.exe")
-		  Dim files() As String
+		  Dim files() As FolderItem
 		  Do
-		    Dim file As WIN32_FIND_DATA = fe.NextItem()
-		    If fe.LastError = 0 Then
-		      files.Append(DefineEncoding(file.FileName, Encodings.UTF16))
-		    Else
-		      Exit Do
+		    Dim file As FolderItem = fe.NextItem()
+		    If file <> Nil Then
+		      files.Append(file)
 		    End If
-		  Loop
+		  Loop Until fe.LastError <> 0
+		
+		Using this class to enumerate a folder will be much faster than FolderItem.Item(Index), especially on large
+		directories. Execution time of FolderItem.Item rises exponentially relative to the number of items in the directory.
+		The execution time of FileEnumerator.NextItem rises only linearly relative to the number of items.
 	#tag EndNote
 
 
@@ -80,8 +98,8 @@ Protected Class FileEnumerator
 		LastError As Integer
 	#tag EndComputedProperty
 
-	#tag Property, Flags = &h21
-		Private mLastError As Integer
+	#tag Property, Flags = &h1
+		Protected mLastError As Integer
 	#tag EndProperty
 
 	#tag Property, Flags = &h21
@@ -156,6 +174,7 @@ Protected Class FileEnumerator
 			Name="SearchPattern"
 			Group="Behavior"
 			Type="String"
+			EditorType="MultiLineEditor"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Super"
