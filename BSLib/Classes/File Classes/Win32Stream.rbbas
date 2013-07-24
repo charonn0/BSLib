@@ -37,7 +37,7 @@ Implements Readable,Writeable
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		 Shared Function Create(File As FolderItem, Overwrite As Boolean = False) As Win32Stream
+		 Shared Function Create(File As FolderItem, Overwrite As Boolean) As Win32Stream
 		  Dim CreateDisposition As Integer
 		  If Overwrite Then
 		    CreateDisposition = CREATE_ALWAYS
@@ -85,7 +85,7 @@ Implements Readable,Writeable
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		 Shared Function Open(File As FolderItem, ReadWrite As Boolean = True) As Win32Stream
+		 Shared Function Open(File As FolderItem, ReadWrite As Boolean) As Win32Stream
 		  Dim desiredaccess As Integer
 		  If ReadWrite Then
 		    desiredaccess = GENERIC_READ Or GENERIC_WRITE
