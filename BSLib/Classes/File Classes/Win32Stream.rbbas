@@ -3,6 +3,7 @@ Protected Class Win32Stream
 Implements Readable,Writeable
 	#tag Method, Flags = &h0
 		Sub Close()
+		  Me.Flush()
 		  #If TargetWin32 Then Call CloseHandle(Me.Handle)
 		End Sub
 	#tag EndMethod
