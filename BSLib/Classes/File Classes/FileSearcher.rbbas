@@ -4,6 +4,11 @@ Inherits Thread
 	#tag Event
 		Sub Run()
 		  List(RootDirectory)
+		  If Not GUISafe Then
+		    RaiseEvent Done()
+		  Else
+		    FoundItems.Insert(0, Nil)
+		  End If
 		End Sub
 	#tag EndEvent
 
@@ -12,7 +17,12 @@ Inherits Thread
 		Private Sub GUITimerHandler(Sender As Timer)
 		  #pragma Unused Sender
 		  While UBound(FoundItems) > -1
-		    If RaiseEvent FoundItem(FoundItems.Pop) Then Me.Kill
+		    Dim item As FolderItem = FoundItems.Pop
+		    If item <> Nil Then
+		      If RaiseEvent FoundItem(item) Then Me.Kill
+		    Else
+		      RaiseEvent Done()
+		    End If
 		  Wend
 		End Sub
 	#tag EndMethod
@@ -20,11 +30,26 @@ Inherits Thread
 	#tag Method, Flags = &h21
 		Private Sub List(Dir As FolderItem)
 		  Depth = Depth + 1
-		  If Depth > MaximumDepth And MaximumDepth > 0 Then 
+		  If Depth > MaximumDepth And MaximumDepth > 0 Then
 		    Depth = Depth - 1
 		    Return
 		  End If
-		  Dim fe As New FileEnumerator(Dir, Pattern)
+		  
+		  Dim fe As FileEnumerator
+		  
+		  If Me.Mode = Mode_Depth_First Then
+		    fe = New FileEnumerator(Dir)
+		    Do
+		      Dim folder As FolderItem = fe.NextFolderItem(True)
+		      If folder <> Nil Then
+		        List(folder)
+		        App.YieldToNextThread()
+		      End If
+		    Loop Until fe.LastError <> 0
+		  End If
+		  
+		  
+		  fe = New FileEnumerator(Dir, Pattern)
 		  Dim i As Integer
 		  Do
 		    Dim file As FolderItem = fe.NextFolderItem()
@@ -34,13 +59,21 @@ Inherits Thread
 		      Else
 		        FoundItems.Insert(0, file)
 		      End If
-		      If file.Directory Then 
-		        List(file)
-		      End If
 		    End If
 		    If i Mod 5 = 0 Then App.YieldToNextThread
 		    i = i + 1
 		  Loop Until fe.LastError <> 0
+		  
+		  If Me.Mode = Mode_Breadth_First Then
+		    fe = New FileEnumerator(Dir)
+		    Do
+		      Dim folder As FolderItem = fe.NextFolderItem(True)
+		      If folder <> Nil Then
+		        List(folder)
+		        App.YieldToNextThread()
+		      End If
+		    Loop Until fe.LastError <> 0
+		  End If
 		  
 		  Depth = Depth - 1
 		End Sub
@@ -53,16 +86,21 @@ Inherits Thread
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Search(Root As FolderItem, Pattern As String = "*", GUISafe As Boolean = True)
+		Sub Search(Root As FolderItem, Pattern As String = "*", GUISafe As Boolean = True, Mode As Integer = Mode_Depth_First)
 		  Depth = 0
 		  ReDim FoundItems(-1)
 		  mRootDirectory = Root
 		  mPattern = Pattern
 		  Me.GUISafe = GUISafe
+		  Me.Mode = Mode
 		  Me.Run
 		End Sub
 	#tag EndMethod
 
+
+	#tag Hook, Flags = &h0
+		Event Done()
+	#tag EndHook
 
 	#tag Hook, Flags = &h0
 		Event FoundItem(Found As FolderItem) As Boolean
@@ -122,6 +160,10 @@ Inherits Thread
 		Private mGUISafe As Boolean
 	#tag EndProperty
 
+	#tag Property, Flags = &h1
+		Protected Mode As Integer
+	#tag EndProperty
+
 	#tag Property, Flags = &h21
 		Private mPattern As String
 	#tag EndProperty
@@ -149,6 +191,13 @@ Inherits Thread
 	#tag EndComputedProperty
 
 
+	#tag Constant, Name = Mode_Breadth_First, Type = Double, Dynamic = False, Default = \"1", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = Mode_Depth_First, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
+
 	#tag ViewBehavior
 		#tag ViewProperty
 			Name="GUISafe"
@@ -170,10 +219,21 @@ Inherits Thread
 			InheritedFrom="Thread"
 		#tag EndViewProperty
 		#tag ViewProperty
+			Name="MaximumDepth"
+			Group="Behavior"
+			InitialValue="-1"
+			Type="Integer"
+		#tag EndViewProperty
+		#tag ViewProperty
 			Name="Name"
 			Visible=true
 			Group="ID"
 			InheritedFrom="Thread"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Pattern"
+			Group="Behavior"
+			Type="String"
 		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Priority"

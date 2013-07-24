@@ -26,15 +26,21 @@ Protected Class FileEnumerator
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function NextFolderItem() As FolderItem
+		Function NextFolderItem(DirectoriesOnly As Boolean = False) As FolderItem
 		  //This function returns a folderitem representing the next file or directory (starting with the first) in the RootDirectory
 		  //If there are no more files, this function sets LastError=18 (ERROR_NO_MORE_FILES). If no more files or an error occurred,
 		  //returns Nil.
 		  
 		  Dim data As WIN32_FIND_DATA = Me.NextItem
-		  If data.FileName.Trim = "." Or data.FileName.Trim = ".." Then Return NextFolderItem
+		  If data.FileName.Trim = "." Or data.FileName.Trim = ".." Then Return NextFolderItem(DirectoriesOnly)
+		  
+		  Dim result As FolderItem = Me.RootDirectory.TrueChild(data.FileName)
 		  If Me.LastError = 0 Then
-		    Return Me.RootDirectory.TrueChild(data.FileName)
+		    If Result.Directory Or Not DirectoriesOnly Then
+		      Return result
+		    Else
+		      Return Me.NextFolderItem(DirectoriesOnly)
+		    End If
 		  End If
 		  
 		End Function
@@ -171,6 +177,11 @@ Protected Class FileEnumerator
 
 
 	#tag ViewBehavior
+		#tag ViewProperty
+			Name="CaseSensitive"
+			Group="Behavior"
+			Type="Boolean"
+		#tag EndViewProperty
 		#tag ViewProperty
 			Name="Index"
 			Visible=true
