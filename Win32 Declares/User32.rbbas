@@ -213,7 +213,7 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
-		Declare Function SetWindowText Lib "User32" Alias "SetWindowTextW" (WND As Integer, Buffer As Ptr) As Boolean
+		Declare Function SetWindowText Lib "User32" Alias "SetWindowTextW" (WND As Integer, Buffer As WString) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
