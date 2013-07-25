@@ -81,7 +81,7 @@ Protected Module CryptoTools
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function Win32Hash(data As String, algorithm As Integer) As String
+		Attributes( deprecated = "Crypto.Hash" )  Function Win32Hash(data As String, algorithm As Integer) As String
 		  //Hashes the data string using the specified hash algorithm (see the constants for this Module for available algorithms.)
 		  //Returns a hex-formatted string of the binary hash
 		  
@@ -97,7 +97,7 @@ Protected Module CryptoTools
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function XorData(Extends input As MemoryBlock, xorBy As MemoryBlock) As MemoryBlock
+		Attributes( deprecated )  Function XorData(Extends input As MemoryBlock, xorBy As MemoryBlock) As MemoryBlock
 		  //XOR's the passed MemoryBlocks
 		  
 		  If input.Size <> xorBy.Size Then
@@ -164,10 +164,6 @@ Protected Module CryptoTools
 		#tag EndGetter
 		Private baseCryptoProvider As Integer
 	#tag EndComputedProperty
-
-
-	#tag Constant, Name = kHashTypeHMAC, Type = Double, Dynamic = False, Default = \"32777", Scope = Protected
-	#tag EndConstant
 
 
 	#tag ViewBehavior
