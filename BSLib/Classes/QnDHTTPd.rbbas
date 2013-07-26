@@ -548,58 +548,6 @@ Inherits TCPSocket
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		 Shared Function FormatBytes(bytes As UInt64, precision As Integer = 2) As String
-		  'Converts raw byte counts into SI formatted strings. 1KB = 1024 bytes.
-		  'Optionally pass an integer representing the number of decimal places to return. The default is two decimal places. You may specify
-		  'between 0 and 16 decimal places. Specifying more than 16 will append extra zeros to make up the length. Passing 0
-		  'shows no decimal places and no decimal point.
-		  
-		  Const kilo = 1024
-		  Static mega As UInt64 = kilo * kilo
-		  Static giga As UInt64 = kilo * mega
-		  Static tera As UInt64 = kilo * giga
-		  Static peta As UInt64 = kilo * tera
-		  Static exab As UInt64 = kilo * peta
-		  
-		  Dim suffix, precisionZeros As String
-		  Dim strBytes As Double
-		  
-		  
-		  If bytes < kilo Then
-		    strbytes = bytes
-		    suffix = "bytes"
-		  ElseIf bytes >= kilo And bytes < mega Then
-		    strbytes = bytes / kilo
-		    suffix = "KB"
-		  ElseIf bytes >= mega And bytes < giga Then
-		    strbytes = bytes / mega
-		    suffix = "MB"
-		  ElseIf bytes >= giga And bytes < tera Then
-		    strbytes = bytes / giga
-		    suffix = "GB"
-		  ElseIf bytes >= tera And bytes < peta Then
-		    strbytes = bytes / tera
-		    suffix = "TB"
-		  ElseIf bytes >= tera And bytes < exab Then
-		    strbytes = bytes / peta
-		    suffix = "PB"
-		  ElseIf bytes >= exab Then
-		    strbytes = bytes / exab
-		    suffix = "EB"
-		  End If
-		  
-		  
-		  While precisionZeros.Len < precision
-		    precisionZeros = precisionZeros + "0"
-		  Wend
-		  If precisionZeros.Trim <> "" Then precisionZeros = "." + precisionZeros
-		  
-		  Return Format(strBytes, "#,###0" + precisionZeros) + suffix
-		  
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h0
 		 Shared Function GetCookies(Headers As InternetHeaders) As String()
 		  'Returns a string array of all HTTP cookies in the passed headers
 		  Dim cookies() As String
