@@ -1,7 +1,7 @@
 #tag Module
 Protected Module DNSAPI
 	#tag ExternalMethod, Flags = &h0
-		Declare Function DnsQuery Lib "DNSAPI" Alias "DNSQuery_A" (hostname As CString, type As Int16, options As Integer, reserved1 As Integer, ByRef result As Ptr, reserved As Integer) As Integer
+		Declare Function DnsQuery Lib "DNSAPI" Alias "DnsQuery_A" (hostname As CString, type As Int16, options As Integer, reserved1 As Integer, ByRef result As Ptr, reserved As Integer) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
