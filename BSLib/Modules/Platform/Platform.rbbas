@@ -890,6 +890,20 @@ Protected Module Platform
 	#tag EndMethod
 
 	#tag Method, Flags = &h1
+		Protected Sub SetSystemClock(NewDateTime As Date)
+		  Dim tm As SYSTEMTIME
+		  tm.Year = NewDateTime.Year
+		  tm.Month = NewDateTime.Month
+		  tm.Day = NewDateTime.Day
+		  tm.Hour = NewDateTime.Hour
+		  tm.Minute = NewDateTime.Minute
+		  tm.Second = NewDateTime.Second
+		  
+		  Call SetSystemTime(tm)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h1
 		Protected Sub ShutDown()
 		  //Shuts the computer down.
 		  Call ExitWindows(EWX_SHUTDOWN)
