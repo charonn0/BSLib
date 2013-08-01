@@ -9,13 +9,12 @@ Protected Class FileEnumerator
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Constructor(Root As FolderItem = Nil, Pattern As String = "*.*", CaseSensitive As Boolean = False)
+		Sub Constructor(Root As FolderItem = Nil, Pattern As String = "*.*")
 		  //Root is the directory in which to search
 		  //Pattern is a full or partial filename, with support for wildcards (e.g. "*.exe" to enumerate all files ending in .exe)
 		  
 		  mRootDirectory = Root
 		  mSearchPattern = Pattern
-		  mCaseSensitive = CaseSensitive
 		End Sub
 	#tag EndMethod
 
@@ -109,10 +108,6 @@ Protected Class FileEnumerator
 		#tag EndGetter
 		LastError As Integer
 	#tag EndComputedProperty
-
-	#tag Property, Flags = &h21
-		Private mCaseSensitive As Boolean = False
-	#tag EndProperty
 
 	#tag Property, Flags = &h1
 		Protected mLastError As Integer
