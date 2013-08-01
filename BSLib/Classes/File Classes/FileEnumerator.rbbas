@@ -56,9 +56,7 @@ Protected Class FileEnumerator
 		  Dim namepattern As WString = "//?/" + ReplaceAll(RootDirectory.AbsolutePath_, "/", "//") + SearchPattern + Chr(0)
 		  If FindHandle <= 0 Then
 		    If System.IsFunctionAvailable("FindFirstFileExW", "Kernel32") Then
-		      Dim flags As Integer
-		      If Me.CaseSensitive Then flags = FIND_FIRST_EX_CASE_SENSITIVE
-		      FindHandle = FindFirstFileEx(namepattern, 0, data, 0, Nil, flags)
+		      FindHandle = FindFirstFileEx(namepattern, 0, data, 0, Nil, FIND_FIRST_EX_LARGE_FETCH)
 		    Else
 		      FindHandle = FindFirstFile(NamePattern, data)
 		    End If
@@ -96,25 +94,8 @@ Protected Class FileEnumerator
 		directories. Execution time of FolderItem.Item rises exponentially relative to the number of items in the directory.
 		The execution time of FileEnumerator.NextItem rises only linearly relative to the number of items.
 		
-		Case sensitive searches are only available on Windows XP and newer and only if the user has set 
-		HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel\obcaseinsensitive to 0 in their registry.
 	#tag EndNote
 
-
-	#tag ComputedProperty, Flags = &h0
-		#tag Getter
-			Get
-			  return mCaseSensitive
-			End Get
-		#tag EndGetter
-		#tag Setter
-			Set
-			  Me.Close
-			  mCaseSensitive = value
-			End Set
-		#tag EndSetter
-		CaseSensitive As Boolean
-	#tag EndComputedProperty
 
 	#tag Property, Flags = &h21
 		Private FindHandle As Integer
