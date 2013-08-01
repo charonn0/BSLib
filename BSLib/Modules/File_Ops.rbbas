@@ -852,6 +852,42 @@ Protected Module File_Ops
 		End Function
 	#tag EndMethod
 
+	#tag Method, Flags = &h0
+		Function PathMatches(Extends Target As FolderItem, ParamArray PathSpecs() As String) As Boolean
+		  'Returns True if the passed FolderItem's path matches one of the passed path specifications.
+		  'e.g.
+		  'Dim f As FolderItem = GetOpenFolderItem("")
+		  'If f.PathMatches("*.ex?", "*.php", "*.dll") Then
+		  '  MsgBox("Match")
+		  'Else
+		  '  MsgBox("No Match")
+		  'End If
+		  #If TargetWin32 Then
+		    If System.IsFunctionAvailable("PathMatchSpecExW", "Shlwapi") Then
+		      Dim spec As String
+		      Dim flags As Integer
+		      If UBound(PathSpecs) > 0 Then
+		        spec = Join(PathSpecs, ";")
+		        flags = PMSF_MULTIPLE
+		      ElseIf UBound(PathSpecs) = 0 Then
+		        spec = PathSpecs(0)
+		        flags = PMSF_NORMAL
+		      Else
+		        Return False
+		      End If
+		      flags = flags Or PMSF_DONT_STRIP_SPACES
+		      Dim r As Integer = PathMatchSpecEx(Target.AbsolutePath_, spec, flags)
+		      Return r = S_OK
+		    Else
+		      For i As Integer = 0 To UBound(PathSpecs)
+		        Dim spec As String = PathSpecs(i).Trim
+		        If PathMatchSpec(Target.AbsolutePath_, spec) Then Return True
+		      Next
+		    End If
+		  #endif
+		End Function
+	#tag EndMethod
+
 	#tag DelegateDeclaration, Flags = &h0
 		Delegate Sub ProgressCallback(PercentDone As Double)
 	#tag EndDelegateDeclaration

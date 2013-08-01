@@ -24,6 +24,14 @@ Protected Module Shlwapi
 		Declare Function PathGetArgs Lib "Shlwapi" Alias "PathGetArgsW" (path As WString) As WString
 	#tag EndExternalMethod
 
+	#tag ExternalMethod, Flags = &h0
+		Declare Function PathMatchSpec Lib "Shlwapi" Alias "PathMatchSpecW" (path As WString, spec As WString) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function PathMatchSpecEx Lib "Shlwapi" Alias "PathMatchSpecExW" (path As WString, spec As WString, Flags As Integer) As Integer
+	#tag EndExternalMethod
+
 
 	#tag ViewBehavior
 		#tag ViewProperty

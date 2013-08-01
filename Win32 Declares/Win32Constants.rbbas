@@ -456,6 +456,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = FIND_FIRST_EX_CASE_SENSITIVE, Type = Double, Dynamic = False, Default = \"1", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = FIND_FIRST_EX_LARGE_FETCH, Type = Double, Dynamic = False, Default = \"2", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = FLASHW_ALL, Type = Double, Dynamic = False, Default = \"&h00000003", Scope = Public
 	#tag EndConstant
 
@@ -864,6 +867,15 @@ Protected Module Win32Constants
 	#tag Constant, Name = PIPE_UNLIMITED_INSTANCES, Type = Double, Dynamic = False, Default = \"&hFF", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = PMSF_DONT_STRIP_SPACES, Type = Double, Dynamic = False, Default = \"&h00010000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PMSF_MULTIPLE, Type = Double, Dynamic = False, Default = \"&h00000001", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = PMSF_NORMAL, Type = Double, Dynamic = False, Default = \"0", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = PRF_CLIENT, Type = Double, Dynamic = False, Default = \"&h00000004", Scope = Public
 	#tag EndConstant
 
@@ -1213,6 +1225,9 @@ Protected Module Win32Constants
 	#tag EndConstant
 
 	#tag Constant, Name = SYNCHRONIZE, Type = Double, Dynamic = False, Default = \"&h00100000", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = S_OK, Type = Double, Dynamic = False, Default = \"0", Scope = Public
 	#tag EndConstant
 
 	#tag Constant, Name = TOKEN_ADJUST_PRIVILEGES, Type = Double, Dynamic = False, Default = \"&h00000020", Scope = Public
