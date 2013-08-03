@@ -257,11 +257,11 @@ Inherits RuntimeException
 		  'Returns the Call stack for the OriginalException
 		  'If UseStackCleaner = True then the stack is cleaned before being returned
 		  
-		  #If UseStackCleaner Then
+		  If UseStackCleaner Then
 		    Return CleanStack(Self.OriginalException)
-		  #Else
+		  Else
 		    Return Self.OriginalException.Stack
-		  #endif
+		  End If
 		End Function
 	#tag EndMethod
 
@@ -295,6 +295,20 @@ Inherits RuntimeException
 		
 		This class also incorporates code from Fireeye Software's StackCleaner project: 
 		http://web.archive.org/web/20090528003537/http://fireyesoftware.com/developer/stackcleaner/
+		
+		---------------
+		Copyright (c) 2013 Andrew Lambert
+		
+		Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), 
+		to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+		and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+		
+		The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+		
+		    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE 
+		    WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+		    COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+		    ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	#tag EndNote
 
 	#tag Note, Name = Useage
@@ -303,8 +317,8 @@ Inherits RuntimeException
 		First, by using the ReRaise method instead of the Raise keyword when re-raising an exception, the original exception's
 		stack trace will be preserved rather than replaced by the stack at the moment Raise is called.
 		
-		Second, if the CaughtException.UseStackCleaner constant is changed to True at compile-time, the stack trace will be cleaned
-		up when read from the exception (in an uncleaned stack, the function names are mangled somewhat.)
+		Second, if the CaughtException.UseStackCleaner True the stack trace will be cleaned up when read from the exception 
+		'(in an uncleaned stack, the function names are mangled somewhat.)
 		
 		Further discussion and code from:
 		http://www.realsoftwareblog.com/2012/07/preserving-stack-trace-when-catching.html
@@ -327,9 +341,9 @@ Inherits RuntimeException
 		Private OriginalException As RuntimeException
 	#tag EndProperty
 
-
-	#tag Constant, Name = UseStackCleaner, Type = Boolean, Dynamic = False, Default = \"False", Scope = Private
-	#tag EndConstant
+	#tag Property, Flags = &h0
+		UseStackCleaner As Boolean = False
+	#tag EndProperty
 
 
 	#tag ViewBehavior
