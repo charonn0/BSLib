@@ -63,6 +63,35 @@ Protected Module Win32UI
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub SetWindowShape(Extends TargetWindow As Window, Shape As Picture, Transparent As Color)
+		  Dim x, x2, y As Integer
+		  Dim r1, r2 As Integer
+		  Dim i As Integer
+		  
+		  r1 = CreateRectRgn(0, 0, 0, 0)
+		  Dim surf As RGBSurface = Shape.RGBSurface
+		  For y = 0 To Shape.height - 1
+		    x = 0
+		    While x < Shape.width
+		      If surf.pixel(x, y) <> transparent Then
+		        For x2 = x To Shape.width - 1
+		          If surf.pixel(x2, y) = transparent Then
+		            Exit
+		          End If
+		          r2 = CreateRectRgn(x, y, x2+1, y+1)
+		          i = CombineRgn(r1, r1, r2, 2)
+		          i = DeleteObject(r2)
+		          x = x2
+		        Next
+		      End If
+		      x = x + 1
+		    Wend
+		  Next
+		  i = SetWindowRgn(TargetWindow.Handle, r1, True)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub SetWindowStyle(HWND As Integer, flag As Integer, Assigns b As Boolean)
 		  Dim oldFlags as Integer
 		  Dim newFlags as Integer
