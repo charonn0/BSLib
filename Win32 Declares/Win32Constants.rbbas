@@ -1230,6 +1230,9 @@ Protected Module Win32Constants
 	#tag Constant, Name = S_OK, Type = Double, Dynamic = False, Default = \"0", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = TH32CS_SNAPPROCESS, Type = Double, Dynamic = False, Default = \"&h2", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = TOKEN_ADJUST_PRIVILEGES, Type = Double, Dynamic = False, Default = \"&h00000020", Scope = Public
 	#tag EndConstant
 

@@ -57,6 +57,10 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function CreateToolhelp32Snapshot Lib "Kernel32" (Flags As Integer, ProcessID As Integer) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function DeleteFile Lib "Kernel32" Alias "DeleteFileW" (Path As WString) As Boolean
 	#tag EndExternalMethod
 
@@ -216,6 +220,10 @@ Protected Module Kernel32
 		Soft Declare Sub GetNativeSystemInfo Lib "Kernel32" (ByRef info As SYSTEM_INFO)
 	#tag EndExternalMethod
 
+	#tag ExternalMethod, Flags = &h0
+		Declare Function GetPriorityClass Lib "Kernel32" (ProcessHandle As Integer) As Integer
+	#tag EndExternalMethod
+
 	#tag ExternalMethod, Flags = &h1
 		Protected Soft Declare Function GetProcessImageFileName Lib "Kernel32" Alias "GetProcessImageFileNameW" (pHandle As Integer, path As Ptr, pathsize As Integer) As Integer
 	#tag EndExternalMethod
@@ -277,11 +285,19 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
-		Soft Declare Function OpenProcess Lib "Kernel32" (dwDesiredAccessAs As Integer, bInheritHandle As Integer, dwProcId As Integer) As Integer
+		Soft Declare Function OpenProcess Lib "Kernel32" (DesiredAccess As Integer, InheritHandle As Boolean, ProcessId As Integer) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
 		Soft Declare Function PeekNamedPipe Lib "Kernel32" (PipeHandle As Integer, Buffer As Ptr, BufferSize As Integer, ByRef BytesRead As Integer, ByRef TotalBytesAvailable As Integer, ByRef BytesLeftThisMessage As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function Process32First Lib "Kernel32" Alias "Process32FirstW" (Handle As Integer, ByRef Entry As PROCESSENTRY32) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function Process32Next Lib "Kernel32" Alias "Process32NextW" (Handle As Integer, ByRef Entry As PROCESSENTRY32) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
@@ -361,7 +377,15 @@ Protected Module Kernel32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function SetPriorityClass Lib "Kernel32" (ProcessHandle As Integer, NewPriority As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function SetSystemTime Lib "Kernel32" (ByRef NewTime As SYSTEMTIME) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Soft Declare Function TerminateProcess Lib "Kernel32" (ProcessHandle As Integer, ExitCode As Integer) As Boolean
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0

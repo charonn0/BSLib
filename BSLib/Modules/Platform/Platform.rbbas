@@ -443,12 +443,12 @@ Protected Module Platform
 		  #If TargetWin32 Then
 		    Dim cleanup As Boolean = EnablePrivilege(SE_DEBUG_PRIVILEGE)
 		    
-		    If KernelVersion = 5.1 Then
+		    If KernelVersion >= 5.1 Then
 		      Dim Modules As New MemoryBlock(255)  // 255 = SIZE_MINIMUM * sizeof(HMODULE)
 		      Dim ModuleName As New MemoryBlock(255)
 		      Dim nSize As Integer
 		      
-		      Dim hProcess As Integer = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, 0, processID)
+		      Dim hProcess As Integer = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, False, processID)
 		      Dim Result As String
 		      If hProcess <> 0 Then
 		        ModuleName = New MemoryBlock(255)
@@ -468,41 +468,41 @@ Protected Module Platform
 		        ret = GetFolderItem(Result)
 		      End If
 		      Return ret
-		    ElseIf KernelVersion > 5.2 Then
-		      Dim pHandle As Integer
-		      Dim realsize As Integer
-		      Dim path As New MemoryBlock(255)
-		      
-		      pHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, processID)
-		      
-		      If System.IsFunctionAvailable("GetProcessImageFileNameW", "Kernel32") Then
-		        If pHandle <> 0 Then
-		          realsize = Kernel32.GetProcessImageFileName(pHandle, path, path.Size)
-		        Else
-		          Return Nil
-		        End If
-		      Else
-		        If pHandle <> 0 Then
-		          realsize = Kernel32.GetProcessImageFileName(pHandle, path, path.Size)
-		        Else
-		          Return Nil
-		        End If
-		      End If
-		      
-		      If realsize > 0 Then
-		        Dim retpath As String = path.WString(0)
-		        Dim t As String = "\Device\" + NthField(retpath, "\", 3)
-		        retpath = retpath.Replace(t, "")
-		        
-		        For i As Integer = 65 To 90  //A-Z in ASCII
-		          Dim mb As New MemoryBlock(255)
-		          Call QueryDosDevice(Chr(i) + ":", mb, mb.Size)
-		          If mb.Wstring(0) = t Then
-		            retpath = Chr(i) + ":" + retpath
-		            Return GetFolderItem(retpath)
-		          End If
-		        Next
-		      End If
+		      'ElseIf KernelVersion > 5.2 Then
+		      'Dim pHandle As Integer
+		      'Dim realsize As Integer
+		      'Dim path As New MemoryBlock(255)
+		      '
+		      'pHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, processID)
+		      '
+		      'If System.IsFunctionAvailable("GetProcessImageFileNameW", "Kernel32") Then
+		      'If pHandle <> 0 Then
+		      'realsize = Kernel32.GetProcessImageFileName(pHandle, path, path.Size)
+		      'Else
+		      'Return Nil
+		      'End If
+		      'Else
+		      'If pHandle <> 0 Then
+		      'realsize = Kernel32.GetProcessImageFileName(pHandle, path, path.Size)
+		      'Else
+		      'Return Nil
+		      'End If
+		      'End If
+		      '
+		      'If realsize > 0 Then
+		      'Dim retpath As String = path.WString(0)
+		      'Dim t As String = "\Device\" + NthField(retpath, "\", 3)
+		      'retpath = retpath.Replace(t, "")
+		      '
+		      'For i As Integer = 65 To 90  //A-Z in ASCII
+		      'Dim mb As New MemoryBlock(255)
+		      'Call QueryDosDevice(Chr(i) + ":", mb, mb.Size)
+		      'If mb.Wstring(0) = t Then
+		      'retpath = Chr(i) + ":" + retpath
+		      'Return GetFolderItem(retpath)
+		      'End If
+		      'Next
+		      'End If
 		    End If
 		    If cleanup Then Call DisablePrivilege(SE_DEBUG_PRIVILEGE)
 		  #endif
@@ -828,7 +828,7 @@ Protected Module Platform
 		  //capable compiler then the results of this function will become unreliable and I will be immensely pleased.
 		  
 		  #If TargetWin32 Then
-		    Dim pHandle As Integer = OpenProcess(PROCESS_QUERY_INFORMATION, 0, GetCurrentProcess)
+		    Dim pHandle As Integer = OpenProcess(PROCESS_QUERY_INFORMATION, False, GetCurrentProcess)
 		    
 		    Dim is64 As Boolean
 		    If IsWow64Process(pHandle, is64) Then

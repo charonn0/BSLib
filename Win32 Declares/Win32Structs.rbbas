@@ -238,6 +238,19 @@ Protected Module Win32Structs
 		Y As Integer
 	#tag EndStructure
 
+	#tag Structure, Name = PROCESSENTRY32, Flags = &h0
+		Ssize As Integer
+		  cntUsage As Integer
+		  ProcessID As Integer
+		  DefaultHeapID As Integer
+		  ModuleID As Integer
+		  ThreadCount As Integer
+		  ParentProcessID As Integer
+		  BasePriority As Integer
+		  Flags As Integer
+		EXEPath As WString*520
+	#tag EndStructure
+
 	#tag Structure, Name = PROCESSOR_POWER_INFORMATION, Flags = &h0
 		ProcessorNumber As UInt32
 		  MaxMhz As UInt32
