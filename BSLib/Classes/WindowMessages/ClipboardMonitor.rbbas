@@ -48,11 +48,12 @@ Inherits WindowMessenger
 
 
 	#tag Note, Name = About this class
-		: http://msdn.microsoft.com/en-us/library/windows/desktop/ms649052%28v=vs.85%29.aspx
+		http://msdn.microsoft.com/en-us/library/windows/desktop/ms649052%28v=vs.85%29.aspx
+		
+		Monitors the system-wide clipboard for changes.
 		
 		Place this class on a window, or call the class constructor with a handle to the desired parent window.
 		The ClipboardChanged event will fire every time the contents of the Clipboard are set.
-		. SeeLer
 	#tag EndNote
 
 
