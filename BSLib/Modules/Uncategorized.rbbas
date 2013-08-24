@@ -364,11 +364,39 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function HighBits(Extends BigInt As UInt64) As Integer
+		  'Gets the high-order bits of the passed UInt64
+		  Return ShiftRight(BigInt, 32)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub HighBits(Extends ByRef BigInt As UInt64, Assigns HighOrder As Integer)
+		  'Sets the high-order bits of the passed UInt64
+		  BigInt = BitOr(ShiftLeft(HighOrder, 32), BigInt.LowBits)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function IntToHex(src as Byte) As string
 		  //Hexify a Byte with padded zeros if needed
 		  
 		  Return RightB("00" + Hex(src), 2)
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function LowBits(Extends BigInt As UInt64) As Integer
+		  'Gets the low-order bits of the passed UInt64
+		  Return BitAnd(BigInt, &hFFFFFFFF)
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub LowBits(Extends ByRef BigInt As UInt64, Assigns LowOrder As Integer)
+		  'Sets the low-order bits of the passed UInt64
+		  BigInt = BitOr(ShiftLeft(BigInt.HighBits, 32), LowOrder)
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
