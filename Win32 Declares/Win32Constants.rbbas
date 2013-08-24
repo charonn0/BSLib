@@ -1275,6 +1275,12 @@ Protected Module Win32Constants
 	#tag Constant, Name = WHITENESS, Type = Double, Dynamic = False, Default = \"&h00FF0062", Scope = Public
 	#tag EndConstant
 
+	#tag Constant, Name = WM_CHANGECBCHAIN, Type = Double, Dynamic = False, Default = \"&h030D", Scope = Public
+	#tag EndConstant
+
+	#tag Constant, Name = WM_DRAWCLIPBOARD, Type = Double, Dynamic = False, Default = \"&h0308", Scope = Public
+	#tag EndConstant
+
 	#tag Constant, Name = WM_GETTEXT, Type = Double, Dynamic = False, Default = \"&h000D", Scope = Public
 	#tag EndConstant
 

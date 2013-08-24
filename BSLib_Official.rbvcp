@@ -59,6 +59,7 @@ Class=Win32Waiter;BSLib/Classes/Win32Waiter.rbbas;&h4077BFFF;&h489DFFFF;false
 Class=Win32Process;BSLib/Classes/Win32Process.rbbas;&h2D81AFFF;&h489DFFFF;false
 Class=FileAttributes;BSLib/Classes/File Classes/FileAttributes.rbbas;&h3ED7D7FF;&h3D4FC7FF;false
 Class=FileSearcher;BSLib/Classes/File Classes/FileSearcher.rbbas;&h2214C7FF;&h3D4FC7FF;false
+Class=ClipboardMonitor;BSLib/Classes/WindowMessages/ClipboardMonitor.rbbas;&h5DDBF7FF;&h34390FFF;false
 DefaultWindow=Window1
 MajorVersion=1
 MinorVersion=0

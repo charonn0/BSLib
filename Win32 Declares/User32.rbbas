@@ -25,6 +25,10 @@ Protected Module User32
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
+		Declare Function ChangeClipboardChain Lib "User32" (Removed As Integer, NextWindow As Integer) As Boolean
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
 		Declare Function ChildWindowFromPoint Lib "User32" (HWND As Integer, Coordinates As POINT) As Integer
 	#tag EndExternalMethod
 
@@ -186,6 +190,10 @@ Protected Module User32
 
 	#tag ExternalMethod, Flags = &h0
 		Declare Function SendMessage Lib "User32" Alias "SendMessageW" (HWND As Integer, Message As UInt32, WParam As Ptr, LParam As Ptr) As Integer
+	#tag EndExternalMethod
+
+	#tag ExternalMethod, Flags = &h0
+		Declare Function SetClipboardViewer Lib "User32" (NewViewerWindow As Integer) As Integer
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
