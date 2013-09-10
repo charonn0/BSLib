@@ -527,6 +527,29 @@ Protected Module Uncategorized
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Function ScreenFromXY(X As Integer, Y As Integer) As Integer
+		  'Given X and Y screen coordinates, the following method returns the index of the containing Screen
+		  'If the coordinates are not contained in any screen, returns -1
+		  
+		  Dim rect As New REALbasic.Rect
+		  Dim pt As New REALbasic.Point
+		  pt.X = X
+		  pt.Y = Y
+		  For i As Integer = 0 To ScreenCount - 1
+		    rect.Top = Screen(i).Top
+		    rect.Left = Screen(i).Left
+		    rect.Width = Screen(i).Width
+		    rect.Height = Screen(i).Height
+		    If rect.Contains(pt) Then
+		      Return i
+		    End If
+		  Next
+		  
+		  Return -1
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function SFSCount(Key As String, Value As String) As Integer
 		  //Queries the StopForumSpam API
 		  Dim h As New HTTPSocket
