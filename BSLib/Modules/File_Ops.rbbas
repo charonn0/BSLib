@@ -853,6 +853,18 @@ Protected Module File_Ops
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub OpenInExplorer(extends f As FolderItem)
+		  //Like ShowInExplorer, but for displaying the contents of a directory
+		  
+		  #If TargetWin32 Then
+		    If Not f.Directory Then Return
+		    Dim param As String = " """ + f.AbsolutePath + """"
+		    Call Shell32.ShellExecute(0, "open", "explorer", param, "", SW_SHOW)
+		  #endif
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function PathMatches(Extends Target As FolderItem, ParamArray PathSpecs() As String) As Boolean
 		  'Returns True if the passed FolderItem's path matches one of the passed path specifications.
 		  'e.g.

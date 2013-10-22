@@ -591,10 +591,9 @@ Inherits TCPSocket
 		      Raise err
 		    End If
 		    Dim mb As New MemoryBlock(PageData.LenB + 8)
-		    'magic
-		    mb.Byte(0) = &h1F
-		    mb.Byte(1) = &h8B
-		    mb.Byte(2) = &h08
+		    mb.Byte(0) = &h1F 'magic
+		    mb.Byte(1) = &h8B 'magic
+		    mb.Byte(2) = &h08 'deflate
 		    mb.StringValue(8, PageData.LenB) = PageData
 		    Return mb
 		  #Else
