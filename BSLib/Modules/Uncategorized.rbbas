@@ -486,20 +486,21 @@ Protected Module Uncategorized
 		    For Each line As String In lines
 		      
 		      line = Left(line, line.Len - InStr(line, "#"))
-		      If line.Trim = "" Then Continue 'comment lines are ignored
+		      If line.Trim = "" Or Left(line, 1) = "#" Then Continue 'comment lines are ignored
 		      
 		      Dim field, value As String
 		      'Each member is broken into halves by a colon (:)
 		      field = NthField(line, ":", 1).Trim
 		      value = NthField(line, ":", 2).Trim
 		      
-		      If field.Trim = "User-Agent" Then
+		      Select Case field.Trim
+		      Case "User-Agent"
 		        UA.Append(value)
 		        
-		      ElseIf field.Trim = "Disallow" Then
+		      Case "Disallow"
 		        paths.Append(value)
 		        
-		      ElseIf field.Trim = "Sitemap"  Then
+		      Case "Sitemap", "Crawl-delay"
 		        Continue 'Sometimes used (not an error), but not interesting to us
 		        
 		      Else
@@ -508,14 +509,14 @@ Protected Module Uncategorized
 		        #endif
 		        Return False
 		        
-		      End If
+		      End Select
 		    Next
 		    
 		    'Then check to see if we're blocked
 		    For Each Agent As String In UA
 		      If Agent = UserAgent Or Agent.Trim = AllBots Then
 		        For Each URL As String In paths
-		          If InStr(URL, "*") > 1 Then URL = NthField(URL, "*", 1) 'wildcard. we don't support complex patterns, just the *
+		          If InStr(URL, AllBots) > 1 Then URL = NthField(URL, AllBots, 1) 'wildcard. we don't support complex patterns, just the *
 		          If Left(path, URL.Len) = URL Then
 		            Return True 'We're blocked!
 		          End If
