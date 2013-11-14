@@ -1,7 +1,7 @@
 #tag Module
 Protected Module ws2_32
 	#tag ExternalMethod, Flags = &h0
-		Declare Function GetHostByName Lib "ws2_32" (Address As CString) As Ptr
+		Declare Function gethostbyname Lib "ws2_32" (Address As CString) As Ptr
 	#tag EndExternalMethod
 
 	#tag ExternalMethod, Flags = &h0
