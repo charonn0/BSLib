@@ -161,6 +161,9 @@ Inherits RuntimeException
 		    Select Case mode
 		    Case kParamMode
 		      Select Case char
+		      Case "v"
+		        funcTypes.append( "Variant" )
+		        
 		      Case "i"
 		        mode = kIntMode
 		        
@@ -398,6 +401,12 @@ Inherits RuntimeException
 			InitialValue="0"
 			Type="Integer"
 			InheritedFrom="Object"
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="UseStackCleaner"
+			Group="Behavior"
+			InitialValue="False"
+			Type="Boolean"
 		#tag EndViewProperty
 	#tag EndViewBehavior
 End Class
