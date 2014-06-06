@@ -1,5 +1,21 @@
 #tag Module
 Protected Module CryptoTools
+	#tag Method, Flags = &h0
+		Function Adler32(Data As MemoryBlock) As UInt32
+		  ' https://en.wikipedia.org/wiki/Adler-32
+		  Const adler = 65521
+		  Dim a, b As UInt32
+		  a = 1
+		  
+		  For i As Integer = 0 To Data.Size - 1
+		    a = (a + Data.Byte(i)) Mod adler
+		    b = (b + a) Mod adler
+		  Next
+		  
+		  Return ShiftLeft(b, 16) Or a
+		End Function
+	#tag EndMethod
+
 	#tag Method, Flags = &h21
 		Private Function HashData(provider as Integer, data as String, ByRef handle as Integer, algorithm As Integer) As MemoryBlock
 		  #If TargetWin32 Then

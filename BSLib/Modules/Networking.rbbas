@@ -94,15 +94,13 @@ Protected Module Networking
 		  //This function should be cross-platform safe.
 		  
 		  If CountFields(dottedIP, ".") <> 4 Then Raise New UnsupportedFormatException
-		  Dim octets() As String = Split(dottedIP, ".")
-		  Dim a, b, c, d As UInt32
-		  a = Val(octets(0)) * 256^3
-		  b = Val(octets(1)) * 256^2
-		  c = Val(octets(2)) * 256
-		  d = Val(octets(3))
-		  
-		  
-		  Return a + b + c + d
+		  Dim mb As New MemoryBlock(4)
+		  mb.LittleEndian = False
+		  mb.Byte(0) = Val(NthField(dottedIP, ".", 1))
+		  mb.Byte(1) = Val(NthField(dottedIP, ".", 2))
+		  mb.Byte(2) = Val(NthField(dottedIP, ".", 3))
+		  mb.Byte(3) = Val(NthField(dottedIP, ".", 4))
+		  Return mb.UInt32Value(0)
 		End Function
 	#tag EndMethod
 
@@ -111,13 +109,10 @@ Protected Module Networking
 		  //Returns a formatted IPv4 address like "192.168.0.1" See also: IPv4DotToInt
 		  //This function should be cross-platform safe.
 		  
-		  Dim a, b, c, d As UInt64
-		  a = ((s Mod 16777216) Mod 65536) Mod 256
-		  b = ((s Mod 16777216) Mod 65536) \ 256
-		  c = (s Mod 16777216) \ 65536
-		  d = (s \ 16777216)
-		  
-		  Return Str(d) +  "." + Str(c) + "." + Str(b) + "." + Str(a)
+		  Dim mb As New MemoryBlock(4)
+		  mb.LittleEndian = False
+		  mb.UInt32Value(0) = s
+		  Return Format(mb.Byte(0), "##0") + "." + Format(mb.Byte(1), "##0") + "." + Format(mb.Byte(2), "##0") + "." + Format(mb.Byte(3), "##0")
 		End Function
 	#tag EndMethod
 
