@@ -472,8 +472,14 @@ Protected Module Uncategorized
 
 	#tag Method, Flags = &h0
 		Function RobotBlocked(robotstxt As String, UserAgent As String, Path As String = "/") As Boolean
-		  'Parses a website's robots.txt file and returns True if the passed UserAgent is Disallowed for the specified path
-		  'If not disallowed (i.e. allowed) then returns False.
+		  Return RobotBlockedEx(robotstxt, UserAgent, Path) <> Nil
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function RobotBlockedEx(robotstxt As String, UserAgent As String, Path As String = "/") As Pair
+		  'Parses a robots.txt file and returns a Pair containing the UserAgent:Path in the robots.txt that matches the UserAgent and Path, if any.
+		  'If not disallowed (i.e. allowed) then returns NIL.
 		  
 		  Const AllBots = "*"
 		  robotstxt = ReplaceLineEndings(robotstxt, EndOfLine.Windows)
@@ -500,14 +506,14 @@ Protected Module Uncategorized
 		      Case "Disallow"
 		        paths.Append(value)
 		        
-		      Case "Sitemap", "Crawl-delay"
+		      Case "Sitemap", "Crawl-delay", "Allow"
 		        Continue 'Sometimes used (not an error), but not interesting to us
 		        
 		      Else
 		        #If DebugBuild Then
 		          Break 'invalid robots.txt data!
 		        #endif
-		        Return False
+		        Return Nil
 		        
 		      End Select
 		    Next
@@ -516,9 +522,17 @@ Protected Module Uncategorized
 		    For Each Agent As String In UA
 		      If Agent = UserAgent Or Agent.Trim = AllBots Then
 		        For Each URL As String In paths
-		          If InStr(URL, AllBots) > 1 Then URL = NthField(URL, AllBots, 1) 'wildcard. we don't support complex patterns, just the *
-		          If Left(path, URL.Len) = URL Then
-		            Return True 'We're blocked!
+		          If InStr(URL, AllBots) > 1 Then 
+		            Dim l, r As String
+		            l = NthField(URL, AllBots, 1)
+		            r = NthField(URL, AllBots, 2)
+		            If Left(path, l.Len) = l And Right(path, r.Len) = r Then
+		              Return Agent:URL 'We're blocked!
+		            End If
+		          Else ' URL = NthField(URL, AllBots, 1) 'wildcard. we don't support complex patterns, just the *
+		            If Left(path, URL.Len) = URL Then
+		              Return Agent:URL 'We're blocked!
+		            End If
 		          End If
 		        Next
 		      End If
